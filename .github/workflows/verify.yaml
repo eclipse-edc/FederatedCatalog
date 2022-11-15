@@ -1,0 +1,210 @@
+name: Test Code (Style, Tests)
+
+on:
+  push:
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'CODEOWNERS'
+      - 'LICENSE'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  Checkstyle:
+    permissions:
+      id-token: write
+      checks: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-build
+
+      - name: Run Checkstyle
+        run: ./gradlew checkstyleMain checkstyleTest checkstyleTestFixtures
+
+  Dependency-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-build
+
+      - name: Dependency rules report # possible severity values: <'fail'|'warn'|'ignore'>
+        # run: ./gradlew buildHealth applyDependencyRules -Pdependency.analysis=warn -Pdependency.analysis.clear.artifacts=false
+        # Disabled our dependency rules for now, as they are outdated and need to be refactored:
+        # https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/2132
+        # explicitly set 1G heap space because we've seen OOMs previously
+        run: ./gradlew -Dorg.gradle.jvmargs="-Xmx1g" buildHealth -Pdependency.analysis=warn -Pdependency.analysis.clear.artifacts=false
+
+      - name: Dependency analysis report
+        run: cat build/reports/dependency-analysis/build-health-report.txt
+
+  Unit-Tests:
+    runs-on: ubuntu-latest
+    env:
+      JACOCO: true
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-build
+
+      - name: Run unit tests
+        uses: ./.github/actions/run-tests
+        with:
+          command: ./gradlew test jacocoTestReport
+
+  Azure-Storage-Integration-Tests:
+    runs-on: ubuntu-latest
+
+    services:
+      azurite:
+        image: mcr.microsoft.com/azure-storage/azurite
+        ports:
+          - 10000:10000
+        env:
+          AZURITE_ACCOUNTS: account1:key1;account2:key2
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-build
+
+      - name: Azure Storage Tests
+        uses: ./.github/actions/run-tests
+        with:
+          command: |
+            ./gradlew -p extensions test -DincludeTags="AzureStorageIntegrationTest"
+            ./gradlew -p system-tests/azure-tests test -DincludeTags="AzureStorageIntegrationTest"
+
+  Check-Cosmos-Key:
+    runs-on: ubuntu-latest
+    steps:
+      - id: has-cosmos-key
+        env:
+          HAS_COSMOS_KEY: ${{ secrets.COSMOS_KEY }}
+        if: "${{ env.HAS_COSMOS_KEY != '' }}"
+        run: echo "::set-output name=defined::true"
+    outputs:
+      has-cosmos-key: ${{ steps.has-cosmos-key.outputs.defined }}
+
+  Azure-CosmosDB-Integration-Tests:
+    # run only if COSMOS_KEY is present
+    needs: [ Check-Cosmos-Key ]
+    if: needs.Check-Cosmos-Key.outputs.has-cosmos-key == 'true'
+    runs-on: ubuntu-latest
+
+    env:
+      COSMOS_KEY: ${{ secrets.COSMOS_KEY }}
+      COSMOS_URL: ${{ secrets.COSMOS_URL }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-build
+
+      - name: Azure CosmosDB Tests
+        uses: ./.github/actions/run-tests
+        with:
+          command: ./gradlew -p extensions test -DincludeTags="AzureCosmosDbIntegrationTest"
+
+  Postgresql-Integration-Tests:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14.2
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: password
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-build
+
+      - name: Postgresql Tests
+        uses: ./.github/actions/run-tests
+        with:
+          command: ./gradlew test -DincludeTags="PostgresqlIntegrationTest"
+
+  End-To-End-Tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-build
+
+      - name: End to End Integration Tests
+        uses: ./.github/actions/run-tests
+        with:
+          command: ./gradlew test -DincludeTags="EndToEndTest"
+
+  Component-Tests:
+    env:
+      JACOCO: true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-build
+
+      - name: Component Tests
+        uses: ./.github/actions/run-tests
+        with:
+          command: ./gradlew test jacocoTestReport -DincludeTags="ComponentTest"
+
+  API-Tests:
+    env:
+      JACOCO: true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-build
+
+      - name: Component Tests
+        uses: ./.github/actions/run-tests
+        with:
+          command: ./gradlew test jacocoTestReport -DincludeTags="ApiTest"
+
+  Upload-Test-Report:
+    needs:
+      - Unit-Tests
+      - Azure-Storage-Integration-Tests
+      - Azure-CosmosDB-Integration-Tests
+      - End-To-End-Tests
+      - Postgresql-Integration-Tests
+      - Component-Tests
+
+    permissions:
+      checks: write
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          junit_files: "**/test-results/**/*.xml"
+
+  Upload-Coverage-Report-To-Codecov:
+    needs:
+      - Unit-Tests
+      - Component-Tests
+      - API-Tests
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      # Sources are needed for Codecov report
+      - uses: actions/checkout@v3
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+      - name: CodeCov
+        uses: codecov/codecov-action@v3
