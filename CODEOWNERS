@@ -17,3 +17,6 @@ README.md @paullatzelsperger
 .github/ISSUE_TEMPLATE @paullatzelsperger
 .github/workflows/ @paullatzelsperger
 
+/extensions/ @paullatzelsperger
+/resources/ @paullatzelsperger
+/spi/ @paullatzelsperger
