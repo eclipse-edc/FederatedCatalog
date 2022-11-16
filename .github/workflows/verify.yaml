@@ -59,6 +59,8 @@ jobs:
 
   Azure-Storage-Integration-Tests:
     runs-on: ubuntu-latest
+    # deactivate until we actually have implementations based on Azure Storage Blob
+    if: ${{ false }}
 
     services:
       azurite:
