@@ -1,6 +1,5 @@
 package org.eclipse.edc.catalog.api.query;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
@@ -31,9 +30,8 @@ import static org.mockito.Mockito.when;
 @ApiTest
 @ExtendWith(EdcExtension.class)
 class FederatedCatalogApiControllerTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final String BASE_PATH = "/api";
-    private final static TypeRef<List<ContractOffer>> CONTRACT_OFFER_LIST_TYPE = new TypeRef<>() {
+    private static final TypeRef<List<ContractOffer>> CONTRACT_OFFER_LIST_TYPE = new TypeRef<>() {
     };
     private final int port = getFreePort();
 
