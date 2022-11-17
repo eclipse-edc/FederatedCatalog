@@ -36,7 +36,9 @@ public class FederatedCatalogCacheQueryApiExtension implements ServiceExtension 
 
         // contribute to the liveness probe
         if (healthCheckService != null) {
-            healthCheckService.addReadinessProvider(() -> HealthCheckResult.Builder.newInstance().component("FCC Query API").build());
+            var successResult = HealthCheckResult.Builder.newInstance().component("FCC Query API").build();
+            healthCheckService.addReadinessProvider(() -> successResult);
+            healthCheckService.addLivenessProvider(() -> successResult);
         }
     }
 

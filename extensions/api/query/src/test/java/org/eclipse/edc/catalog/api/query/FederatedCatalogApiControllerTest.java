@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
+import org.eclipse.edc.catalog.spi.CacheQueryAdapter;
+import org.eclipse.edc.catalog.spi.CacheQueryAdapterRegistry;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
@@ -13,7 +15,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,9 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.catalog.test.TestUtil.createOffer;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ApiTest
 @ExtendWith(EdcExtension.class)
@@ -46,14 +50,17 @@ class FederatedCatalogApiControllerTest {
         var response = baseRequest()
                 .contentType(ContentType.JSON)
                 .body(FederatedCatalogCacheQuery.Builder.newInstance().build())
-                .post("/federatedcatalog");
+                .post("/federatedcatalog")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(CONTRACT_OFFER_LIST_TYPE);
 
-        assertThat(response.getStatusCode()).isEqualTo(200);
-        assertThat(response.getBody().as(CONTRACT_OFFER_LIST_TYPE)).isEmpty();
+        assertThat(response).isEmpty();
     }
 
     @Test
-    void queryApi_whenResultsReturned(FederatedCacheStore store) throws IOException {
+    void queryApi_whenResultsReturned(FederatedCacheStore store) {
         int nbAssets = 3;
 
         // generate assets and populate the store
@@ -75,6 +82,22 @@ class FederatedCatalogApiControllerTest {
 
         // test
         compareAssetsById(offers, assets);
+    }
+
+    @Test
+    void queryApi_whenQueryUnsuccessful(CacheQueryAdapterRegistry adapterRegistry) {
+        var adapter = mock(CacheQueryAdapter.class);
+        when(adapter.executeQuery(any())).thenThrow(new RuntimeException("test exception"));
+        when(adapter.canExecute(any())).thenReturn(true);
+        adapterRegistry.register(adapter);
+
+        baseRequest()
+                .contentType(ContentType.JSON)
+                .body(FederatedCatalogCacheQuery.Builder.newInstance().build())
+                .post("/federatedcatalog")
+                .then()
+                .statusCode(500);
+
     }
 
     private void compareAssetsById(List<ContractOffer> actual, List<ContractOffer> expected) {
