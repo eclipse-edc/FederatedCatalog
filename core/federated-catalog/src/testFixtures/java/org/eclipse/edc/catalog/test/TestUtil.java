@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.edc.catalog.cache;
+package org.eclipse.edc.catalog.test;
 
 import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.FederatedCacheNode;

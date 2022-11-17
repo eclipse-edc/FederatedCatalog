@@ -18,13 +18,9 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
-val edcVersion: String by project
-val edcGroup: String by project
-val identityHubVersion: String by project
-val identityHubGroup: String by project
-
 dependencies {
     implementation(project(":core:federated-catalog"))
+    implementation(project(":extensions:api:query"))
     runtimeOnly(edc.bundles.connector)
 }
 

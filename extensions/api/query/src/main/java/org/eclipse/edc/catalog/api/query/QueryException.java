@@ -12,12 +12,15 @@
  *
  */
 
-package org.eclipse.edc.catalog.cache.query;
+package org.eclipse.edc.catalog.api.query;
 
-import java.util.Collections;
+import org.eclipse.edc.spi.EdcException;
 
-public class QueryNotAcceptedException extends QueryException {
-    public QueryNotAcceptedException() {
-        super(Collections.singletonList("No suitable adapter found for the supplied query!"));
+import java.util.List;
+
+public class QueryException extends EdcException {
+
+    public QueryException(List<String> errors) {
+        super(String.join(", ", errors));
     }
 }

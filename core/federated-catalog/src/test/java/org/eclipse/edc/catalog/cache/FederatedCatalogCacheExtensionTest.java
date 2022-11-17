@@ -15,7 +15,6 @@
 package org.eclipse.edc.catalog.cache;
 
 import org.awaitility.Awaitility;
-import org.eclipse.edc.catalog.cache.controller.FederatedCatalogApiController;
 import org.eclipse.edc.catalog.cache.query.IdsMultipartNodeQueryAdapter;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
@@ -36,9 +35,9 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.catalog.cache.TestUtil.TEST_PROTOCOL;
-import static org.eclipse.edc.catalog.cache.TestUtil.createCatalog;
-import static org.eclipse.edc.catalog.cache.TestUtil.createNode;
+import static org.eclipse.edc.catalog.test.TestUtil.TEST_PROTOCOL;
+import static org.eclipse.edc.catalog.test.TestUtil.createCatalog;
+import static org.eclipse.edc.catalog.test.TestUtil.createNode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -76,7 +75,6 @@ class FederatedCatalogCacheExtensionTest {
     void initialize() {
         extension.initialize(context);
 
-        verify(webserviceMock).registerResource(any(FederatedCatalogApiController.class));
         verify(context, atLeastOnce()).getMonitor();
         verify(context).getSetting("edc.catalog.cache.partition.num.crawlers", 2);
         verify(context).getConnectorId();
@@ -114,13 +112,6 @@ class FederatedCatalogCacheExtensionTest {
     @Test
     void start(ServiceExtensionContext context) {
         extension.initialize(context);
-    }
-
-    @Test
-    void verifyProvider_queryEngine() {
-
-        var q = extension.getQueryEngine();
-        assertThat(extension.getQueryEngine()).isSameAs(q);
     }
 
     @Test

@@ -14,10 +14,16 @@
 
 package org.eclipse.edc.catalog.cache;
 
+import org.eclipse.edc.catalog.cache.query.CacheQueryAdapterImpl;
+import org.eclipse.edc.catalog.cache.query.CacheQueryAdapterRegistryImpl;
+import org.eclipse.edc.catalog.cache.query.QueryEngineImpl;
 import org.eclipse.edc.catalog.directory.InMemoryNodeDirectory;
+import org.eclipse.edc.catalog.spi.CacheQueryAdapterRegistry;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
+import org.eclipse.edc.catalog.spi.QueryEngine;
 import org.eclipse.edc.catalog.store.InMemoryFederatedCacheStore;
+import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.util.concurrency.LockManager;
@@ -31,6 +37,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class FederatedCatalogDefaultServicesExtension implements ServiceExtension {
 
     public static final String NAME = "Federated Catalog Default Services";
+
+    @Inject
+    private FederatedCacheStore store;
+    private CacheQueryAdapterRegistry registry;
 
     @Override
     public String name() {
@@ -46,5 +56,19 @@ public class FederatedCatalogDefaultServicesExtension implements ServiceExtensio
     @Provider(isDefault = true)
     public FederatedCacheNodeDirectory defaultNodeDirectory() {
         return new InMemoryNodeDirectory();
+    }
+
+    @Provider
+    public QueryEngine defaultQueryEngine() {
+        return new QueryEngineImpl(getCacheQueryAdapterRegistry());
+    }
+
+    @Provider
+    public CacheQueryAdapterRegistry getCacheQueryAdapterRegistry() {
+        if (registry == null) {
+            registry = new CacheQueryAdapterRegistryImpl();
+            registry.register(new CacheQueryAdapterImpl(store));
+        }
+        return registry;
     }
 }

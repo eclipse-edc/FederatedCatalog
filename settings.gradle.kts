@@ -53,5 +53,6 @@ dependencyResolutionManagement {
 
 include(":core:federated-catalog")
 include(":extensions:store:fcc-node-directory-cosmos")
+include(":extensions:api:query")
 include(":spi:federated-catalog-spi")
 include(":launchers")
