@@ -19,7 +19,6 @@ plugins {
 dependencies {
     api(edc.spi.catalog)
     api(edc.spi.core)
-    api(edc.spi.web)
 }
 publishing {
     publications {

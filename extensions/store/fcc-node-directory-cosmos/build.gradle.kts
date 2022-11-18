@@ -17,7 +17,6 @@ plugins {
 }
 
 dependencies {
-    api(edc.util)
     api(project(":spi:federated-catalog-spi"))
     api(edc.ext.azure.cosmos.core)
 
