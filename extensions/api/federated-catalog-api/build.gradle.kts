@@ -24,6 +24,7 @@ dependencies {
 
     runtimeOnly(edc.core.connector)
     implementation(libs.jakarta.rsApi)
+    implementation(edc.api.management.config)
 
     // required for integration test
     testImplementation(testFixtures(project(":core:federated-catalog"))) // provides the TestUtil
