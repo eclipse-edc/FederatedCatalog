@@ -20,7 +20,7 @@ plugins {
 
 dependencies {
     runtimeOnly(project(":core:federated-catalog"))
-    runtimeOnly(project(":extensions:api:query"))
+    runtimeOnly(project(":extensions:api:federated-catalog-api"))
     runtimeOnly(edc.bundles.connector)
 }
 
