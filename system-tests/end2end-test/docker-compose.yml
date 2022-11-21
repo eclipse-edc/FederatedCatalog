@@ -1,0 +1,37 @@
+services:
+
+  # standalone FCC runtime
+  fcc-runtime:
+    container_name: federated-catalog-runtime
+    build:
+      context: ../../launchers
+      args:
+        JVM_ARGS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+    environment:
+      EDC_CATALOG_CACHE_EXECUTION_DELAY_SECONDS: 5
+      EDC_CATALOG_CACHE_EXECUTION_PERIOD_SECONDS: 10
+      EDC_CATALOG_CACHE_PARTITION_NUM_CRAWLERS: 5
+      EDC_WEB_REST_CORS_ENABLED: "true"
+      EDC_WEB_REST_CORS_HEADERS: "origin,content-type,accept,authorization,x-api-key"
+    depends_on: [ connector1 ]
+    ports:
+      - "8181:8181"
+
+
+  connector1:
+    container_name: connector1
+    build:
+      context: connector/
+      args:
+        JVM_ARGS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006"
+
+    environment:
+      EDC_CONNECTOR_NAME: connector1
+      EDC_CATALOG_CACHE_EXECUTION_DELAY_SECONDS: 5
+      EDC_CATALOG_CACHE_EXECUTION_PERIOD_SECONDS: 5
+      EDC_CATALOG_CACHE_PARTITION_NUM_CRAWLERS: 5
+      EDC_WEB_REST_CORS_ENABLED: "true"
+      EDC_WEB_REST_CORS_HEADERS: "origin,content-type,accept,authorization,x-api-key"
+    ports:
+      - "8282:8282"
+      - "9192:9191"
