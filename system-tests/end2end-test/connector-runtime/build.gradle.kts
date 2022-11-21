@@ -19,6 +19,7 @@ plugins {
 }
 
 dependencies {
+
     runtimeOnly(edc.core.controlplane)
     runtimeOnly(edc.api.observability)
     runtimeOnly(edc.api.management)

@@ -4,7 +4,7 @@ services:
   fcc-runtime:
     container_name: federated-catalog-runtime
     build:
-      context: ../../launchers
+      context: catalog-runtime/
       args:
         JVM_ARGS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     environment:
@@ -13,19 +13,28 @@ services:
       EDC_CATALOG_CACHE_PARTITION_NUM_CRAWLERS: 5
       EDC_WEB_REST_CORS_ENABLED: "true"
       EDC_WEB_REST_CORS_HEADERS: "origin,content-type,accept,authorization,x-api-key"
-    depends_on: [ connector1 ]
+      FCC_DIRECTORY_FILE: /resources/nodes-dc.json
+
+    # for testing purposes, lets make sure that the first crawl run is succesful
+    depends_on:
+      connector1:
+        condition: service_healthy
+    volumes:
+      - ./resources:/resources
     ports:
       - "8181:8181"
+      - "5005:5005"
 
 
   connector1:
     container_name: connector1
     build:
-      context: connector/
+      context: connector-runtime/
       args:
         JVM_ARGS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006"
 
     environment:
+      IDS_WEBHOOK_ADDRESS: http://connector1:8282
       EDC_CONNECTOR_NAME: connector1
       EDC_CATALOG_CACHE_EXECUTION_DELAY_SECONDS: 5
       EDC_CATALOG_CACHE_EXECUTION_PERIOD_SECONDS: 5
