@@ -1,4 +1,4 @@
-package org.eclipse.edc.util;
+package org.eclipse.edc.catalog;
 
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;

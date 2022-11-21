@@ -1,4 +1,4 @@
-package org.eclipse.edc.matchers;
+package org.eclipse.edc.catalog.matchers;
 
 import org.eclipse.edc.catalog.spi.CatalogRequest;
 import org.mockito.ArgumentMatcher;

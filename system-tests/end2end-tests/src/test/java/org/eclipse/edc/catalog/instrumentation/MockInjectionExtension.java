@@ -1,4 +1,4 @@
-package org.eclipse.edc.instrumentation;
+package org.eclipse.edc.catalog.instrumentation;
 
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
