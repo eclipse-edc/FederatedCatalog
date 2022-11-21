@@ -14,21 +14,15 @@
 
 package org.eclipse.edc.catalog.cache;
 
-import org.eclipse.edc.catalog.cache.controller.FederatedCatalogApiController;
 import org.eclipse.edc.catalog.cache.crawler.NodeQueryAdapterRegistryImpl;
-import org.eclipse.edc.catalog.cache.query.CacheQueryAdapterImpl;
-import org.eclipse.edc.catalog.cache.query.CacheQueryAdapterRegistryImpl;
 import org.eclipse.edc.catalog.cache.query.IdsMultipartNodeQueryAdapter;
-import org.eclipse.edc.catalog.cache.query.QueryEngineImpl;
 import org.eclipse.edc.catalog.spi.CacheConfiguration;
-import org.eclipse.edc.catalog.spi.CacheQueryAdapterRegistry;
 import org.eclipse.edc.catalog.spi.CachedAsset;
 import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeFilter;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.catalog.spi.NodeQueryAdapterRegistry;
-import org.eclipse.edc.catalog.spi.QueryEngine;
 import org.eclipse.edc.catalog.spi.model.ExecutionPlan;
 import org.eclipse.edc.catalog.spi.model.UpdateResponse;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
@@ -40,7 +34,6 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.health.HealthCheckResult;
 import org.eclipse.edc.spi.system.health.HealthCheckService;
-import org.eclipse.edc.web.spi.WebService;
 
 import static java.util.Optional.ofNullable;
 
@@ -50,8 +43,6 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
     private Monitor monitor;
     @Inject
     private FederatedCacheStore store;
-    @Inject
-    private WebService webService;
     @Inject(required = false)
     private HealthCheckService healthCheckService;
     @Inject
@@ -66,45 +57,23 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
     private ExecutionPlan executionPlan;
     private NodeQueryAdapterRegistryImpl nodeQueryAdapterRegistry;
     private ExecutionManager executionManager;
-    private CacheQueryAdapterRegistryImpl registry;
-    private QueryEngineImpl queryEngine;
 
     @Override
     public String name() {
         return NAME;
     }
 
-    @Provider
-    public CacheQueryAdapterRegistry getCacheQueryAdapterRegistry() {
-        if (registry == null) {
-            registry = new CacheQueryAdapterRegistryImpl();
-            registry.register(new CacheQueryAdapterImpl(store));
-        }
-        return registry;
-    }
-
-    @Provider
-    public QueryEngine getQueryEngine() {
-        if (queryEngine == null) {
-            queryEngine = new QueryEngineImpl(getCacheQueryAdapterRegistry());
-        }
-        return queryEngine;
-    }
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        // QUERY SUBSYSTEM
-
         monitor = context.getMonitor();
-        var catalogController = new FederatedCatalogApiController(getQueryEngine());
-        webService.registerResource(catalogController);
 
-        // contribute to the liveness probe
-        if (healthCheckService != null) {
-            healthCheckService.addReadinessProvider(() -> HealthCheckResult.Builder.newInstance().component("FCC Query API").build());
-        }
 
         // CRAWLER SUBSYSTEM
+        // contribute to the liveness probe
+        if (healthCheckService != null) {
+            healthCheckService.addReadinessProvider(() -> HealthCheckResult.Builder.newInstance().component("FCC Crawler Subsystem").build());
+        }
         var cacheConfiguration = new CacheConfiguration(context);
         int numCrawlers = cacheConfiguration.getNumCrawlers();
         // and a loader manager

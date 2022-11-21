@@ -36,6 +36,7 @@ dependencyResolutionManagement {
             library("core-jetty", "org.eclipse.edc", "jetty-core").versionRef("edc")
             library("core-jersey", "org.eclipse.edc", "jersey-core").versionRef("edc")
             library("core-junit", "org.eclipse.edc", "junit").versionRef("edc")
+            library("api-management-config", "org.eclipse.edc", "management-api-configuration").versionRef("edc")
             library("ext-http", "org.eclipse.edc", "http").versionRef("edc")
             library("spi-ids", "org.eclipse.edc", "ids-spi").versionRef("edc")
             library("ext-azure-cosmos-core", "org.eclipse.edc", "azure-cosmos-core").versionRef("edc")
@@ -53,5 +54,6 @@ dependencyResolutionManagement {
 
 include(":core:federated-catalog")
 include(":extensions:store:fcc-node-directory-cosmos")
+include(":extensions:api:federated-catalog-api")
 include(":spi:federated-catalog-spi")
 include(":launchers")

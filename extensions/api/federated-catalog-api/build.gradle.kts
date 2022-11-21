@@ -15,27 +15,22 @@
 plugins {
     `java-library`
     id("io.swagger.core.v3.swagger-gradle-plugin")
-    `java-test-fixtures`
 }
 
 dependencies {
     api(edc.spi.core)
-    api(edc.spi.web)
+    implementation(edc.spi.web)
     api(project(":spi:federated-catalog-spi"))
 
-    implementation(edc.util)
-    implementation(edc.core.connector)
-
-    implementation(libs.okhttp)
-
+    runtimeOnly(edc.core.connector)
     implementation(libs.jakarta.rsApi)
-    implementation(libs.failsafe.core)
+    implementation(edc.api.management.config)
 
     // required for integration test
+    testImplementation(testFixtures(project(":core:federated-catalog"))) // provides the TestUtil
     testImplementation(edc.core.junit)
     testImplementation(edc.ext.http)
-    testImplementation(edc.spi.ids)
-    testImplementation(libs.awaitility)
+    testImplementation(libs.restAssured)
 }
 
 edcBuild {
@@ -46,8 +41,8 @@ edcBuild {
 
 publishing {
     publications {
-        create<MavenPublication>("federated-catalog-core") {
-            artifactId = "federated-catalog-core"
+        create<MavenPublication>("federated-catalog-api") {
+            artifactId = "federated-catalog-api"
             from(components["java"])
         }
     }

@@ -12,15 +12,13 @@
  *
  */
 
-package org.eclipse.edc.catalog.cache.controller;
+package org.eclipse.edc.catalog.api.query;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import org.eclipse.edc.catalog.cache.query.QueryException;
-import org.eclipse.edc.catalog.cache.query.QueryNotAcceptedException;
 import org.eclipse.edc.catalog.spi.QueryEngine;
 import org.eclipse.edc.catalog.spi.QueryResponse;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
@@ -31,7 +29,7 @@ import java.util.Collection;
 @Consumes({ MediaType.APPLICATION_JSON })
 @Produces({ MediaType.APPLICATION_JSON })
 @Path("/federatedcatalog")
-public class FederatedCatalogApiController {
+public class FederatedCatalogApiController implements FederatedCatalogApi {
 
     private final QueryEngine queryEngine;
 
@@ -39,6 +37,7 @@ public class FederatedCatalogApiController {
         this.queryEngine = queryEngine;
     }
 
+    @Override
     @POST
     public Collection<ContractOffer> getCachedCatalog(FederatedCatalogCacheQuery federatedCatalogCacheQuery) {
         var queryResponse = queryEngine.getCatalog(federatedCatalogCacheQuery);
