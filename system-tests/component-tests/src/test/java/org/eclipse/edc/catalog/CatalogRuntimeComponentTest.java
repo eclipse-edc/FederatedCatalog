@@ -6,6 +6,7 @@ import org.eclipse.edc.catalog.spi.CatalogRequest;
 import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
+import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.spi.message.MessageContext;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcher;
@@ -45,9 +46,9 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-//@EndToEndTest
+@ComponentTest
 @ExtendWith(EdcExtension.class)
-public class EndToEndCatalogTest {
+public class CatalogRuntimeComponentTest {
     private static final Duration TEST_TIMEOUT = ofSeconds(10);
 
     @BeforeEach

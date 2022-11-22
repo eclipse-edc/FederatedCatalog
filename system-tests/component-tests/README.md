@@ -1,0 +1,2 @@
+This module adds tests that run a fully-built Federated Catalog runtime, except that actually sending out the requests
+over IDS is mocked. The majority of integration tests should be done in this fashion.

@@ -5,5 +5,12 @@
     "supportedProtocols": [
       "ids-multipart"
     ]
+  },
+  {
+    "name": "connector2",
+    "url": "http://connector1:8383",
+    "supportedProtocols": [
+      "ids-multipart"
+    ]
   }
 ]

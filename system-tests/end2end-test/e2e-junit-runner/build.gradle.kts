@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2021 Microsoft Corporation
+ *  Copyright (c) 2020, 2021 Microsoft Corporation
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -17,13 +17,10 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":core:federated-catalog"))
-    implementation(project(":extensions:api:federated-catalog-api"))
-    runtimeOnly(edc.bundles.connector)
-
-    testImplementation(edc.core.junit)
-    testImplementation(libs.okhttp)
-    testImplementation(libs.restAssured)
-    testImplementation(libs.bundles.jupiter)
+    testImplementation(project(":spi:federated-catalog-spi"))
+    testImplementation(edc.api.management)
     testImplementation(libs.awaitility)
+    testImplementation(libs.okhttp)
+    testImplementation(edc.junit)
 }
+

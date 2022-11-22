@@ -32,7 +32,7 @@ dependencies {
     implementation(libs.failsafe.core)
 
     // required for integration test
-    testImplementation(edc.core.junit)
+    testImplementation(edc.junit)
     testImplementation(edc.ext.http)
     testImplementation(edc.spi.ids)
     testImplementation(libs.awaitility)

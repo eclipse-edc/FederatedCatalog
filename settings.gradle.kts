@@ -1,5 +1,16 @@
 rootProject.name = "federated-catalog"
 
+include(":core:federated-catalog")
+include(":extensions:store:fcc-node-directory-cosmos")
+include(":extensions:api:federated-catalog-api")
+include(":spi:federated-catalog-spi")
+include(":launchers")
+include(":system-tests:component-tests")
+include(":system-tests:end2end-test:connector-runtime")
+include(":system-tests:end2end-test:catalog-runtime")
+include(":system-tests:end2end-test:e2e-junit-runner")
+
+
 // this is needed to have access to snapshot builds of plugins
 pluginManagement {
     repositories {
@@ -36,7 +47,7 @@ dependencyResolutionManagement {
             library("core-connector", "org.eclipse.edc", "connector-core").versionRef("edc")
             library("core-jetty", "org.eclipse.edc", "jetty-core").versionRef("edc")
             library("core-jersey", "org.eclipse.edc", "jersey-core").versionRef("edc")
-            library("core-junit", "org.eclipse.edc", "junit").versionRef("edc")
+            library("junit", "org.eclipse.edc", "junit").versionRef("edc")
             library("api-management-config", "org.eclipse.edc", "management-api-configuration").versionRef("edc")
             library("api-management", "org.eclipse.edc", "management-api").versionRef("edc")
             library("api-observability", "org.eclipse.edc", "api-observability").versionRef("edc")
@@ -72,12 +83,3 @@ dependencyResolutionManagement {
         }
     }
 }
-
-include(":core:federated-catalog")
-include(":extensions:store:fcc-node-directory-cosmos")
-include(":extensions:api:federated-catalog-api")
-include(":spi:federated-catalog-spi")
-include(":launchers")
-include(":system-tests:catalog-tests")
-include(":system-tests:end2end-test:connector-runtime")
-include(":system-tests:end2end-test:catalog-runtime")

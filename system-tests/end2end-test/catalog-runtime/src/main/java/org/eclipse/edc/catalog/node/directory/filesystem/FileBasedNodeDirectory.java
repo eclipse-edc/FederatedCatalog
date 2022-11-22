@@ -13,14 +13,18 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * File-based node directory, solely intended for use in testing, specifically with docker-compose
+ */
 public class FileBasedNodeDirectory implements FederatedCacheNodeDirectory {
 
+    private static final TypeReference<List<FederatedCacheNode>> NODE_LIST_TYPE = new TypeReference<>() {
+    };
     private final List<FederatedCacheNode> nodes = new ArrayList<>();
     private final LockManager lockManager;
     private final ObjectMapper objectMapper;
 
     public FileBasedNodeDirectory(File nodeFile, LockManager lockManager, ObjectMapper objectMapper) {
-
         this.lockManager = lockManager;
         this.objectMapper = objectMapper;
         readAll(nodeFile);
@@ -39,9 +43,7 @@ public class FileBasedNodeDirectory implements FederatedCacheNodeDirectory {
     private void readAll(File nodeFile) {
         try {
             var content = Files.readString(nodeFile.toPath());
-            var n = objectMapper.readValue(content, new TypeReference<List<FederatedCacheNode>>() {
-            });
-            nodes.addAll(n);
+            nodes.addAll(objectMapper.readValue(content, NODE_LIST_TYPE));
         } catch (IOException e) {
             throw new EdcException(e);
         }
