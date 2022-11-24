@@ -13,6 +13,7 @@ jobs:
       # module is signed individually, and parallelism is not available. Hence, the increased timeout of 3600 seconds.
       # There is no way to cancel the process on Jenkins from withing GitHub.
       - name: Call Jenkins API to trigger build
+        id: runjenkins
         uses: toptal/jenkins-job-trigger-action@master
         with:
           jenkins_url: "https://ci.eclipse.org/dataspaceconnector/"
@@ -22,5 +23,9 @@ jobs:
           job_params: |
             {
             }
-          job_name: "EDC-Snapshot"
+          job_name: "FederatedCatalog-Snapshot"
           job_timeout: "3600" # Default 30 sec. (optional)
+
+      - name: Log Jenkins URL
+        run:
+          echo "::notice title=Jenkins URL::${{ steps.runjenkins.outputs.jenkins_job_url }} "
