@@ -1,0 +1,16 @@
+[
+  {
+    "name": "connector1",
+    "url": "http://connector1:8282",
+    "supportedProtocols": [
+      "ids-multipart"
+    ]
+  },
+  {
+    "name": "connector2",
+    "url": "http://connector1:8383",
+    "supportedProtocols": [
+      "ids-multipart"
+    ]
+  }
+]

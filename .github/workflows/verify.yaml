@@ -113,7 +113,7 @@ jobs:
 
   Postgresql-Integration-Tests:
     runs-on: ubuntu-latest
-
+    if: ${{ false }}
     services:
       postgres:
         image: postgres:14.2
@@ -131,17 +131,6 @@ jobs:
         with:
           command: ./gradlew test -DincludeTags="PostgresqlIntegrationTest"
 
-  End-To-End-Tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/setup-build
-
-      - name: End to End Integration Tests
-        uses: ./.github/actions/run-tests
-        with:
-          command: ./gradlew test -DincludeTags="EndToEndTest"
-
   Component-Tests:
     env:
       JACOCO: true
@@ -153,8 +142,35 @@ jobs:
       - name: Component Tests
         uses: ./.github/actions/run-tests
         with:
-          command: ./gradlew test jacocoTestReport -DincludeTags="ComponentTest"
+          command: ./gradlew :system-tests:component-tests:test jacocoTestReport -DincludeTags="ComponentTest"
 
+  End-To-End-Tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-build
+
+      - name: 'Build Launchers'
+        run: |
+          ./gradlew :system-tests:end2end-test:catalog-runtime:shadowJar
+          ./gradlew :system-tests:end2end-test:connector-runtime:shadowJar
+
+      - name: 'Upgrade docker-compose (for --wait option)'
+        run: |
+          sudo curl -L https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+
+      - name: 'Start FCC Runtime in Docker'
+        run: docker-compose -f system-tests/end2end-test/docker-compose.yml up --build  --wait
+        timeout-minutes: 10
+
+      - name: 'End to End Integration Tests'
+        uses: ./.github/actions/run-tests
+        with:
+          command: ./gradlew system-tests:end2end-test:e2e-junit:test -DincludeTags="EndToEndTest"
+  
+  
+  
   API-Tests:
     env:
       JACOCO: true

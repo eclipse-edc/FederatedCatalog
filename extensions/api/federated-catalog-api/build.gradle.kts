@@ -28,7 +28,7 @@ dependencies {
 
     // required for integration test
     testImplementation(testFixtures(project(":core:federated-catalog"))) // provides the TestUtil
-    testImplementation(edc.core.junit)
+    testImplementation(edc.junit)
     testImplementation(edc.ext.http)
     testImplementation(libs.restAssured)
 }
