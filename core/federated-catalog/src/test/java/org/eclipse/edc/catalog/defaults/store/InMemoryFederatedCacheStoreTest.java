@@ -24,6 +24,8 @@ import org.eclipse.edc.util.concurrency.LockManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -48,6 +50,8 @@ class InMemoryFederatedCacheStoreTest {
                 .id(id)
                 .asset(asset)
                 .policy(Policy.Builder.newInstance().build())
+                .contractStart(ZonedDateTime.now())
+                .contractEnd(ZonedDateTime.now().plus(365, ChronoUnit.DAYS))
                 .build();
     }
 
