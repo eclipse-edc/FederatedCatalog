@@ -22,5 +22,6 @@ dependencies {
     testImplementation(libs.awaitility)
     testImplementation(libs.okhttp)
     testImplementation(edc.junit)
+    testRuntimeOnly(libs.jackson.datatypeJsr310)
 }
 

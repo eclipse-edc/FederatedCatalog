@@ -11,6 +11,8 @@ import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.types.domain.asset.Asset;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -57,6 +59,8 @@ public class TestFunctions {
                 .id(id)
                 .asset(Asset.Builder.newInstance().id(id).build())
                 .policy(Policy.Builder.newInstance().build())
+                .contractStart(ZonedDateTime.now())
+                .contractEnd(ZonedDateTime.now().plus(365, ChronoUnit.DAYS))
                 .build();
     }
 
