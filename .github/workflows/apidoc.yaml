@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        apiGroup: [ 'cache-api' ]
+        apiGroup: [ 'management-api' ]
     env:
       rootDir: resources/openapi/yaml/${{ matrix.apiGroup }}
     steps:
@@ -37,6 +37,7 @@ jobs:
 
       - name: Generate OpenAPI definitions from code
         run: |
+          export
           ./gradlew resolve
 
       # Can be used (and yq tasks removed) when https://github.com/kpramesh2212/openapi-merger-plugin/pull/11/files is merged
@@ -55,13 +56,18 @@ jobs:
           diff -r git-sorted git-regen
 
   Publish-To-SwaggerHub:
+    # do NOT run on forks. The Org ("edc") is unique all across SwaggerHub
+    if: github.repository == 'eclipse-edc/FederatedCatalog' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     needs: [ Verify-OpenAPI-Definitions ]
     strategy:
       matrix:
-        apiGroup: [ 'cache-api' ]
+        apiGroup: [ 'management-api' ]
+        apiName: [ 'FederatedCatalog API' ]
     env:
       rootDir: resources/openapi/yaml/${{ matrix.apiGroup }}
+      SWAGGERHUB_API_KEY: ${{ secrets.SWAGGERHUB_TOKEN }}
+      SWAGGERHUB_USER: ${{ secrets.SWAGGERHUB_USER }}
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup-build
@@ -70,11 +76,19 @@ jobs:
       # merge together all api groups
       - name: Generate API Specs
         run: |
-          ./gradlew -PapiTitle="${{ matrix.apiGroup }}" -PapiDescription="REST API documentation for the ${{ matrix.apiGroup }}" :mergeApiSpec --input=${{ env.rootDir }} --output=${{ matrix.apiGroup }}.yaml
+          ./gradlew -PapiTitle="${{ matrix.apiName }}" -PapiDescription="REST API documentation for the ${{ matrix.apiName }}" :mergeApiSpec --input=${{ env.rootDir }} --output=${{ matrix.apiGroup }}.yaml
 
-      # Publish the generated files to SwaggerHub
+      # install swaggerhub CLI
+      - name: Install SwaggerHub CLI
+        run: npm i -g swaggerhub-cli
+
+      # create API, will fail if exists
+      - name: Create API
+        continue-on-error: true
+        run: |
+          swaggerhub api:create ${{ env.SWAGGERHUB_USER }}/${{ matrix.apiName}} -f ${{ matrix.apiGroup }}.yaml --visibility=public --published=unpublish
+
+      # Post the API to SwaggerHub as "unpublished", because published APIs cannot be overwritten
       - name: Publish API Specs to SwaggerHub
         run: |
-          npm i -g swaggerhub-cli
-          echo "publishing ${{ matrix.apiGroup }} - NOT YET IMPLEMENTED!!!"
-          # swaggerhub api:update edc/${{ matrix.apiGroup}} -f ${{ matrix.apiGroup }}.yaml --visibility=public --published=unpublish
+          swaggerhub api:update ${{ env.SWAGGERHUB_USER }}/${{ matrix.apiName}} -f ${{ matrix.apiGroup }}.yaml --visibility=public --published=unpublish
