@@ -19,7 +19,7 @@ plugins {
 }
 
 dependencies {
-    runtimeOnly(project(":core:federated-catalog"))
+    runtimeOnly(project(":core:federated-catalog-core"))
     runtimeOnly(project(":extensions:api:federated-catalog-api"))
     implementation(project(":spi:federated-catalog-spi"))
     implementation(edc.util)
@@ -37,4 +37,8 @@ application {
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     mergeServiceFiles()
     archiveFileName.set("fc.jar")
+}
+
+edcBuild {
+    publish.set(false)
 }

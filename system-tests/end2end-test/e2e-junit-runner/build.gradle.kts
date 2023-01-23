@@ -25,3 +25,6 @@ dependencies {
     testRuntimeOnly(libs.jackson.datatypeJsr310)
 }
 
+edcBuild {
+    publish.set(false)
+}

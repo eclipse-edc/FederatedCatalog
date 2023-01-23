@@ -42,3 +42,7 @@ tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     mergeServiceFiles()
     archiveFileName.set("app.jar")
 }
+
+edcBuild {
+    publish.set(false)
+}
