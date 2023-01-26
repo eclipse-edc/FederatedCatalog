@@ -42,12 +42,3 @@ edcBuild {
         apiGroup.set("management-api")
     }
 }
-
-publishing {
-    publications {
-        create<MavenPublication>("federated-catalog-core") {
-            artifactId = "federated-catalog-core"
-            from(components["java"])
-        }
-    }
-}

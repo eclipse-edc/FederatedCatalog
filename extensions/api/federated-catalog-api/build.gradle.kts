@@ -27,7 +27,7 @@ dependencies {
     implementation(edc.api.management.config)
 
     // required for integration test
-    testImplementation(testFixtures(project(":core:federated-catalog"))) // provides the TestUtil
+    testImplementation(testFixtures(project(":core:federated-catalog-core"))) // provides the TestUtil
     testImplementation(edc.junit)
     testImplementation(edc.ext.http)
     testImplementation(libs.restAssured)
@@ -36,14 +36,5 @@ dependencies {
 edcBuild {
     swagger {
         apiGroup.set("management-api")
-    }
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("federated-catalog-api") {
-            artifactId = "federated-catalog-api"
-            from(components["java"])
-        }
     }
 }

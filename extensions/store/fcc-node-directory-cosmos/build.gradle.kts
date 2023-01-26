@@ -25,13 +25,3 @@ dependencies {
 
     testImplementation(testFixtures(edc.ext.azure.test))
 }
-
-
-publishing {
-    publications {
-        create<MavenPublication>("fcc-node-directory-cosmos") {
-            artifactId = "fcc-node-directory-cosmos"
-            from(components["java"])
-        }
-    }
-}

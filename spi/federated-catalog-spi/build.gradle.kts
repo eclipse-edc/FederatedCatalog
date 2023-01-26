@@ -20,11 +20,3 @@ dependencies {
     api(edc.spi.catalog)
     api(edc.spi.core)
 }
-publishing {
-    publications {
-        create<MavenPublication>("federated-catalog-spi") {
-            artifactId = "federated-catalog-spi"
-            from(components["java"])
-        }
-    }
-}
