@@ -16,14 +16,15 @@ jobs:
         id: runjenkins
         uses: toptal/jenkins-job-trigger-action@master
         with:
-          jenkins_url: "https://ci.eclipse.org/dataspaceconnector/"
+          jenkins_url: "https://ci.eclipse.org/edc/"
           jenkins_user: ${{ secrets.EF_JENKINS_USER }}
           jenkins_token: ${{ secrets.EF_JENKINS_TOKEN }}
           # empty params are needed, otherwise the job will fail.
           job_params: |
             {
+              "REPO": "https://github.com/eclipse-edc/FederatedCatalog"
             }
-          job_name: "FederatedCatalog-Snapshot"
+          job_name: "Publish-Component"
           job_timeout: "3600" # Default 30 sec. (optional)
 
       - name: Log Jenkins URL
