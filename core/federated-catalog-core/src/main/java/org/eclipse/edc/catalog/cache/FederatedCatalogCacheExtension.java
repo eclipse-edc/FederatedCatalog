@@ -29,7 +29,6 @@ import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.health.HealthCheckResult;
@@ -39,8 +38,9 @@ import static java.util.Optional.ofNullable;
 
 @Extension(value = FederatedCatalogCacheExtension.NAME)
 public class FederatedCatalogCacheExtension implements ServiceExtension {
+
     public static final String NAME = "Federated Catalog Cache";
-    private Monitor monitor;
+
     @Inject
     private FederatedCacheStore store;
     @Inject(required = false)
@@ -63,12 +63,8 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
         return NAME;
     }
 
-
     @Override
     public void initialize(ServiceExtensionContext context) {
-        monitor = context.getMonitor();
-
-
         // CRAWLER SUBSYSTEM
         // contribute to the liveness probe
         if (healthCheckService != null) {
@@ -84,7 +80,7 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
         nodeFilter = ofNullable(nodeFilter).orElse(node -> !node.getName().equals(context.getConnectorId()));
 
         executionManager = ExecutionManager.Builder.newInstance()
-                .monitor(monitor)
+                .monitor(context.getMonitor())
                 .preExecutionTask(() -> {
                     store.deleteExpired();
                     store.expireAll();
@@ -104,11 +100,10 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
 
     @Provider
     public NodeQueryAdapterRegistry createNodeQueryAdapterRegistry(ServiceExtensionContext context) {
-
         if (nodeQueryAdapterRegistry == null) {
             nodeQueryAdapterRegistry = new NodeQueryAdapterRegistryImpl();
             // catalog queries via IDS multipart are supported by default
-            nodeQueryAdapterRegistry.register("ids-multipart", new IdsMultipartNodeQueryAdapter(context.getConnectorId(), dispatcherRegistry, monitor));
+            nodeQueryAdapterRegistry.register("ids-multipart", new IdsMultipartNodeQueryAdapter(context.getConnectorId(), dispatcherRegistry, context.getMonitor()));
         }
         return nodeQueryAdapterRegistry;
     }

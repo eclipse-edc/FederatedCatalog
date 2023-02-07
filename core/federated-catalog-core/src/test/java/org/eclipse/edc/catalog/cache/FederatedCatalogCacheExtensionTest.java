@@ -14,18 +14,16 @@
 
 package org.eclipse.edc.catalog.cache;
 
-import org.awaitility.Awaitility;
 import org.eclipse.edc.catalog.cache.query.IdsMultipartNodeQueryAdapter;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
+import org.eclipse.edc.catalog.spi.FederatedCacheNodeFilter;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.catalog.spi.NodeQueryAdapter;
 import org.eclipse.edc.catalog.spi.model.UpdateResponse;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
-import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.health.HealthCheckService;
 import org.eclipse.edc.spi.system.injection.ObjectFactory;
-import org.eclipse.edc.web.spi.WebService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +33,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.catalog.test.TestUtil.TEST_PROTOCOL;
 import static org.eclipse.edc.catalog.test.TestUtil.createCatalog;
 import static org.eclipse.edc.catalog.test.TestUtil.createNode;
@@ -49,8 +48,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(DependencyInjectionExtension.class)
 class FederatedCatalogCacheExtensionTest {
-    private final RemoteMessageDispatcherRegistry messageDispatcherMock = mock(RemoteMessageDispatcherRegistry.class);
-    private final WebService webserviceMock = mock(WebService.class);
     private final FederatedCacheStore storeMock = mock(FederatedCacheStore.class);
     private final FederatedCacheNodeDirectory nodeDirectoryMock = mock(FederatedCacheNodeDirectory.class);
     private FederatedCatalogCacheExtension extension;
@@ -59,10 +56,9 @@ class FederatedCatalogCacheExtensionTest {
     @BeforeEach
     void setUp(ServiceExtensionContext context, ObjectFactory factory) {
         this.context = spy(context);
-        this.context.registerService(WebService.class, webserviceMock);
-        this.context.registerService(RemoteMessageDispatcherRegistry.class, messageDispatcherMock);
         this.context.registerService(FederatedCacheNodeDirectory.class, nodeDirectoryMock);
         this.context.registerService(FederatedCacheStore.class, storeMock);
+        this.context.registerService(FederatedCacheNodeFilter.class, null);
         extension = factory.constructInstance(FederatedCatalogCacheExtension.class);
     }
 
@@ -85,9 +81,10 @@ class FederatedCatalogCacheExtensionTest {
         var healthCheckServiceMock = mock(HealthCheckService.class);
         context.registerService(HealthCheckService.class, healthCheckServiceMock);
         extension = factory.constructInstance(FederatedCatalogCacheExtension.class); //reconstruct to honor health service
-        extension.initialize(context);
-        verify(healthCheckServiceMock).addReadinessProvider(any());
 
+        extension.initialize(context);
+
+        verify(healthCheckServiceMock).addReadinessProvider(any());
     }
 
     @Test
@@ -99,11 +96,10 @@ class FederatedCatalogCacheExtensionTest {
         var queryAdapter = mock(NodeQueryAdapter.class);
         when(queryAdapter.sendRequest(any())).thenReturn(CompletableFuture.completedFuture(new UpdateResponse("test-url", createCatalog())));
         extension.createNodeQueryAdapterRegistry(context).register(TEST_PROTOCOL, queryAdapter);
+
         extension.start();
 
-
-        Awaitility.await()
-                .atMost(Duration.ofSeconds(5))
+        await().atMost(Duration.ofSeconds(5))
                 .untilAsserted(() -> {
                     verify(storeMock, atLeastOnce()).save(any());
                 });
@@ -118,7 +114,8 @@ class FederatedCatalogCacheExtensionTest {
     void verifyProvider_cacheNodeAdapterRegistry() {
         var n = extension.createNodeQueryAdapterRegistry(context);
         assertThat(extension.createNodeQueryAdapterRegistry(context)).isSameAs(n);
-        assertThat(n.findForProtocol("ids-multipart")).hasSize(1).allSatisfy(qa -> assertThat(qa).isInstanceOf(IdsMultipartNodeQueryAdapter.class));
+        assertThat(n.findForProtocol("ids-multipart")).hasSize(1)
+                .allSatisfy(qa -> assertThat(qa).isInstanceOf(IdsMultipartNodeQueryAdapter.class));
     }
 
 }

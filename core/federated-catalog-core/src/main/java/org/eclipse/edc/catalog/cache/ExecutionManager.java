@@ -79,7 +79,7 @@ public class ExecutionManager {
 
     private void doWork() {
         // load work items from directory
-        List<WorkItem> workItems = fetchWorkItems();
+        var workItems = fetchWorkItems();
         if (workItems.isEmpty()) {
             monitor.warning("No WorkItems found, aborting execution");
             return;
@@ -161,12 +161,18 @@ public class ExecutionManager {
 
     @NotNull
     private ArrayBlockingQueue<CatalogCrawler> createCrawlers(CrawlerErrorHandler errorHandler, int numCrawlers) {
-        return new ArrayBlockingQueue<>(numCrawlers, true, IntStream.range(0, numCrawlers).mapToObj(i -> new CatalogCrawler(monitor, errorHandler, successHandler)).collect(Collectors.toList()));
+        var crawlers = IntStream.range(0, numCrawlers)
+                .mapToObj(i -> new CatalogCrawler(monitor, errorHandler, successHandler))
+                .collect(Collectors.toList());
+        return new ArrayBlockingQueue<>(numCrawlers, true, crawlers);
     }
 
     private List<WorkItem> fetchWorkItems() {
         // use all nodes EXCEPT self
-        return directory.getAll().stream().filter(nodeFilter).map(n -> new WorkItem(n.getTargetUrl(), selectProtocol(n.getSupportedProtocols()))).collect(Collectors.toList());
+        return directory.getAll().stream()
+                .filter(nodeFilter)
+                .map(n -> new WorkItem(n.getTargetUrl(), selectProtocol(n.getSupportedProtocols())))
+                .collect(Collectors.toList());
     }
 
     private String selectProtocol(List<String> supportedProtocols) {

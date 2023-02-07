@@ -71,4 +71,5 @@ public class FederatedCatalogDefaultServicesExtension implements ServiceExtensio
         }
         return registry;
     }
+
 }
