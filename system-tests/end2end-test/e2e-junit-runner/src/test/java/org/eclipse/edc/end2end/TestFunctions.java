@@ -1,7 +1,7 @@
 package org.eclipse.edc.end2end;
 
+import org.eclipse.edc.connector.api.management.asset.model.AssetCreationRequestDto;
 import org.eclipse.edc.connector.api.management.asset.model.AssetEntryDto;
-import org.eclipse.edc.connector.api.management.asset.model.AssetRequestDto;
 import org.eclipse.edc.connector.api.management.asset.model.DataAddressDto;
 import org.eclipse.edc.connector.api.management.policy.model.PolicyDefinitionRequestDto;
 import org.eclipse.edc.policy.model.Policy;
@@ -12,7 +12,7 @@ import java.util.Map;
 public class TestFunctions {
     public static AssetEntryDto createAsset(String id) {
         return AssetEntryDto.Builder.newInstance()
-                .asset(AssetRequestDto.Builder.newInstance()
+                .asset(AssetCreationRequestDto.Builder.newInstance()
                         .id(id)
                         .properties(Map.of(
                                 Asset.PROPERTY_CONTENT_TYPE, "application/octet-stream",
