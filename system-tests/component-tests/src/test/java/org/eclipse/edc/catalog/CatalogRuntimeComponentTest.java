@@ -1,3 +1,17 @@
+/*
+ *  Copyright (c) 2022 Microsoft Corporation
+ *
+ *  This program and the accompanying materials are made available under the
+ *  terms of the Apache License, Version 2.0 which is available at
+ *  https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  SPDX-License-Identifier: Apache-2.0
+ *
+ *  Contributors:
+ *       Microsoft Corporation - initial API and implementation
+ *
+ */
+
 package org.eclipse.edc.catalog;
 
 import org.eclipse.edc.catalog.spi.CachedAsset;
@@ -8,7 +22,6 @@ import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
-import org.eclipse.edc.spi.message.MessageContext;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,7 +51,6 @@ import static org.eclipse.edc.catalog.TestFunctions.insertSingle;
 import static org.eclipse.edc.catalog.TestFunctions.queryCatalogApi;
 import static org.eclipse.edc.catalog.TestFunctions.randomCatalog;
 import static org.eclipse.edc.catalog.matchers.CatalogRequestMatcher.sentTo;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
@@ -71,7 +83,7 @@ public class CatalogRuntimeComponentTest {
         // prepare node directory
         insertSingle(directory);
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class)))
+        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class)))
                 .thenReturn(emptyCatalog());
 
         await().pollDelay(ofSeconds(1))
@@ -88,7 +100,7 @@ public class CatalogRuntimeComponentTest {
         // prepare node directory
         insertSingle(directory);
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class)))
+        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class)))
                 .thenReturn(randomCatalog(5))
                 .thenReturn(emptyCatalog()); // this is important, otherwise there is an endless loop!
 
@@ -104,7 +116,7 @@ public class CatalogRuntimeComponentTest {
         insertSingle(directory);
 
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class)))
+        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class)))
                 .thenReturn(randomCatalog(100))
                 .thenReturn(randomCatalog(100))
                 .thenReturn(randomCatalog(50))
@@ -114,7 +126,7 @@ public class CatalogRuntimeComponentTest {
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> assertThat(queryCatalogApi()).hasSize(250));
 
-        verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class));
+        verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequest.class));
     }
 
     @Test
@@ -124,7 +136,7 @@ public class CatalogRuntimeComponentTest {
         insertSingle(directory);
 
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class)))
+        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class)))
                 .thenReturn(completedFuture(catalogBuilder().contractOffers(new ArrayList<>(List.of(
                         createOffer("offer1"), createOffer("offer2"), createOffer("offer3")
                 ))).build()))
@@ -137,7 +149,7 @@ public class CatalogRuntimeComponentTest {
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    verify(dispatcher, atLeast(5)).send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class));
+                    verify(dispatcher, atLeast(5)).send(eq(Catalog.class), isA(CatalogRequest.class));
                     assertThat(queryCatalogApi()).hasSize(2)
                             .noneMatch(co -> co.getId().equals("offer3"));
                 });
@@ -151,7 +163,7 @@ public class CatalogRuntimeComponentTest {
         insertSingle(directory);
 
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class)))
+        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class)))
                 .thenReturn(completedFuture(catalogBuilder().contractOffers(new ArrayList<>(List.of(
                         createOffer("offer1"), createOffer("offer2"), createOffer("offer3")
                 ))).build()))
@@ -164,7 +176,7 @@ public class CatalogRuntimeComponentTest {
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class));
+                    verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequest.class));
                     assertThat(queryCatalogApi()).hasSize(3);
                 });
 
@@ -177,7 +189,7 @@ public class CatalogRuntimeComponentTest {
         insertSingle(directory);
 
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class)))
+        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class)))
                 .thenReturn(completedFuture(catalogBuilder().contractOffers(new ArrayList<>(List.of(
                         createOffer("offer1"), createOffer("offer2"), createOffer("offer3")
                 ))).build()))
@@ -193,7 +205,7 @@ public class CatalogRuntimeComponentTest {
                     var list = queryCatalogApi();
                     assertThat(list).hasSize(5)
                             .allSatisfy(co -> assertThat(Integer.parseInt(co.getId().replace("offer", ""))).isIn(1, 2, 3, 4, 5));
-                    verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class));
+                    verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequest.class));
                 });
 
     }
@@ -204,7 +216,7 @@ public class CatalogRuntimeComponentTest {
         // prepare node directory
         insertSingle(directory);
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class), any(MessageContext.class)))
+        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class)))
                 .thenReturn(randomCatalog(5))
                 .thenReturn(emptyCatalog()); // this is important, otherwise there is an endless loop!
 
@@ -234,7 +246,7 @@ public class CatalogRuntimeComponentTest {
 
                     var numAssets = rnd.nextInt(50);
 
-                    when(dispatcher.send(eq(Catalog.class), argThat(sentTo(nodeUrl + "/api/v1/ids/data")), any(MessageContext.class)))
+                    when(dispatcher.send(eq(Catalog.class), argThat(sentTo(nodeUrl + "/api/v1/ids/data"))))
                             .thenReturn(randomCatalog(numAssets))
                             .thenReturn(emptyCatalog());
                     numTotalAssets.addAndGet(numAssets);
@@ -255,11 +267,11 @@ public class CatalogRuntimeComponentTest {
         directory.insert(node1);
         directory.insert(node2);
 
-        when(dispatcher.send(eq(Catalog.class), argThat(sentTo("http://test-node1.com/api/v1/ids/data")), any(MessageContext.class)))
+        when(dispatcher.send(eq(Catalog.class), argThat(sentTo("http://test-node1.com/api/v1/ids/data"))))
                 .thenReturn(catalogOf(createOffer("offer1"), createOffer("offer2"), createOffer("offer3")))
                 .thenReturn(emptyCatalog());
 
-        when(dispatcher.send(eq(Catalog.class), argThat(sentTo("http://test-node2.com/api/v1/ids/data")), any(MessageContext.class)))
+        when(dispatcher.send(eq(Catalog.class), argThat(sentTo("http://test-node2.com/api/v1/ids/data"))))
                 .thenReturn(catalogOf(createOffer("offer14"), createOffer("offer32"), /*this one is conflicting:*/createOffer("offer3")))
                 .thenReturn(emptyCatalog());
 
