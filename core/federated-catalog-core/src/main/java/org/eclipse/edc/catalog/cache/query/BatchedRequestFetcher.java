@@ -56,7 +56,7 @@ public class BatchedRequestFetcher {
         var range = new Range(from, from + batchSize);
         var rq = catalogRequest.toBuilder().querySpec(QuerySpec.Builder.newInstance().range(range).build()).build();
 
-        return dispatcherRegistry.send(Catalog.class, rq, () -> null)
+        return dispatcherRegistry.send(Catalog.class, rq)
                 .thenApply(Catalog::getContractOffers)
                 .thenCompose(offers -> {
                     if (offers.size() > 0) {

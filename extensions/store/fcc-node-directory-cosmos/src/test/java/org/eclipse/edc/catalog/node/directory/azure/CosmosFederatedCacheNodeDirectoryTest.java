@@ -70,14 +70,14 @@ class CosmosFederatedCacheNodeDirectoryTest {
     @Test
     void insert() {
         FederatedCacheNode node = createNode();
-        api.saveItem(any(FederatedCacheNodeDocument.class));
+        api.createItem(any(FederatedCacheNodeDocument.class));
 
         List<FederatedCacheNodeDocument> documents = new ArrayList<>();
         doAnswer(i -> {
             FederatedCacheNodeDocument passedNode = i.getArgument(0);
             documents.add(passedNode);
             return null;
-        }).when(api).saveItem(any(FederatedCacheNodeDocument.class));
+        }).when(api).createItem(any(FederatedCacheNodeDocument.class));
 
         directory.insert(node);
 
@@ -87,7 +87,7 @@ class CosmosFederatedCacheNodeDirectoryTest {
                     assertThat(doc.getPartitionKey()).isEqualTo(PARTITION_KEY);
                     assertNodesAreEqual(doc.getWrappedInstance(), node);
                 });
-        verify(api).saveItem(any(FederatedCacheNodeDocument.class));
+        verify(api).createItem(any(FederatedCacheNodeDocument.class));
     }
 
     @Test

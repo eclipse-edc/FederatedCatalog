@@ -55,7 +55,7 @@ class BatchedRequestFetcherTest {
 
     @Test
     void fetchAll() {
-        when(dispatcherMock.send(eq(Catalog.class), any(CatalogRequest.class), any()))
+        when(dispatcherMock.send(eq(Catalog.class), any(CatalogRequest.class)))
                 .thenReturn(completedFuture(createCatalog(5)))
                 .thenReturn(completedFuture(createCatalog(5)))
                 .thenReturn(completedFuture(createCatalog(3)))
@@ -69,7 +69,7 @@ class BatchedRequestFetcherTest {
 
 
         var captor = forClass(CatalogRequest.class);
-        verify(dispatcherMock, times(4)).send(eq(Catalog.class), captor.capture(), any());
+        verify(dispatcherMock, times(4)).send(eq(Catalog.class), captor.capture());
 
         // verify the sequence of requests
         assertThat(captor.getAllValues())
