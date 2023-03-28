@@ -21,15 +21,8 @@ val javaVersion: String by project
 val fccScmConnection: String by project
 val fccWebsiteUrl: String by project
 val fccScmUrl: String by project
-val groupId: String by project
-val defaultVersion: String by project
 val annotationProcessorVersion: String by project
 val metaModelVersion: String by project
-
-var actualVersion: String = (project.findProperty("version") ?: defaultVersion) as String
-if (actualVersion == "unspecified") {
-    actualVersion = defaultVersion
-}
 
 buildscript {
     repositories {
@@ -42,7 +35,7 @@ buildscript {
 }
 
 allprojects {
-    apply(plugin = "${groupId}.edc-build")
+    apply(plugin = "${group}.edc-build")
 
     // configure which version of the annotation processor to use. defaults to the same version as the plugin
     configure<org.eclipse.edc.plugins.autodoc.AutodocExtension> {
@@ -53,9 +46,7 @@ allprojects {
     configure<org.eclipse.edc.plugins.edcbuild.extensions.BuildExtension> {
         versions {
             // override default dependency versions here
-            projectVersion.set(actualVersion)
             metaModel.set(metaModelVersion)
-
         }
         pom {
             projectName.set(project.name)
