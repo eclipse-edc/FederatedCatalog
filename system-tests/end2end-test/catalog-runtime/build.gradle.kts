@@ -15,19 +15,19 @@
 plugins {
     `java-library`
     id("application")
-    id("com.github.johnrengelman.shadow") version "8.0.0"
+    alias(libs.plugins.shadow)
 }
 
 dependencies {
     runtimeOnly(project(":core:federated-catalog-core"))
     runtimeOnly(project(":extensions:api:federated-catalog-api"))
     implementation(project(":spi:federated-catalog-spi"))
-    implementation(edc.util)
-    runtimeOnly(edc.bundles.connector)
+    implementation(libs.edc.util)
+    runtimeOnly(libs.bundles.edc.connector)
 
     // IDS stuff
-    runtimeOnly(edc.ids)
-    runtimeOnly(edc.iam.mock)
+    runtimeOnly(libs.edc.ids)
+    runtimeOnly(libs.edc.iam.mock)
 }
 
 application {

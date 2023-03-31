@@ -17,6 +17,6 @@ plugins {
 }
 
 dependencies {
-    api(edc.spi.catalog)
-    api(edc.spi.core)
+    api(libs.edc.spi.catalog)
+    api(libs.edc.spi.core)
 }

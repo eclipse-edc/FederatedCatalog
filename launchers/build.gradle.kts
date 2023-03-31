@@ -15,13 +15,13 @@
 plugins {
     `java-library`
     id("application")
-    id("com.github.johnrengelman.shadow") version "8.0.0"
+    alias(libs.plugins.shadow)
 }
 
 dependencies {
     runtimeOnly(project(":core:federated-catalog-core"))
     runtimeOnly(project(":extensions:api:federated-catalog-api"))
-    runtimeOnly(edc.bundles.connector)
+    runtimeOnly(libs.bundles.edc.connector)
 }
 
 application {
