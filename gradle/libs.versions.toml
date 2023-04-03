@@ -36,4 +36,4 @@ edc-connector = [ "edc-boot", "edc-core-connector", "edc-core-jersey", "edc-core
 edc-dpf = [ "edc-dpf-transferclient", "edc-dpf-selector-client", "edc-dpf-selector-spi", "edc-dpf-selector-core", "edc-dpf-framework" ]
 
 [plugins]
-shadow = { id = "com.github.johnrengelman.shadow", version = "8.0.0" }
+shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
