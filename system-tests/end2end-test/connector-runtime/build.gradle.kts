@@ -15,23 +15,23 @@
 plugins {
     `java-library`
     id("application")
-    id("com.github.johnrengelman.shadow") version "8.0.0"
+    alias(libs.plugins.shadow)
 }
 
 dependencies {
 
-    runtimeOnly(edc.core.controlplane)
-    runtimeOnly(edc.api.observability)
-    runtimeOnly(edc.api.management)
-    runtimeOnly(edc.config.filesystem)
-    runtimeOnly(edc.ext.http)
+    runtimeOnly(libs.edc.core.controlplane)
+    runtimeOnly(libs.edc.api.observability)
+    runtimeOnly(libs.edc.api.management)
+    runtimeOnly(libs.edc.config.filesystem)
+    runtimeOnly(libs.edc.ext.http)
 
     // IDS
-    runtimeOnly(edc.ids)
-    runtimeOnly(edc.iam.mock)
+    runtimeOnly(libs.edc.ids)
+    runtimeOnly(libs.edc.iam.mock)
 
     // Embedded DPF
-    runtimeOnly(edc.bundles.dpf)
+    runtimeOnly(libs.bundles.edc.dpf)
 }
 
 application {

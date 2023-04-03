@@ -15,6 +15,8 @@
 
 plugins {
     `java-library`
+    `maven-publish`
+    `version-catalog`
 }
 
 val javaVersion: String by project
@@ -25,9 +27,6 @@ val annotationProcessorVersion: String by project
 val metaModelVersion: String by project
 
 buildscript {
-    repositories {
-        mavenLocal()
-    }
     dependencies {
         val edcGradlePluginsVersion: String by project
         classpath("org.eclipse.edc.edc-build:org.eclipse.edc.edc-build.gradle.plugin:${edcGradlePluginsVersion}")
@@ -70,4 +69,13 @@ allprojects {
         configDirectory.set(rootProject.file("resources"))
     }
 
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("federated-catalog-version-catalog") {
+            from(components["versionCatalog"])
+            artifactId = "federated-catalog-versions"
+        }
+    }
 }

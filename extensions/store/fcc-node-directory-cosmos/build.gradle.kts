@@ -18,10 +18,10 @@ plugins {
 
 dependencies {
     api(project(":spi:federated-catalog-spi"))
-    api(edc.ext.azure.cosmos.core)
+    api(libs.edc.ext.azure.cosmos.core)
 
-    implementation(libs.azure.cosmos)
-    implementation(libs.failsafe.core)
+    implementation(root.azure.cosmos)
+    implementation(root.failsafe.core)
 
-    testImplementation(testFixtures(edc.ext.azure.test))
+    testImplementation(testFixtures(libs.edc.ext.azure.test))
 }

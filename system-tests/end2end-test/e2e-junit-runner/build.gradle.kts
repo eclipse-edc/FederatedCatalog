@@ -18,11 +18,9 @@ plugins {
 
 dependencies {
     testImplementation(project(":spi:federated-catalog-spi"))
-    testImplementation(edc.api.management)
-    testImplementation(libs.awaitility)
-    testImplementation(libs.okhttp)
-    testImplementation(edc.junit)
-    testRuntimeOnly(libs.jackson.datatypeJsr310)
+    testImplementation(libs.edc.api.management)
+    testImplementation(root.awaitility)
+    testImplementation(libs.edc.junit)
 }
 
 edcBuild {

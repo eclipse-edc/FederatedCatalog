@@ -19,13 +19,12 @@ plugins {
 dependencies {
     implementation(project(":core:federated-catalog-core"))
     implementation(project(":extensions:api:federated-catalog-api"))
-    runtimeOnly(edc.bundles.connector)
+    runtimeOnly(libs.bundles.edc.connector)
 
-    testImplementation(edc.junit)
-    testImplementation(libs.okhttp)
-    testImplementation(libs.restAssured)
-    testImplementation(libs.bundles.jupiter)
-    testImplementation(libs.awaitility)
+    testImplementation(libs.edc.junit)
+    testImplementation(root.restAssured)
+    testImplementation(root.bundles.jupiter)
+    testImplementation(root.awaitility)
 }
 
 edcBuild {
