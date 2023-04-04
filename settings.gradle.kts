@@ -9,6 +9,7 @@ include(":system-tests:component-tests")
 include(":system-tests:end2end-test:connector-runtime")
 include(":system-tests:end2end-test:catalog-runtime")
 include(":system-tests:end2end-test:e2e-junit-runner")
+include(":version-catalog")
 
 // this is needed to have access to snapshot builds of plugins
 pluginManagement {
