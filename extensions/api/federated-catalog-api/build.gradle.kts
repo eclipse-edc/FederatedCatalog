@@ -29,7 +29,7 @@ dependencies {
     testImplementation(testFixtures(project(":core:federated-catalog-core"))) // provides the TestUtil
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.ext.http)
-    testImplementation(root.restAssured)
+    testImplementation(libs.restAssured)
 }
 
 edcBuild {

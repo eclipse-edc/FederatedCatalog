@@ -19,7 +19,7 @@ plugins {
 dependencies {
     testImplementation(project(":spi:federated-catalog-spi"))
     testImplementation(libs.edc.api.management)
-    testImplementation(root.awaitility)
+    testImplementation(libs.awaitility)
     testImplementation(libs.edc.junit)
 }
 

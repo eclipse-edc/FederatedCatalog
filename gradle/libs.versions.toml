@@ -2,9 +2,14 @@
 format.version = "1.1"
 
 [versions]
+awaitility = "4.2.0"
 edc = "0.0.1-SNAPSHOT"
+failsafe = "3.3.1"
+restAssured = "4.5.0"
 
 [libraries]
+awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
+azure-cosmos = { group = "com.azure", name = "azure-cosmos", version = "4.42.0" }
 edc-api-management = { module = "org.eclipse.edc:management-api", version.ref = "edc" }
 edc-api-management-config = { module = "org.eclipse.edc:management-api-configuration", version.ref = "edc" }
 edc-api-observability = { module = "org.eclipse.edc:api-observability", version.ref = "edc" }
@@ -30,6 +35,8 @@ edc-spi-core = { module = "org.eclipse.edc:core-spi", version.ref = "edc" }
 edc-spi-ids = { module = "org.eclipse.edc:ids-spi", version.ref = "edc" }
 edc-spi-web = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 edc-util = { module = "org.eclipse.edc:util", version.ref = "edc" }
+failsafe-core = { module = "dev.failsafe:failsafe", version.ref = "failsafe" }
+restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssured" }
 
 [bundles]
 edc-connector = [ "edc-boot", "edc-core-connector", "edc-core-jersey", "edc-core-controlplane", "edc-api-observability" ]
