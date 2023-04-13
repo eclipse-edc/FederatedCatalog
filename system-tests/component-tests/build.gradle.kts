@@ -22,9 +22,8 @@ dependencies {
     runtimeOnly(libs.bundles.edc.connector)
 
     testImplementation(libs.edc.junit)
-    testImplementation(root.restAssured)
-    testImplementation(root.bundles.jupiter)
-    testImplementation(root.awaitility)
+    testImplementation(libs.restAssured)
+    testImplementation(libs.awaitility)
 }
 
 edcBuild {

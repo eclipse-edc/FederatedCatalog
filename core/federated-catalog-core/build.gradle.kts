@@ -29,7 +29,7 @@ dependencies {
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.ext.http)
     testImplementation(libs.edc.spi.ids)
-    testImplementation(root.awaitility)
+    testImplementation(libs.awaitility)
 }
 
 edcBuild {

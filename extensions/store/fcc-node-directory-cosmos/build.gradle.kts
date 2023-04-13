@@ -20,8 +20,8 @@ dependencies {
     api(project(":spi:federated-catalog-spi"))
     api(libs.edc.ext.azure.cosmos.core)
 
-    implementation(root.azure.cosmos)
-    implementation(root.failsafe.core)
+    implementation(libs.azure.cosmos)
+    implementation(libs.failsafe.core)
 
     testImplementation(testFixtures(libs.edc.ext.azure.test))
 }
