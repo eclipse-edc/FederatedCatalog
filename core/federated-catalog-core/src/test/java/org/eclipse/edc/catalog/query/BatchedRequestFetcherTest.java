@@ -16,7 +16,7 @@ package org.eclipse.edc.catalog.query;
 
 import org.eclipse.edc.catalog.cache.query.BatchedRequestFetcher;
 import org.eclipse.edc.catalog.spi.Catalog;
-import org.eclipse.edc.catalog.spi.CatalogRequest;
+import org.eclipse.edc.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.message.Range;
@@ -55,7 +55,7 @@ class BatchedRequestFetcherTest {
 
     @Test
     void fetchAll() {
-        when(dispatcherMock.send(eq(Catalog.class), any(CatalogRequest.class)))
+        when(dispatcherMock.send(eq(Catalog.class), any(CatalogRequestMessage.class)))
                 .thenReturn(completedFuture(createCatalog(5)))
                 .thenReturn(completedFuture(createCatalog(5)))
                 .thenReturn(completedFuture(createCatalog(3)))
@@ -68,7 +68,7 @@ class BatchedRequestFetcherTest {
                 list.stream().allMatch(o -> o.getId().matches("(id)\\d|1[0-3]")));
 
 
-        var captor = forClass(CatalogRequest.class);
+        var captor = forClass(CatalogRequestMessage.class);
         verify(dispatcherMock, times(4)).send(eq(Catalog.class), captor.capture());
 
         // verify the sequence of requests
@@ -78,10 +78,10 @@ class BatchedRequestFetcherTest {
                 .containsExactly(new Range(0, 5), new Range(5, 10), new Range(10, 15), new Range(15, 20));
     }
 
-    private CatalogRequest createRequest() {
-        return CatalogRequest.Builder.newInstance()
+    private CatalogRequestMessage createRequest() {
+        return CatalogRequestMessage.Builder.newInstance()
                 .connectorId("test-connector")
-                .connectorAddress("test-address")
+                .callbackAddress("test-address")
                 .protocol("ids-multipart")
                 .build();
     }

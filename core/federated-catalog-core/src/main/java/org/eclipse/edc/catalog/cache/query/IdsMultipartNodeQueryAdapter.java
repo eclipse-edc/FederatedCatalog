@@ -15,7 +15,7 @@
 package org.eclipse.edc.catalog.cache.query;
 
 import org.eclipse.edc.catalog.spi.Catalog;
-import org.eclipse.edc.catalog.spi.CatalogRequest;
+import org.eclipse.edc.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.catalog.spi.NodeQueryAdapter;
 import org.eclipse.edc.catalog.spi.model.UpdateRequest;
 import org.eclipse.edc.catalog.spi.model.UpdateResponse;
@@ -38,16 +38,15 @@ public class IdsMultipartNodeQueryAdapter implements NodeQueryAdapter {
     @Override
     public CompletableFuture<UpdateResponse> sendRequest(UpdateRequest updateRequest) {
 
-        var catalogRequest = CatalogRequest.Builder.newInstance()
+        var catalogRequest = CatalogRequestMessage.Builder.newInstance()
                 .protocol(IDS_MULTIPART_PROTOCOL)
-                .connectorAddress(getNodeUrl(updateRequest))
+                .callbackAddress(getNodeUrl(updateRequest))
                 .connectorId(connectorId)
                 .build();
         var allOffers = requestFetcher.fetch(catalogRequest, 0, 100);
 
         return allOffers.thenApply(list -> new UpdateResponse(getNodeUrl(updateRequest), Catalog.Builder.newInstance().id(UUID.randomUUID().toString()).contractOffers(list).build()));
     }
-
 
     // adds /api/ids/data if not already there
     private String getNodeUrl(UpdateRequest updateRequest) {

@@ -16,7 +16,7 @@ package org.eclipse.edc.catalog;
 
 import org.eclipse.edc.catalog.spi.CachedAsset;
 import org.eclipse.edc.catalog.spi.Catalog;
-import org.eclipse.edc.catalog.spi.CatalogRequest;
+import org.eclipse.edc.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
@@ -83,7 +83,7 @@ public class CatalogRuntimeComponentTest {
         // prepare node directory
         insertSingle(directory);
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class)))
+        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
                 .thenReturn(emptyCatalog());
 
         await().pollDelay(ofSeconds(1))
@@ -100,7 +100,7 @@ public class CatalogRuntimeComponentTest {
         // prepare node directory
         insertSingle(directory);
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class)))
+        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
                 .thenReturn(randomCatalog(5))
                 .thenReturn(emptyCatalog()); // this is important, otherwise there is an endless loop!
 
@@ -116,7 +116,7 @@ public class CatalogRuntimeComponentTest {
         insertSingle(directory);
 
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class)))
+        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
                 .thenReturn(randomCatalog(100))
                 .thenReturn(randomCatalog(100))
                 .thenReturn(randomCatalog(50))
@@ -126,7 +126,7 @@ public class CatalogRuntimeComponentTest {
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> assertThat(queryCatalogApi()).hasSize(250));
 
-        verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequest.class));
+        verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequestMessage.class));
     }
 
     @Test
@@ -136,7 +136,7 @@ public class CatalogRuntimeComponentTest {
         insertSingle(directory);
 
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class)))
+        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
                 .thenReturn(completedFuture(catalogBuilder().contractOffers(new ArrayList<>(List.of(
                         createOffer("offer1"), createOffer("offer2"), createOffer("offer3")
                 ))).build()))
@@ -149,7 +149,7 @@ public class CatalogRuntimeComponentTest {
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    verify(dispatcher, atLeast(5)).send(eq(Catalog.class), isA(CatalogRequest.class));
+                    verify(dispatcher, atLeast(5)).send(eq(Catalog.class), isA(CatalogRequestMessage.class));
                     assertThat(queryCatalogApi()).hasSize(2)
                             .noneMatch(co -> co.getId().equals("offer3"));
                 });
@@ -163,7 +163,7 @@ public class CatalogRuntimeComponentTest {
         insertSingle(directory);
 
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class)))
+        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
                 .thenReturn(completedFuture(catalogBuilder().contractOffers(new ArrayList<>(List.of(
                         createOffer("offer1"), createOffer("offer2"), createOffer("offer3")
                 ))).build()))
@@ -176,7 +176,7 @@ public class CatalogRuntimeComponentTest {
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequest.class));
+                    verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequestMessage.class));
                     assertThat(queryCatalogApi()).hasSize(3);
                 });
 
@@ -189,7 +189,7 @@ public class CatalogRuntimeComponentTest {
         insertSingle(directory);
 
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class)))
+        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
                 .thenReturn(completedFuture(catalogBuilder().contractOffers(new ArrayList<>(List.of(
                         createOffer("offer1"), createOffer("offer2"), createOffer("offer3")
                 ))).build()))
@@ -205,7 +205,7 @@ public class CatalogRuntimeComponentTest {
                     var list = queryCatalogApi();
                     assertThat(list).hasSize(5)
                             .allSatisfy(co -> assertThat(Integer.parseInt(co.getId().replace("offer", ""))).isIn(1, 2, 3, 4, 5));
-                    verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequest.class));
+                    verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequestMessage.class));
                 });
 
     }
@@ -216,7 +216,7 @@ public class CatalogRuntimeComponentTest {
         // prepare node directory
         insertSingle(directory);
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequest.class)))
+        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
                 .thenReturn(randomCatalog(5))
                 .thenReturn(emptyCatalog()); // this is important, otherwise there is an endless loop!
 

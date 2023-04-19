@@ -21,6 +21,7 @@ plugins {
 dependencies {
 
     runtimeOnly(libs.edc.core.controlplane)
+    runtimeOnly(libs.edc.core.dataPlane.selector)
     runtimeOnly(libs.edc.api.observability)
     runtimeOnly(libs.edc.api.management)
     runtimeOnly(libs.edc.config.filesystem)
