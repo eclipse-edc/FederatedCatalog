@@ -23,7 +23,10 @@ dependencies {
     runtimeOnly(project(":extensions:api:federated-catalog-api"))
     implementation(project(":spi:federated-catalog-spi"))
     implementation(libs.edc.util)
+
     runtimeOnly(libs.bundles.edc.connector)
+    runtimeOnly(libs.edc.core.controlplane)
+    runtimeOnly(libs.edc.core.dataPlane.selector)
 
     // IDS stuff
     runtimeOnly(libs.edc.ids)

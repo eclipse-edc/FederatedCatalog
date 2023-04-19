@@ -156,22 +156,22 @@ jobs:
           ./gradlew :system-tests:end2end-test:catalog-runtime:shadowJar
           ./gradlew :system-tests:end2end-test:connector-runtime:shadowJar
 
-      - name: 'Upgrade docker-compose (for --wait option)'
+      - name: 'Install docker compose plugin'
         run: |
-          sudo curl -L https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
+          DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+          mkdir -p $DOCKER_CONFIG/cli-plugins
+          curl -SL https://github.com/docker/compose/releases/download/v2.17.2/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
+          chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
 
       - name: 'Start FCC Runtime in Docker'
-        run: docker-compose -f system-tests/end2end-test/docker-compose.yml up --build  --wait
+        run: docker compose -f system-tests/end2end-test/docker-compose.yml up --build --wait
         timeout-minutes: 10
 
       - name: 'End to End Integration Tests'
         uses: ./.github/actions/run-tests
         with:
           command: ./gradlew system-tests:end2end-test:e2e-junit:test -DincludeTags="EndToEndTest"
-  
-  
-  
+
   API-Tests:
     env:
       JACOCO: true

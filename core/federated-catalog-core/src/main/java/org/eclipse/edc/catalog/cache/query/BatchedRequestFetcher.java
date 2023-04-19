@@ -15,7 +15,7 @@
 package org.eclipse.edc.catalog.cache.query;
 
 import org.eclipse.edc.catalog.spi.Catalog;
-import org.eclipse.edc.catalog.spi.CatalogRequest;
+import org.eclipse.edc.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.spi.message.Range;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
@@ -29,7 +29,7 @@ import java.util.concurrent.CompletableFuture;
 import static java.lang.String.format;
 
 /**
- * Helper class that runs through a loop and sends {@link CatalogRequest}s until no more {@link ContractOffer}s are
+ * Helper class that runs through a loop and sends {@link CatalogRequestMessage}s until no more {@link ContractOffer}s are
  * received. This is useful to avoid overloading the provider connector by chunking the resulting response payload
  * size.
  */
@@ -52,7 +52,7 @@ public class BatchedRequestFetcher {
      * @return A list of {@link ContractOffer} objects
      */
     @NotNull
-    public CompletableFuture<List<ContractOffer>> fetch(CatalogRequest catalogRequest, int from, int batchSize) {
+    public CompletableFuture<List<ContractOffer>> fetch(CatalogRequestMessage catalogRequest, int from, int batchSize) {
         var range = new Range(from, from + batchSize);
         var rq = catalogRequest.toBuilder().querySpec(QuerySpec.Builder.newInstance().range(range).build()).build();
 
