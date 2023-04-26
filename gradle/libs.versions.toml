@@ -9,7 +9,7 @@ restAssured = "5.3.0"
 
 [libraries]
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
-azure-cosmos = { group = "com.azure", name = "azure-cosmos", version = "4.43.0" }
+azure-cosmos = { group = "com.azure", name = "azure-cosmos", version = "4.44.0" }
 edc-api-management = { module = "org.eclipse.edc:management-api", version.ref = "edc" }
 edc-api-management-config = { module = "org.eclipse.edc:management-api-configuration", version.ref = "edc" }
 edc-api-observability = { module = "org.eclipse.edc:api-observability", version.ref = "edc" }
