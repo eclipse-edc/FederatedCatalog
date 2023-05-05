@@ -17,7 +17,7 @@ package org.eclipse.edc.end2end;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.eclipse.edc.api.model.CriterionDto;
-import org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionCreateDto;
+import org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.spi.result.Result;
@@ -61,12 +61,12 @@ class FederatedCatalogTest {
         var pr = apiClient.postPolicy(policy);
         assertThat(r.succeeded()).withFailMessage(getError(pr)).isTrue();
 
-        var def = ContractDefinitionCreateDto.Builder.newInstance().id("def-" + id)
+        var request = ContractDefinitionRequestDto.Builder.newInstance().id("def-" + id)
                 .accessPolicyId(policyId)
                 .contractPolicyId(policyId)
                 .criteria(List.of(CriterionDto.from(Asset.PROPERTY_ID, "=", id)))
                 .build();
-        var dr = apiClient.postContractDefinition(def);
+        var dr = apiClient.postContractDefinition(request);
         assertThat(dr.succeeded()).withFailMessage(getError(dr)).isTrue();
 
         // act-assert
