@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.eclipse.edc.api.model.CriterionDto;
 import org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto;
+import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.asset.Asset;
@@ -75,7 +76,7 @@ class FederatedCatalogTest {
                 .untilAsserted(() -> {
                     var contractOffers = apiClient.getContractOffers();
                     assertThat(contractOffers).isNotEmpty();
-//                    assertThat(contractOffers).extracting(ContractOffer::getAsset).extracting(Asset::getId).contains(id);
+                    assertThat(contractOffers).extracting(ContractOffer::getAssetId).contains(id);
                 });
     }
 
