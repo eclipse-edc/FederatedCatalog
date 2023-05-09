@@ -74,9 +74,9 @@ class FederatedCatalogTest {
                 .pollInterval(ofSeconds(1))
                 .atMost(ofSeconds(20))
                 .untilAsserted(() -> {
-                    var contractOffers = apiClient.getContractOffers();
-                    assertThat(contractOffers).isNotEmpty();
-                    assertThat(contractOffers).extracting(ContractOffer::getAssetId).contains(id);
+                    var catalogs = apiClient.getContractOffers();
+                    assertThat(catalogs).hasSize(1);
+                    assertThat(catalogs.get(0).getContractOffers()).extracting(ContractOffer::getAssetId).contains(id);
                 });
     }
 

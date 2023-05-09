@@ -23,6 +23,8 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -42,6 +44,15 @@ public class BatchedRequestFetcher {
         this.monitor = monitor;
     }
 
+    private static Catalog copyCatalogWithoutNulls(Catalog catalog) {
+        return Catalog.Builder.newInstance().id(catalog.getId())
+                .contractOffers(catalog.getContractOffers())
+                .properties(new HashMap<>())
+                .dataServices(new ArrayList<>())
+                .datasets(new ArrayList<>())
+                .build();
+    }
+
     /**
      * Gets all contract offers. Requests are split in digestible chunks to match {@code batchSize} until no more offers
      * can be obtained.
@@ -56,6 +67,7 @@ public class BatchedRequestFetcher {
         var rq = catalogRequest.toBuilder().querySpec(QuerySpec.Builder.newInstance().range(range).build()).build();
 
         return dispatcherRegistry.send(Catalog.class, rq)
+                .thenCompose(catalog -> CompletableFuture.completedFuture(copyCatalogWithoutNulls(catalog)))
                 .thenCompose(catalog -> {
                     var offers = catalog.getContractOffers();
                     if (offers.size() >= batchSize) {
