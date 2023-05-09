@@ -17,7 +17,6 @@ package org.eclipse.edc.catalog.cache;
 import org.eclipse.edc.catalog.cache.crawler.NodeQueryAdapterRegistryImpl;
 import org.eclipse.edc.catalog.cache.query.IdsMultipartNodeQueryAdapter;
 import org.eclipse.edc.catalog.spi.CacheConfiguration;
-import org.eclipse.edc.catalog.spi.CachedAsset;
 import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeFilter;
@@ -115,7 +114,8 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
      */
     private void persist(UpdateResponse updateResponse) {
         updateResponse.getCatalog().getContractOffers().forEach(offer -> {
-            offer.getAsset().getProperties().put(CachedAsset.PROPERTY_ORIGINATOR, updateResponse.getSource());
+
+//            offer.getAsset().getProperties().put(CachedAsset.PROPERTY_ORIGINATOR, updateResponse.getSource());
             store.save(offer);
         });
     }

@@ -23,7 +23,6 @@ import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.spi.types.domain.asset.Asset;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -71,7 +70,7 @@ public class TestFunctions {
     public static ContractOffer createOffer(String id) {
         return ContractOffer.Builder.newInstance()
                 .id(id)
-                .asset(Asset.Builder.newInstance().id(id).build())
+                .assetId(id)
                 .policy(Policy.Builder.newInstance().build())
                 .contractStart(ZonedDateTime.now())
                 .contractEnd(ZonedDateTime.now().plus(365, ChronoUnit.DAYS))

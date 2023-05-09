@@ -22,7 +22,6 @@ import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.message.Range;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.spi.types.domain.asset.Asset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -95,7 +94,7 @@ class BatchedRequestFetcherTest {
                 .mapToObj(i -> ContractOffer.Builder.newInstance()
                         .id("id" + i)
                         .policy(Policy.Builder.newInstance().build())
-                        .asset(Asset.Builder.newInstance().id("asset" + i).build())
+                        .assetId("asset" + i)
                         .contractStart(ZonedDateTime.now())
                         .contractEnd(ZonedDateTime.now().plus(365, ChronoUnit.DAYS))
                         .build())

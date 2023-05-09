@@ -48,7 +48,7 @@ class InMemoryFederatedCacheStoreTest {
     private static ContractOffer createContractOffer(String id, Asset asset) {
         return ContractOffer.Builder.newInstance()
                 .id(id)
-                .asset(asset)
+                .assetId(asset.getId())
                 .policy(Policy.Builder.newInstance().build())
                 .contractStart(ZonedDateTime.now())
                 .contractEnd(ZonedDateTime.now().plus(365, ChronoUnit.DAYS))
@@ -73,7 +73,7 @@ class InMemoryFederatedCacheStoreTest {
 
         assertThat(result)
                 .hasSize(1)
-                .allSatisfy(co -> assertThat(co.getAsset().getId()).isEqualTo(assetId));
+                .allSatisfy(co -> assertThat(co.getAssetId()).isEqualTo(assetId));
     }
 
     @Test
@@ -93,7 +93,7 @@ class InMemoryFederatedCacheStoreTest {
                 .hasSize(1)
                 .allSatisfy(co -> {
                     assertThat(co.getId()).isEqualTo(contractOfferId2);
-                    assertThat(co.getAsset().getId()).isEqualTo(assetId);
+                    assertThat(co.getAssetId()).isEqualTo(assetId);
                 });
     }
 
@@ -113,8 +113,8 @@ class InMemoryFederatedCacheStoreTest {
 
         assertThat(result)
                 .hasSize(2)
-                .anySatisfy(co -> assertThat(co.getAsset().getId()).isEqualTo(assetId1))
-                .anySatisfy(co -> assertThat(co.getAsset().getId()).isEqualTo(assetId2));
+                .anySatisfy(co -> assertThat(co.getAssetId()).isEqualTo(assetId1))
+                .anySatisfy(co -> assertThat(co.getAssetId()).isEqualTo(assetId2));
     }
 
     @Test

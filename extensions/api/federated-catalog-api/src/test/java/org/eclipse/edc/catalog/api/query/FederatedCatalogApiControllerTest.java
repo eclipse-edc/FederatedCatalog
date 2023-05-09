@@ -113,8 +113,8 @@ class FederatedCatalogApiControllerTest {
     }
 
     private void compareAssetsById(List<ContractOffer> actual, List<ContractOffer> expected) {
-        List<String> actualAssetIds = actual.stream().map(co -> co.getAsset().getId()).sorted().collect(Collectors.toList());
-        List<String> expectedAssetIds = expected.stream().map(co -> co.getAsset().getId()).sorted().collect(Collectors.toList());
+        List<String> actualAssetIds = actual.stream().map(ContractOffer::getAssetId).sorted().collect(Collectors.toList());
+        List<String> expectedAssetIds = expected.stream().map(ContractOffer::getAssetId).sorted().collect(Collectors.toList());
         assertThat(actualAssetIds).isEqualTo(expectedAssetIds);
     }
 

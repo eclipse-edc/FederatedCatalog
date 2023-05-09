@@ -43,7 +43,7 @@ public class InMemoryFederatedCacheStore implements FederatedCacheStore {
 
     @Override
     public void save(ContractOffer contractOffer) {
-        lockManager.writeLock(() -> cache.put(contractOffer.getAsset().getId(), new MarkableEntry(false, contractOffer)));
+        lockManager.writeLock(() -> cache.put(contractOffer.getAssetId(), new MarkableEntry(false, contractOffer)));
     }
 
     @Override
