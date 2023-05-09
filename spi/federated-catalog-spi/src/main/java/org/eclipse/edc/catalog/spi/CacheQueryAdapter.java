@@ -15,9 +15,7 @@
 package org.eclipse.edc.catalog.spi;
 
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.spi.types.domain.asset.Asset;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Stream;
 
@@ -36,7 +34,7 @@ public interface CacheQueryAdapter {
      * @return A stream of {@link Asset} objects. Can be empty, can never be null.
      * @throws IllegalArgumentException may be thrown if the implementor cannot translate the query.
      */
-    @NotNull Stream<ContractOffer> executeQuery(FederatedCatalogCacheQuery query);
+    Stream<Catalog> executeQuery(FederatedCatalogCacheQuery query);
 
     /**
      * Checks whether a given query can be run by the implementor. This does not limit itself to whether the query

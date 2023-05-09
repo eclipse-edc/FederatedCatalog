@@ -14,8 +14,8 @@
 
 package org.eclipse.edc.catalog.store;
 
+import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.CriterionConverter;
 import org.eclipse.edc.util.concurrency.LockManager;
@@ -32,22 +32,22 @@ import java.util.stream.Collectors;
  */
 public class InMemoryFederatedCacheStore implements FederatedCacheStore {
 
-    private final Map<String, MarkableEntry> cache = new ConcurrentHashMap<>();
-    private final CriterionConverter<Predicate<ContractOffer>> converter;
+    private final Map<String, MarkableEntry<Catalog>> cache = new ConcurrentHashMap<>();
+    private final CriterionConverter<Predicate<Catalog>> converter;
     private final LockManager lockManager;
 
-    public InMemoryFederatedCacheStore(CriterionConverter<Predicate<ContractOffer>> converter, LockManager lockManager) {
+    public InMemoryFederatedCacheStore(CriterionConverter<Predicate<Catalog>> converter, LockManager lockManager) {
         this.converter = converter;
         this.lockManager = lockManager;
     }
 
     @Override
-    public void save(ContractOffer contractOffer) {
-        lockManager.writeLock(() -> cache.put(contractOffer.getAsset().getId(), new MarkableEntry(false, contractOffer)));
+    public void save(Catalog catalog) {
+        lockManager.writeLock(() -> cache.put(catalog.getId(), new MarkableEntry<>(false, catalog)));
     }
 
     @Override
-    public Collection<ContractOffer> query(List<Criterion> query) {
+    public Collection<Catalog> query(List<Criterion> query) {
         //AND all predicates
         var rootPredicate = query.stream().map(converter::convert).reduce(x -> true, Predicate::and);
         return lockManager.readLock(() -> cache.values().stream().map(MarkableEntry::getEntry).filter(rootPredicate).collect(Collectors.toList()));
@@ -63,15 +63,15 @@ public class InMemoryFederatedCacheStore implements FederatedCacheStore {
 
     @Override
     public void expireAll() {
-        cache.replaceAll((k, v) -> v = new MarkableEntry(true, v.getEntry()));
+        cache.replaceAll((k, v) -> new MarkableEntry<>(true, v.getEntry()));
     }
 
-    private static class MarkableEntry {
-        private final ContractOffer entry;
+    private static class MarkableEntry<B> {
+        private final B entry;
         private final boolean mark;
 
-        MarkableEntry(boolean isMarked, ContractOffer offer) {
-            entry = offer;
+        MarkableEntry(boolean isMarked, B catalog) {
+            entry = catalog;
             mark = isMarked;
         }
 
@@ -80,7 +80,7 @@ public class InMemoryFederatedCacheStore implements FederatedCacheStore {
             return mark;
         }
 
-        public ContractOffer getEntry() {
+        public B getEntry() {
             return entry;
         }
 

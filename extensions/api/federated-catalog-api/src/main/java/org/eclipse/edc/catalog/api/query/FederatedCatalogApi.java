@@ -21,10 +21,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 
-import java.util.Collection;
+import java.util.List;
 
 @OpenAPIDefinition
 @Tag(name = "Federated Catalog")
@@ -37,5 +38,5 @@ public interface FederatedCatalogApi {
             }
 
     )
-    Collection<ContractOffer> getCachedCatalog(FederatedCatalogCacheQuery federatedCatalogCacheQuery);
+    List<Catalog> getCachedCatalog(FederatedCatalogCacheQuery federatedCatalogCacheQuery);
 }

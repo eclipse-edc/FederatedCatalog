@@ -14,7 +14,6 @@
 
 package org.eclipse.edc.catalog;
 
-import org.eclipse.edc.catalog.spi.CachedAsset;
 import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.catalog.spi.FederatedCacheNode;
@@ -51,6 +50,7 @@ import static org.eclipse.edc.catalog.TestFunctions.insertSingle;
 import static org.eclipse.edc.catalog.TestFunctions.queryCatalogApi;
 import static org.eclipse.edc.catalog.TestFunctions.randomCatalog;
 import static org.eclipse.edc.catalog.matchers.CatalogRequestMatcher.sentTo;
+import static org.eclipse.edc.catalog.spi.CatalogConstants.PROPERTY_ORIGINATOR;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
@@ -61,6 +61,7 @@ import static org.mockito.Mockito.when;
 @ComponentTest
 @ExtendWith(EdcExtension.class)
 public class CatalogRuntimeComponentTest {
+    public static final String TEST_CATALOG_ID = "test-catalog-id";
     private static final Duration TEST_TIMEOUT = ofSeconds(10);
 
     @BeforeEach
@@ -88,9 +89,10 @@ public class CatalogRuntimeComponentTest {
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
-                .until(() -> {
+                .untilAsserted(() -> {
                     var response = queryCatalogApi();
-                    return response.isEmpty();
+                    assertThat(response).hasSize(1);
+                    assertThat(response).allSatisfy(c -> assertThat(c.getContractOffers()).isEmpty());
                 });
     }
 
@@ -101,12 +103,15 @@ public class CatalogRuntimeComponentTest {
         insertSingle(directory);
         // intercept request egress
         when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
-                .thenReturn(randomCatalog(5))
+                .thenReturn(randomCatalog(TEST_CATALOG_ID, 5))
                 .thenReturn(emptyCatalog()); // this is important, otherwise there is an endless loop!
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
-                .untilAsserted(() -> assertThat(queryCatalogApi()).hasSize(5));
+                .untilAsserted(() -> {
+                    var catalogs = queryCatalogApi();
+                    assertThat(catalogs).allSatisfy(c -> assertThat(c.getContractOffers()).hasSize(5));
+                });
     }
 
     @Test
@@ -117,16 +122,19 @@ public class CatalogRuntimeComponentTest {
 
         // intercept request egress
         when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
-                .thenReturn(randomCatalog(100))
-                .thenReturn(randomCatalog(100))
-                .thenReturn(randomCatalog(50))
-                .thenReturn(emptyCatalog()); // this is important, otherwise there is an endless loop!
+                .thenReturn(randomCatalog(TEST_CATALOG_ID, 100))
+                .thenReturn(randomCatalog(TEST_CATALOG_ID, 100))
+                .thenReturn(randomCatalog(TEST_CATALOG_ID, 50));
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
-                .untilAsserted(() -> assertThat(queryCatalogApi()).hasSize(250));
+                .untilAsserted(() -> {
+                    var catalogs = queryCatalogApi();
+                    assertThat(catalogs.size()).isEqualTo(1);
+                    assertThat(catalogs.get(0).getContractOffers()).hasSize(250);
+                });
+        verify(dispatcher, atLeast(3)).send(eq(Catalog.class), isA(CatalogRequestMessage.class));
 
-        verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequestMessage.class));
     }
 
     @Test
@@ -137,21 +145,22 @@ public class CatalogRuntimeComponentTest {
 
         // intercept request egress
         when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
-                .thenReturn(completedFuture(catalogBuilder().contractOffers(new ArrayList<>(List.of(
+                .thenReturn(completedFuture(catalogBuilder().id(TEST_CATALOG_ID).contractOffers(new ArrayList<>(List.of(
                         createOffer("offer1"), createOffer("offer2"), createOffer("offer3")
                 ))).build()))
-                .thenReturn(emptyCatalog())
-                .thenReturn(completedFuture(catalogBuilder().contractOffers(new ArrayList<>(List.of(
+                .thenReturn(emptyCatalog(TEST_CATALOG_ID))
+                .thenReturn(completedFuture(catalogBuilder().id(TEST_CATALOG_ID).contractOffers(new ArrayList<>(List.of(
                         createOffer("offer1"), createOffer("offer2")/* this one is "deleted": createOffer("offer3") */
-                ))).build()))
-                .thenReturn(emptyCatalog()); // this is important, otherwise there is an endless loop!
+                ))).build()));
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    verify(dispatcher, atLeast(5)).send(eq(Catalog.class), isA(CatalogRequestMessage.class));
-                    assertThat(queryCatalogApi()).hasSize(2)
-                            .noneMatch(co -> co.getId().equals("offer3"));
+                    var catalogs = queryCatalogApi();
+                    assertThat(catalogs).hasSize(1);
+                    assertThat(catalogs.get(0).getContractOffers()).hasSize(2)
+                            .noneMatch(offer -> offer.getId().equals("offer3"));
+                    verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequestMessage.class));
                 });
 
     }
@@ -164,20 +173,21 @@ public class CatalogRuntimeComponentTest {
 
         // intercept request egress
         when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
-                .thenReturn(completedFuture(catalogBuilder().contractOffers(new ArrayList<>(List.of(
+                .thenReturn(completedFuture(catalogBuilder().id(TEST_CATALOG_ID).contractOffers(new ArrayList<>(List.of(
                         createOffer("offer1"), createOffer("offer2"), createOffer("offer3")
                 ))).build()))
-                .thenReturn(emptyCatalog())
-                .thenReturn(completedFuture(catalogBuilder().contractOffers(new ArrayList<>(List.of(
+                .thenReturn(emptyCatalog(TEST_CATALOG_ID))
+                .thenReturn(completedFuture(catalogBuilder().id(TEST_CATALOG_ID).contractOffers(new ArrayList<>(List.of(
                         createOffer("offer1"), createOffer("offer2"), createOffer("offer3")
-                ))).build()))
-                .thenReturn(emptyCatalog()); // this is important, otherwise there is an endless loop!
+                ))).build()));
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
+                    var catalogs = queryCatalogApi();
+                    assertThat(catalogs).hasSize(1);
+                    assertThat(catalogs.get(0).getContractOffers()).hasSize(3);
                     verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequestMessage.class));
-                    assertThat(queryCatalogApi()).hasSize(3);
                 });
 
     }
@@ -190,22 +200,22 @@ public class CatalogRuntimeComponentTest {
 
         // intercept request egress
         when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
-                .thenReturn(completedFuture(catalogBuilder().contractOffers(new ArrayList<>(List.of(
+                .thenReturn(completedFuture(catalogBuilder().id("test-cat").contractOffers(new ArrayList<>(List.of(
                         createOffer("offer1"), createOffer("offer2"), createOffer("offer3")
                 ))).build()))
-                .thenReturn(emptyCatalog())
-                .thenReturn(completedFuture(catalogBuilder().contractOffers(new ArrayList<>(List.of(
+                .thenReturn(completedFuture(catalogBuilder().id("test-cat").contractOffers(new ArrayList<>(List.of(
                         createOffer("offer1"), createOffer("offer2"), createOffer("offer3"), createOffer("offer4"), createOffer("offer5")
-                ))).build()))
-                .thenReturn(emptyCatalog()); // this is important, otherwise there is an endless loop!
+                ))).build()));
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    var list = queryCatalogApi();
-                    assertThat(list).hasSize(5)
-                            .allSatisfy(co -> assertThat(Integer.parseInt(co.getId().replace("offer", ""))).isIn(1, 2, 3, 4, 5));
-                    verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequestMessage.class));
+                    var catalogs = queryCatalogApi();
+                    assertThat(catalogs).hasSize(1);
+                    assertThat(catalogs)
+                            .allSatisfy(cat -> assertThat(cat.getContractOffers()).hasSize(5))
+                            .allSatisfy(co -> assertThat(Integer.parseInt(co.getContractOffers().get(0).getId().replace("offer", ""))).isIn(1, 2, 3, 4, 5));
+                    verify(dispatcher, atLeast(2)).send(eq(Catalog.class), isA(CatalogRequestMessage.class));
                 });
 
     }
@@ -217,15 +227,16 @@ public class CatalogRuntimeComponentTest {
         insertSingle(directory);
         // intercept request egress
         when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
-                .thenReturn(randomCatalog(5))
+                .thenReturn(randomCatalog(TEST_CATALOG_ID, 5))
                 .thenReturn(emptyCatalog()); // this is important, otherwise there is an endless loop!
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    var offers = queryCatalogApi();
-                    assertThat(offers).hasSize(5);
-                    assertThat(offers).extracting(ContractOffer::getAsset).allSatisfy(a -> assertThat(a.getProperties()).containsEntry(CachedAsset.PROPERTY_ORIGINATOR, "http://test-node.com/api/v1/ids/data"));
+                    var catalogs = queryCatalogApi();
+                    assertThat(catalogs).hasSize(1);
+                    assertThat(catalogs.get(0).getContractOffers()).hasSize(5);
+                    assertThat(catalogs).extracting(Catalog::getProperties).allSatisfy(a -> assertThat(a).containsEntry(PROPERTY_ORIGINATOR, "http://test-node.com/api/v1/ids/data"));
                 });
     }
 
@@ -247,15 +258,18 @@ public class CatalogRuntimeComponentTest {
                     var numAssets = rnd.nextInt(50);
 
                     when(dispatcher.send(eq(Catalog.class), argThat(sentTo(nodeUrl + "/api/v1/ids/data"))))
-                            .thenReturn(randomCatalog(numAssets))
-                            .thenReturn(emptyCatalog());
+                            .thenReturn(randomCatalog("catalog-" + nodeUrl, numAssets));
                     numTotalAssets.addAndGet(numAssets);
                 });
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
-                .untilAsserted(() ->
-                        assertThat(queryCatalogApi()).hasSize(numTotalAssets.get()));
+                .untilAsserted(() -> {
+                    var catalogs = queryCatalogApi();
+                    assertThat(catalogs).hasSize(1000);
+                    //assert that the total number of offers across all catalogs is corrects
+                    assertThat(catalogs.stream().mapToLong(c -> c.getContractOffers().size()).sum()).isEqualTo(numTotalAssets.get());
+                });
     }
 
     @Test
@@ -268,17 +282,24 @@ public class CatalogRuntimeComponentTest {
         directory.insert(node2);
 
         when(dispatcher.send(eq(Catalog.class), argThat(sentTo("http://test-node1.com/api/v1/ids/data"))))
-                .thenReturn(catalogOf(createOffer("offer1"), createOffer("offer2"), createOffer("offer3")))
+                .thenReturn(catalogOf("catalog-" + node1.getTargetUrl(), createOffer("offer1"), createOffer("offer2"), createOffer("offer3")))
                 .thenReturn(emptyCatalog());
 
         when(dispatcher.send(eq(Catalog.class), argThat(sentTo("http://test-node2.com/api/v1/ids/data"))))
-                .thenReturn(catalogOf(createOffer("offer14"), createOffer("offer32"), /*this one is conflicting:*/createOffer("offer3")))
+                .thenReturn(catalogOf("catalog-" + node2.getTargetUrl(), createOffer("offer14"), createOffer("offer32"), /*this one is conflicting:*/createOffer("offer3")))
                 .thenReturn(emptyCatalog());
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
-                .untilAsserted(() ->
-                        assertThat(queryCatalogApi()).hasSize(5));
+                .untilAsserted(() -> {
+                    var catalogs = queryCatalogApi();
+                    assertThat(catalogs).hasSize(2);
+                    assertThat(catalogs).anySatisfy(c -> assertThat(c.getProperties().get(PROPERTY_ORIGINATOR).toString()).startsWith("http://test-node1.com"));
+                    assertThat(catalogs).anySatisfy(c -> assertThat(c.getProperties().get(PROPERTY_ORIGINATOR).toString()).startsWith("http://test-node2.com"));
+                    assertThat(catalogs.stream().mapToLong(c -> c.getContractOffers().size()).sum()).isEqualTo(6);
+                    assertThat(catalogs.stream().flatMap(c -> c.getContractOffers().stream()).map(ContractOffer::getAssetId))
+                            .containsExactlyInAnyOrder("offer1", "offer2", "offer3", "offer14", "offer32", "offer3");
+                });
 
 
     }

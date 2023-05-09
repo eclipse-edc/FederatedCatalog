@@ -19,11 +19,11 @@ import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 import org.eclipse.edc.catalog.spi.WorkItem;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.spi.types.domain.asset.Asset;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,17 +39,18 @@ public class TestUtil {
     public static ContractOffer createOffer(String id) {
         return ContractOffer.Builder.newInstance()
                 .id(id)
-                .asset(Asset.Builder.newInstance().id(id).build())
+                .assetId(id)
                 .policy(Policy.Builder.newInstance().build())
                 .contractStart(ZonedDateTime.now())
                 .contractEnd(ZonedDateTime.now().plus(365, ChronoUnit.DAYS))
                 .build();
     }
 
-    public static Catalog createCatalog() {
+    public static Catalog createCatalog(String id) {
         return Catalog.Builder.newInstance()
-                .id("test-catalog")
+                .id(id)
                 .contractOffers(List.of(createOffer("test-offer")))
+                .properties(new HashMap<>())
                 .build();
     }
 

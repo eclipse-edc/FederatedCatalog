@@ -16,9 +16,9 @@ package org.eclipse.edc.catalog.cache.query;
 
 import org.eclipse.edc.catalog.spi.CacheQueryAdapter;
 import org.eclipse.edc.catalog.spi.CacheQueryAdapterRegistry;
+import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.QueryResponse;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.spi.EdcException;
 
 import java.util.ArrayList;
@@ -56,17 +56,17 @@ public class CacheQueryAdapterRegistryImpl implements CacheQueryAdapterRegistry 
 
         var responseBuilder = QueryResponse.Builder.newInstance()
                 .status(QueryResponse.Status.ACCEPTED);
-        Stream<ContractOffer> offers = Stream.empty();
+        Stream<Catalog> catalogs = Stream.empty();
 
         // add the results of all query adapters to the union stream
         for (var adapter : adapters) {
             try {
-                offers = Stream.concat(offers, adapter.executeQuery(query));
+                catalogs = Stream.concat(catalogs, adapter.executeQuery(query));
             } catch (EdcException ex) {
                 responseBuilder.error("Adapter failed: " + ex.getMessage());
             }
         }
 
-        return responseBuilder.offers(offers.collect(Collectors.toList())).build();
+        return responseBuilder.catalogs(catalogs.collect(Collectors.toList())).build();
     }
 }

@@ -15,16 +15,16 @@
 package org.eclipse.edc.catalog.cache.query;
 
 import org.eclipse.edc.catalog.spi.CacheQueryAdapterRegistry;
+import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.QueryEngine;
 import org.eclipse.edc.catalog.spi.QueryResponse;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.catalog.test.TestUtil.createOffer;
+import static org.eclipse.edc.catalog.test.TestUtil.createCatalog;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -32,22 +32,22 @@ import static org.mockito.Mockito.when;
 
 class QueryEngineImplTest {
 
-    private static final ContractOffer ASSET_ABC = createOffer("ABC");
-    private static final ContractOffer ASSET_DEF = createOffer("DEF");
-    private static final ContractOffer ASSET_XYZ = createOffer("XYZ");
+    private static final Catalog CATALOG_ABC = createCatalog("ABC");
+    private static final Catalog CATALOG_DEF = createCatalog("DEF");
+    private static final Catalog CATALOG_XYZ = createCatalog("XYZ");
 
     @Test
     void getCatalog() {
         CacheQueryAdapterRegistry registry = mock(CacheQueryAdapterRegistry.class);
 
-        when(registry.executeQuery(any())).thenReturn(QueryResponse.ok(List.of(ASSET_ABC, ASSET_DEF, ASSET_XYZ)));
+        when(registry.executeQuery(any())).thenReturn(QueryResponse.ok(List.of(CATALOG_ABC, CATALOG_DEF, CATALOG_XYZ)));
 
         QueryEngine queryEngine = new QueryEngineImpl(registry);
 
         QueryResponse catalog = queryEngine.getCatalog(FederatedCatalogCacheQuery.Builder.newInstance().build());
         assertThat(catalog.getStatus()).isEqualTo(QueryResponse.Status.ACCEPTED);
         assertThat(catalog.getErrors()).isEmpty();
-        assertThat(catalog.getOffers()).containsExactlyInAnyOrder(ASSET_ABC, ASSET_DEF, ASSET_XYZ);
+        assertThat(catalog.getCatalogs()).containsExactlyInAnyOrder(CATALOG_ABC, CATALOG_DEF, CATALOG_XYZ);
 
         verify(registry).executeQuery(any());
     }
@@ -57,7 +57,7 @@ class QueryEngineImplTest {
         CacheQueryAdapterRegistry registry = mock(CacheQueryAdapterRegistry.class);
 
         when(registry.executeQuery(any())).thenReturn(QueryResponse.Builder.newInstance()
-                .offers(List.of(ASSET_ABC, ASSET_DEF, ASSET_XYZ))
+                .catalogs(List.of(CATALOG_ABC, CATALOG_DEF, CATALOG_XYZ))
                 .error("some error")
                 .build());
 
@@ -66,7 +66,7 @@ class QueryEngineImplTest {
         QueryResponse catalog = queryEngine.getCatalog(FederatedCatalogCacheQuery.Builder.newInstance().build());
         assertThat(catalog.getStatus()).isEqualTo(QueryResponse.Status.ACCEPTED);
         assertThat(catalog.getErrors()).hasSize(1).containsExactly("some error");
-        assertThat(catalog.getOffers()).containsExactlyInAnyOrder(ASSET_ABC, ASSET_DEF, ASSET_XYZ);
+        assertThat(catalog.getCatalogs()).containsExactlyInAnyOrder(CATALOG_ABC, CATALOG_DEF, CATALOG_XYZ);
         verify(registry).executeQuery(any());
     }
 
@@ -84,7 +84,7 @@ class QueryEngineImplTest {
         QueryResponse catalog = queryEngine.getCatalog(FederatedCatalogCacheQuery.Builder.newInstance().build());
         assertThat(catalog.getStatus()).isEqualTo(QueryResponse.Status.NO_ADAPTER_FOUND);
         assertThat(catalog.getErrors()).hasSize(1);
-        assertThat(catalog.getOffers()).isEmpty();
+        assertThat(catalog.getCatalogs()).isEmpty();
         verify(registry).executeQuery(any());
     }
 }

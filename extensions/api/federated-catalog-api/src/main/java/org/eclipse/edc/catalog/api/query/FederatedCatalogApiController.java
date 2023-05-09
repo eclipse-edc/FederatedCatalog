@@ -19,12 +19,12 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.QueryEngine;
 import org.eclipse.edc.catalog.spi.QueryResponse;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 
-import java.util.Collection;
+import java.util.List;
 
 @Consumes({ MediaType.APPLICATION_JSON })
 @Produces({ MediaType.APPLICATION_JSON })
@@ -39,7 +39,7 @@ public class FederatedCatalogApiController implements FederatedCatalogApi {
 
     @Override
     @POST
-    public Collection<ContractOffer> getCachedCatalog(FederatedCatalogCacheQuery federatedCatalogCacheQuery) {
+    public List<Catalog> getCachedCatalog(FederatedCatalogCacheQuery federatedCatalogCacheQuery) {
         var queryResponse = queryEngine.getCatalog(federatedCatalogCacheQuery);
         // query not possible
         if (queryResponse.getStatus() == QueryResponse.Status.NO_ADAPTER_FOUND) {
@@ -49,6 +49,6 @@ public class FederatedCatalogApiController implements FederatedCatalogApi {
             throw new QueryException(queryResponse.getErrors());
         }
 
-        return queryResponse.getOffers();
+        return queryResponse.getCatalogs();
     }
 }

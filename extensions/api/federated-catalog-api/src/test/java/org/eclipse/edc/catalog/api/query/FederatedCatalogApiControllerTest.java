@@ -19,6 +19,7 @@ import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import org.eclipse.edc.catalog.spi.CacheQueryAdapter;
 import org.eclipse.edc.catalog.spi.CacheQueryAdapterRegistry;
+import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
@@ -31,11 +32,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.given;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.catalog.test.TestUtil.createOffer;
+import static org.eclipse.edc.catalog.test.TestUtil.createCatalog;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -45,7 +46,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(EdcExtension.class)
 class FederatedCatalogApiControllerTest {
     private static final String BASE_PATH = "/api";
-    private static final TypeRef<List<ContractOffer>> CONTRACT_OFFER_LIST_TYPE = new TypeRef<>() {
+    private static final TypeRef<List<Catalog>> CONTRACT_OFFER_LIST_TYPE = new TypeRef<>() {
     };
     private final int port = getFreePort();
 
@@ -73,15 +74,14 @@ class FederatedCatalogApiControllerTest {
 
     @Test
     void queryApi_whenResultsReturned(FederatedCacheStore store) {
-        int nbAssets = 3;
+        int numberEntries = 3;
 
-        // generate assets and populate the store
-        List<ContractOffer> assets = new ArrayList<>();
-        for (int i = 0; i < nbAssets; i++) {
-            assets.add(createOffer("some-offer-" + i));
+        // generate entries and populate the store
+        List<Catalog> entries = new ArrayList<>();
+        for (int i = 0; i < numberEntries; i++) {
+            entries.add(createCatalog("some-offer-" + i));
         }
-        assets.forEach(store::save);
-
+        entries.forEach(store::save);
 
         var offers = baseRequest()
                 .contentType(ContentType.JSON)
@@ -93,7 +93,7 @@ class FederatedCatalogApiControllerTest {
                 .as(CONTRACT_OFFER_LIST_TYPE);
 
         // test
-        compareAssetsById(offers, assets);
+        compareByAssetId(offers, entries);
     }
 
     @Test
@@ -112,9 +112,9 @@ class FederatedCatalogApiControllerTest {
 
     }
 
-    private void compareAssetsById(List<ContractOffer> actual, List<ContractOffer> expected) {
-        List<String> actualAssetIds = actual.stream().map(co -> co.getAsset().getId()).sorted().collect(Collectors.toList());
-        List<String> expectedAssetIds = expected.stream().map(co -> co.getAsset().getId()).sorted().collect(Collectors.toList());
+    private void compareByAssetId(List<Catalog> actual, List<Catalog> expected) {
+        var actualAssetIds = actual.stream().flatMap(e -> e.getContractOffers().stream()).map(ContractOffer::getAssetId).collect(toList());
+        var expectedAssetIds = expected.stream().flatMap(e -> e.getContractOffers().stream()).map(ContractOffer::getAssetId).collect(toList());
         assertThat(actualAssetIds).isEqualTo(expectedAssetIds);
     }
 

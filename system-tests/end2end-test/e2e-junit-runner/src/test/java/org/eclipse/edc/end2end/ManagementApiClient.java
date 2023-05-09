@@ -22,11 +22,11 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.eclipse.edc.api.model.IdResponseDto;
+import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
 import org.eclipse.edc.connector.api.management.asset.model.AssetEntryDto;
 import org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto;
 import org.eclipse.edc.connector.api.management.policy.model.PolicyDefinitionRequestDto;
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.spi.result.Result;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,7 +38,7 @@ import static java.lang.String.format;
 class ManagementApiClient {
     private static final String MANAGEMENT_BASE_URL = "http://localhost:9192/api/v1/management";
     private static final String CATALOG_BASE_URL = "http://localhost:8181/api";
-    private static final TypeReference<List<ContractOffer>> LIST_TYPE_REFERENCE = new TypeReference<>() {
+    private static final TypeReference<List<Catalog>> LIST_TYPE_REFERENCE = new TypeReference<>() {
     };
     private static final MediaType JSON = MediaType.parse("application/json");
     private final ObjectMapper mapper;
@@ -67,7 +67,7 @@ class ManagementApiClient {
         return postObjectWithId(createPostRequest(definition, mgmt("/contractdefinitions")));
     }
 
-    List<ContractOffer> getContractOffers() {
+    List<Catalog> getContractOffers() {
         var rq = createPostRequest(FederatedCatalogCacheQuery.Builder.newInstance().build(), catalog("/federatedcatalog"));
 
         try (var response = getClient().newCall(rq).execute()) {
