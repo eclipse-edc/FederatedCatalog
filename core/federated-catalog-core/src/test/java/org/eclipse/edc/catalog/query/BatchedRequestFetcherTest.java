@@ -63,18 +63,18 @@ class BatchedRequestFetcherTest {
         var request = createRequest();
 
         var offers = fetcher.fetch(request, 0, 5);
-        assertThat(offers).isCompletedWithValueMatching(list -> list.size() == 13 &&
-                list.stream().allMatch(o -> o.getId().matches("(id)\\d|1[0-3]")));
+        assertThat(offers).isCompletedWithValueMatching(list -> list.getContractOffers().size() == 13 &&
+                list.getContractOffers().stream().allMatch(o -> o.getId().matches("(id)\\d|1[0-3]")));
 
 
         var captor = forClass(CatalogRequestMessage.class);
-        verify(dispatcherMock, times(4)).send(eq(Catalog.class), captor.capture());
+        verify(dispatcherMock, times(3)).send(eq(Catalog.class), captor.capture());
 
         // verify the sequence of requests
         assertThat(captor.getAllValues())
                 .extracting(l -> l.getQuerySpec().getRange())
                 .usingRecursiveFieldByFieldElementComparator()
-                .containsExactly(new Range(0, 5), new Range(5, 10), new Range(10, 15), new Range(15, 20));
+                .containsExactly(new Range(0, 5), new Range(5, 10), new Range(10, 15));
     }
 
     private CatalogRequestMessage createRequest() {

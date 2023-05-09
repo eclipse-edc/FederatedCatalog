@@ -15,10 +15,9 @@
 package org.eclipse.edc.catalog.cache.query;
 
 import org.eclipse.edc.catalog.spi.CacheQueryAdapter;
+import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Stream;
 
@@ -31,7 +30,7 @@ public class CacheQueryAdapterImpl implements CacheQueryAdapter {
     }
 
     @Override
-    public @NotNull Stream<ContractOffer> executeQuery(FederatedCatalogCacheQuery query) {
+    public Stream<Catalog> executeQuery(FederatedCatalogCacheQuery query) {
         //todo: translate the generic CacheQuery into a list of criteria and
         return store.query(query.getCriteria()).stream();
     }

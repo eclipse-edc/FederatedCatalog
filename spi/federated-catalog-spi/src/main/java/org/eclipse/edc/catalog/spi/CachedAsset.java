@@ -28,9 +28,9 @@ import org.eclipse.edc.spi.types.domain.asset.Asset;
  */
 @JsonTypeName()
 @JsonDeserialize(builder = CachedAsset.Builder.class)
+@Deprecated
 public class CachedAsset extends Asset {
 
-    public static final String PROPERTY_ORIGINATOR = "asset:prop:originator";
     private static final String PROPERTY_POLICY = "asset:prop:policy";
 
     private CachedAsset() {
@@ -39,7 +39,7 @@ public class CachedAsset extends Asset {
 
     @JsonIgnore
     public String getOriginator() {
-        Object property = getProperty(PROPERTY_ORIGINATOR);
+        Object property = getProperty(CatalogConstants.PROPERTY_ORIGINATOR);
         return property != null ? property.toString() : null;
     }
 
@@ -62,7 +62,7 @@ public class CachedAsset extends Asset {
         }
 
         public Builder originator(String originator) {
-            entity.getProperties().put(PROPERTY_ORIGINATOR, originator);
+            entity.getProperties().put(CatalogConstants.PROPERTY_ORIGINATOR, originator);
             return this;
         }
 

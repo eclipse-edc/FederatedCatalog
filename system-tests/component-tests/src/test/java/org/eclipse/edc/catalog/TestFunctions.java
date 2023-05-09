@@ -27,6 +27,7 @@ import org.eclipse.edc.policy.model.Policy;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -43,26 +44,31 @@ public class TestFunctions {
     public static final String BASE_PATH = "/api";
     public static final int PORT = getFreePort();
     private static final String PATH = "/federatedcatalog";
-    private static final TypeRef<List<ContractOffer>> CONTRACT_OFFER_LIST_TYPE = new TypeRef<>() {
+    private static final TypeRef<List<Catalog>> CONTRACT_OFFER_LIST_TYPE = new TypeRef<>() {
     };
 
     public static CompletableFuture<Catalog> emptyCatalog() {
-        return completedFuture(catalogBuilder()
-                .build());
+        return completedFuture(catalogBuilder().build());
+    }
+
+    public static CompletableFuture<Catalog> emptyCatalog(String catalogId) {
+        return completedFuture(catalogBuilder().id(catalogId).build());
     }
 
     public static Catalog.Builder catalogBuilder() {
         return Catalog.Builder.newInstance()
                 .id(UUID.randomUUID().toString())
+                .properties(new HashMap<>())
                 .contractOffers(Collections.emptyList());
     }
 
-    public static CompletableFuture<Catalog> catalogOf(ContractOffer... offers) {
-        return completedFuture(catalogBuilder().contractOffers(asList(offers)).build());
+    public static CompletableFuture<Catalog> catalogOf(String catId, ContractOffer... offers) {
+        return completedFuture(catalogBuilder().id(catId).contractOffers(asList(offers)).build());
     }
 
-    public static CompletableFuture<Catalog> randomCatalog(int howMany) {
+    public static CompletableFuture<Catalog> randomCatalog(String id, int howMany) {
         return completedFuture(catalogBuilder()
+                .id(id)
                 .contractOffers(IntStream.range(0, howMany).mapToObj(i -> createOffer("Offer_" + UUID.randomUUID())).collect(Collectors.toList()))
                 .build());
     }
@@ -81,7 +87,7 @@ public class TestFunctions {
         directory.insert(new FederatedCacheNode("test-node", "http://test-node.com", singletonList("ids-multipart")));
     }
 
-    public static List<ContractOffer> queryCatalogApi() {
+    public static List<Catalog> queryCatalogApi() {
         return baseRequest()
                 .body(FederatedCatalogCacheQuery.Builder.newInstance().build())
                 .post(PATH)

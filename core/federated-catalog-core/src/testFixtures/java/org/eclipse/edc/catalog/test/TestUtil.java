@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,10 +46,11 @@ public class TestUtil {
                 .build();
     }
 
-    public static Catalog createCatalog() {
+    public static Catalog createCatalog(String id) {
         return Catalog.Builder.newInstance()
-                .id("test-catalog")
+                .id(id)
                 .contractOffers(List.of(createOffer("test-offer")))
+                .properties(new HashMap<>())
                 .build();
     }
 

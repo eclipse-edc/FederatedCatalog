@@ -30,7 +30,7 @@ public interface FederatedCacheStore {
     /**
      * Adds an {@link ContractOffer} to the store
      */
-    void save(ContractOffer asset);
+    void save(Catalog catalog);
 
     /**
      * Queries the store for {@link ContractOffer}s
@@ -38,7 +38,7 @@ public interface FederatedCacheStore {
      * @param query A list of criteria the asset must fulfill
      * @return A collection of assets that are already in the store and that satisfy a given list of criteria.
      */
-    Collection<ContractOffer> query(List<Criterion> query);
+    Collection<Catalog> query(List<Criterion> query);
 
     /**
      * Deletes all entries from the cache that are marked as "expired"

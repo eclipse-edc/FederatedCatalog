@@ -14,9 +14,9 @@
 
 package org.eclipse.edc.end2end;
 
+import org.eclipse.edc.api.model.DataAddressDto;
 import org.eclipse.edc.connector.api.management.asset.model.AssetCreationRequestDto;
 import org.eclipse.edc.connector.api.management.asset.model.AssetEntryDto;
-import org.eclipse.edc.connector.api.management.asset.model.DataAddressDto;
 import org.eclipse.edc.connector.api.management.policy.model.PolicyDefinitionRequestDto;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.types.domain.asset.Asset;

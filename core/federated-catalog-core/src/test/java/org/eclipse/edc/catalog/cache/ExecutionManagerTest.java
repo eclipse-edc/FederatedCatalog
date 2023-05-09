@@ -72,7 +72,7 @@ class ExecutionManagerTest {
     void executePlan() {
         when(nodeDirectoryMock.getAll()).thenReturn(List.of(createNode()));
         when(nodeQueryAdapterRegistry.findForProtocol(TEST_PROTOCOL)).thenReturn(List.of(queryAdapterMock));
-        when(queryAdapterMock.sendRequest(any())).thenReturn(completedFuture(new UpdateResponse("test-url", createCatalog())));
+        when(queryAdapterMock.sendRequest(any())).thenReturn(completedFuture(new UpdateResponse("test-url", createCatalog("test-catalog"))));
         manager.executePlan(simplePlan());
 
         var inOrder = inOrder(preExecutionTaskMock, queryAdapterMock, successConsumerMock);
@@ -86,7 +86,7 @@ class ExecutionManagerTest {
         when(nodeDirectoryMock.getAll()).thenReturn(List.of(createNode(), createNode()));
         when(nodeQueryAdapterRegistry.findForProtocol(TEST_PROTOCOL)).thenReturn(List.of(queryAdapterMock));
 
-        var response = new UpdateResponse("test-url", createCatalog());
+        var response = new UpdateResponse("test-url", createCatalog("test-catalog"));
         var future = new CompletableFuture<UpdateResponse>();
         future.completeAsync(() -> response, delayedExecutor(2, TimeUnit.SECONDS));
 
@@ -118,7 +118,7 @@ class ExecutionManagerTest {
         doThrow(new RuntimeException("test-exception")).when(preExecutionTaskMock).run();
         when(nodeDirectoryMock.getAll()).thenReturn(List.of(createNode()));
         when(nodeQueryAdapterRegistry.findForProtocol(TEST_PROTOCOL)).thenReturn(List.of(queryAdapterMock));
-        when(queryAdapterMock.sendRequest(any())).thenReturn(completedFuture(new UpdateResponse("test-url", createCatalog())));
+        when(queryAdapterMock.sendRequest(any())).thenReturn(completedFuture(new UpdateResponse("test-url", createCatalog("test-catalog"))));
         manager.executePlan(simplePlan());
 
         verify(successConsumerMock).accept(any());
@@ -130,7 +130,7 @@ class ExecutionManagerTest {
         doThrow(new RuntimeException("test-exception")).when(postExecutionTask).run();
         when(nodeDirectoryMock.getAll()).thenReturn(List.of(createNode()));
         when(nodeQueryAdapterRegistry.findForProtocol(TEST_PROTOCOL)).thenReturn(List.of(queryAdapterMock));
-        when(queryAdapterMock.sendRequest(any())).thenReturn(completedFuture(new UpdateResponse("test-url", createCatalog())));
+        when(queryAdapterMock.sendRequest(any())).thenReturn(completedFuture(new UpdateResponse("test-url", createCatalog("test-catalog"))));
         manager.executePlan(simplePlan());
 
         verify(successConsumerMock).accept(any());

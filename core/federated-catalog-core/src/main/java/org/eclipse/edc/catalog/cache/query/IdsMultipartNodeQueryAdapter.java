@@ -14,7 +14,6 @@
 
 package org.eclipse.edc.catalog.cache.query;
 
-import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.catalog.spi.NodeQueryAdapter;
 import org.eclipse.edc.catalog.spi.model.UpdateRequest;
@@ -22,7 +21,6 @@ import org.eclipse.edc.catalog.spi.model.UpdateResponse;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.monitor.Monitor;
 
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class IdsMultipartNodeQueryAdapter implements NodeQueryAdapter {
@@ -43,9 +41,9 @@ public class IdsMultipartNodeQueryAdapter implements NodeQueryAdapter {
                 .callbackAddress(getNodeUrl(updateRequest))
                 .connectorId(connectorId)
                 .build();
-        var allOffers = requestFetcher.fetch(catalogRequest, 0, 100);
+        var catalogFuture = requestFetcher.fetch(catalogRequest, 0, 100);
 
-        return allOffers.thenApply(list -> new UpdateResponse(getNodeUrl(updateRequest), Catalog.Builder.newInstance().id(UUID.randomUUID().toString()).contractOffers(list).build()));
+        return catalogFuture.thenApply(catalog -> new UpdateResponse(getNodeUrl(updateRequest), catalog));
     }
 
     // adds /api/ids/data if not already there

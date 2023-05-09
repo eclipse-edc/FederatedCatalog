@@ -14,15 +14,13 @@
 
 package org.eclipse.edc.catalog.spi;
 
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class QueryResponse {
     private Status status;
     private List<String> errors = new ArrayList<>();
-    private List<ContractOffer> offers = new ArrayList<>();
+    private List<Catalog> catalogs = new ArrayList<>();
 
     private QueryResponse(Status status) {
         this.status = status;
@@ -33,15 +31,15 @@ public class QueryResponse {
 
     }
 
-    public static QueryResponse ok(List<ContractOffer> result) {
+    public static QueryResponse ok(List<Catalog> result) {
         return Builder.newInstance()
                 .status(Status.ACCEPTED)
-                .offers(result)
+                .catalogs(result)
                 .build();
     }
 
-    public List<ContractOffer> getOffers() {
-        return offers;
+    public List<Catalog> getCatalogs() {
+        return catalogs;
     }
 
     public Status getStatus() {
@@ -63,15 +61,15 @@ public class QueryResponse {
 
         private Builder() {
             response = new QueryResponse();
-            response.status = Status.ACCEPTED; //thats the default
+            response.status = Status.ACCEPTED; //that's the default
         }
 
         public static Builder newInstance() {
             return new Builder();
         }
 
-        public Builder offers(List<ContractOffer> assets) {
-            response.offers = assets;
+        public Builder catalogs(List<Catalog> catalogs) {
+            response.catalogs = catalogs;
             return this;
         }
 

@@ -51,22 +51,26 @@ public class BatchedRequestFetcher {
      * @param batchSize      The size of one batch
      * @return A list of {@link ContractOffer} objects
      */
-    @NotNull
-    public CompletableFuture<List<ContractOffer>> fetch(CatalogRequestMessage catalogRequest, int from, int batchSize) {
+    public @NotNull CompletableFuture<Catalog> fetch(CatalogRequestMessage catalogRequest, int from, int batchSize) {
         var range = new Range(from, from + batchSize);
         var rq = catalogRequest.toBuilder().querySpec(QuerySpec.Builder.newInstance().range(range).build()).build();
 
         return dispatcherRegistry.send(Catalog.class, rq)
-                .thenApply(Catalog::getContractOffers)
-                .thenCompose(offers -> {
-                    if (offers.size() > 0) {
+                .thenCompose(catalog -> {
+                    var offers = catalog.getContractOffers();
+                    if (offers.size() >= batchSize) {
                         monitor.debug(format("Fetching next batch from %s to %s", from, from + batchSize));
                         return fetch(rq, range.getFrom() + batchSize, batchSize)
-                                .thenApply(o -> concat(offers, o));
+                                .thenApply(o -> concat(catalog, o));
                     } else {
-                        return CompletableFuture.completedFuture(offers);
+                        return CompletableFuture.completedFuture(catalog);
                     }
                 });
+    }
+
+    private Catalog concat(Catalog target, Catalog source) {
+        target.getContractOffers().addAll(source.getContractOffers());
+        return target;
     }
 
     private List<ContractOffer> concat(List<ContractOffer> list1, List<ContractOffer> list2) {

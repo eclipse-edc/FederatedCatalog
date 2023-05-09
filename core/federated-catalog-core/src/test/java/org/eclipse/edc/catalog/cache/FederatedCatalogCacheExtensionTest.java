@@ -94,7 +94,7 @@ class FederatedCatalogCacheExtensionTest {
         when(nodeDirectoryMock.getAll()).thenReturn(List.of(createNode()));
         extension.initialize(context);
         var queryAdapter = mock(NodeQueryAdapter.class);
-        when(queryAdapter.sendRequest(any())).thenReturn(CompletableFuture.completedFuture(new UpdateResponse("test-url", createCatalog())));
+        when(queryAdapter.sendRequest(any())).thenReturn(CompletableFuture.completedFuture(new UpdateResponse("test-url", createCatalog("test-catalog"))));
         extension.createNodeQueryAdapterRegistry(context).register(TEST_PROTOCOL, queryAdapter);
 
         extension.start();

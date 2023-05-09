@@ -57,7 +57,7 @@ class CatalogCrawlerTest {
         var adapter = new NodeQueryAdapter() {
             @Override
             public CompletableFuture<UpdateResponse> sendRequest(UpdateRequest request) {
-                return CompletableFuture.completedFuture(new UpdateResponse(target.getUrl(), createCatalog()));
+                return CompletableFuture.completedFuture(new UpdateResponse(target.getUrl(), createCatalog("test-catalog")));
             }
         };
         assertThat(crawler.run(target, adapter)).isCompleted();
