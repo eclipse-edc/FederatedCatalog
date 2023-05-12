@@ -38,7 +38,7 @@ public class IdsMultipartNodeQueryAdapter implements NodeQueryAdapter {
 
         var catalogRequest = CatalogRequestMessage.Builder.newInstance()
                 .protocol(IDS_MULTIPART_PROTOCOL)
-                .callbackAddress(getNodeUrl(updateRequest))
+                .counterPartyAddress(getNodeUrl(updateRequest))
                 .connectorId(connectorId)
                 .build();
         var catalogFuture = requestFetcher.fetch(catalogRequest, 0, 100);

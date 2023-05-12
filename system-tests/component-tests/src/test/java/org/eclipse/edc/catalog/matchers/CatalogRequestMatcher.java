@@ -23,7 +23,7 @@ public abstract class CatalogRequestMatcher implements ArgumentMatcher<CatalogRe
         return new CatalogRequestMatcher() {
             @Override
             public boolean matches(CatalogRequestMessage argument) {
-                return argument.getCallbackAddress().equals(recipientUrl);
+                return argument.getCounterPartyAddress().equals(recipientUrl);
             }
         };
     }
