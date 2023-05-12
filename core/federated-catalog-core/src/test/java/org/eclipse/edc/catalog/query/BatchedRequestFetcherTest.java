@@ -80,7 +80,7 @@ class BatchedRequestFetcherTest {
     private CatalogRequestMessage createRequest() {
         return CatalogRequestMessage.Builder.newInstance()
                 .connectorId("test-connector")
-                .callbackAddress("test-address")
+                .counterPartyAddress("test-address")
                 .protocol("ids-multipart")
                 .build();
     }
