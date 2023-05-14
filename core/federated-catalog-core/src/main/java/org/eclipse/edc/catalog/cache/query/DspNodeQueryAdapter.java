@@ -1,12 +1,15 @@
 package org.eclipse.edc.catalog.cache.query;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.catalog.spi.NodeQueryAdapter;
 import org.eclipse.edc.catalog.spi.model.UpdateRequest;
 import org.eclipse.edc.catalog.spi.model.UpdateResponse;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -15,9 +18,8 @@ public class DspNodeQueryAdapter implements NodeQueryAdapter {
     private static final int BATCH_SIZE = 100;
     private final BatchedRequestFetcher fetcher;
 
-    public DspNodeQueryAdapter(RemoteMessageDispatcherRegistry dispatcherRegistry, Monitor monitor) {
-
-        fetcher = new BatchedRequestFetcher(dispatcherRegistry, monitor);
+    public DspNodeQueryAdapter(RemoteMessageDispatcherRegistry dispatcherRegistry, Monitor monitor, ObjectMapper objectMapper, TypeTransformerRegistry transformerRegistry, JsonLd jsonLdService) {
+        fetcher = new BatchedRequestFetcher(dispatcherRegistry, monitor, objectMapper, transformerRegistry, jsonLdService);
     }
 
     @Override

@@ -17,5 +17,4 @@ package org.eclipse.edc.catalog.spi;
 public interface CatalogConstants {
     String PROPERTY_ORIGINATOR = "asset:prop:originator";
     String DATASPACE_PROTOCOL = "dataspace-protocol-http";
-    String IDS_MULTIPART_PROTOCOL = "ids-multipart";
 }

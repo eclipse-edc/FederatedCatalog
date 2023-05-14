@@ -253,7 +253,7 @@ public class CatalogRuntimeComponentTest {
         range(0, 1000)
                 .forEach(i -> {
                     var nodeUrl = format("http://test-node%s.com", i);
-                    var node = new FederatedCacheNode("test-node" + i, nodeUrl, singletonList(CatalogConstants.IDS_MULTIPART_PROTOCOL));
+                    var node = new FederatedCacheNode("test-node" + i, nodeUrl, singletonList(CatalogConstants.DATASPACE_PROTOCOL));
                     directory.insert(node);
 
                     var numAssets = rnd.nextInt(50);
@@ -276,8 +276,8 @@ public class CatalogRuntimeComponentTest {
     @Test
     @DisplayName("Crawl multiple targets with conflicting asset IDs")
     void crawlMultiple_whenConflictingAssetIds_shouldOverwrite(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
-        var node1 = new FederatedCacheNode("test-node1", "http://test-node1.com", singletonList(CatalogConstants.IDS_MULTIPART_PROTOCOL));
-        var node2 = new FederatedCacheNode("test-node2", "http://test-node2.com", singletonList(CatalogConstants.IDS_MULTIPART_PROTOCOL));
+        var node1 = new FederatedCacheNode("test-node1", "http://test-node1.com", singletonList(CatalogConstants.DATASPACE_PROTOCOL));
+        var node2 = new FederatedCacheNode("test-node2", "http://test-node2.com", singletonList(CatalogConstants.DATASPACE_PROTOCOL));
 
         directory.insert(node1);
         directory.insert(node2);

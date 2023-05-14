@@ -23,6 +23,7 @@ dependencies {
     runtimeOnly(project(":extensions:api:federated-catalog-api"))
     implementation(project(":spi:federated-catalog-spi"))
     implementation(libs.edc.util)
+    runtimeOnly(libs.edc.spi.jsonld)
 
     runtimeOnly(libs.bundles.edc.connector)
     runtimeOnly(libs.edc.core.controlplane)

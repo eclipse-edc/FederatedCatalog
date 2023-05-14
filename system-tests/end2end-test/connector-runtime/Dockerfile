@@ -25,7 +25,7 @@ ENV WEB_HTTP_PATH="/api"
 ENV WEB_HTTP_MANAGEMENT_PORT="9191"
 ENV WEB_HTTP_MANAGEMENT_PATH="/management"
 ENV WEB_HTTP_PROTOCOL_PORT="8282"
-ENV WEB_HTTP_PROTOCOL_PATH="/protocol"
+ENV WEB_HTTP_PROTOCOL_PATH="/api/v1/dsp"
 
 # Use "exec" for graceful termination (SIGINT) to reach JVM.
 # ARG can not be used in ENTRYPOINT so storing values in ENV variables

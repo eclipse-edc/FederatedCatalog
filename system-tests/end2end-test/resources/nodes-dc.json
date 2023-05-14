@@ -1,14 +1,14 @@
 [
   {
     "name": "connector1",
-    "url": "http://connector1:8282/protocol",
+    "url": "http://connector1:8282/api/v1/dsp",
     "supportedProtocols": [
       "dataspace-protocol-http"
     ]
   },
   {
     "name": "connector2",
-    "url": "http://connector2:8383/protocol",
+    "url": "http://connector2:8383/api/v1/dsp",
     "supportedProtocols": [
       "dataspace-protocol-http"
     ]

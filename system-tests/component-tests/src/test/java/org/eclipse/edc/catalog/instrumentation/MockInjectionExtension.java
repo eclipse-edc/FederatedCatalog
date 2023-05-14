@@ -40,7 +40,7 @@ public class MockInjectionExtension implements ServiceExtension {
     public RemoteMessageDispatcher createDispatcher() {
         if (dispatcher == null) {
             dispatcher = mock(RemoteMessageDispatcher.class);
-            when(dispatcher.protocol()).thenReturn(CatalogConstants.IDS_MULTIPART_PROTOCOL);
+            when(dispatcher.protocol()).thenReturn(CatalogConstants.DATASPACE_PROTOCOL);
         }
 
         return dispatcher;

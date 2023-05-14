@@ -81,7 +81,7 @@ public class TestFunctions {
     }
 
     public static void insertSingle(FederatedCacheNodeDirectory directory) {
-        directory.insert(new FederatedCacheNode("test-node", "http://test-node.com", singletonList(CatalogConstants.IDS_MULTIPART_PROTOCOL)));
+        directory.insert(new FederatedCacheNode("test-node", "http://test-node.com", singletonList(CatalogConstants.DATASPACE_PROTOCOL)));
     }
 
     public static List<Catalog> queryCatalogApi() {

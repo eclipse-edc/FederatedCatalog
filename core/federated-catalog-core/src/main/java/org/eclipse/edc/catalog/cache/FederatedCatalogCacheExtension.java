@@ -16,7 +16,6 @@ package org.eclipse.edc.catalog.cache;
 
 import org.eclipse.edc.catalog.cache.crawler.NodeQueryAdapterRegistryImpl;
 import org.eclipse.edc.catalog.cache.query.DspNodeQueryAdapter;
-import org.eclipse.edc.catalog.cache.query.IdsMultipartNodeQueryAdapter;
 import org.eclipse.edc.catalog.spi.CacheConfiguration;
 import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.CatalogConstants;
@@ -26,6 +25,7 @@ import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.catalog.spi.NodeQueryAdapterRegistry;
 import org.eclipse.edc.catalog.spi.model.ExecutionPlan;
 import org.eclipse.edc.catalog.spi.model.UpdateResponse;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
@@ -34,10 +34,12 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.health.HealthCheckResult;
 import org.eclipse.edc.spi.system.health.HealthCheckService;
+import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 
 import static java.util.Optional.ofNullable;
 import static org.eclipse.edc.catalog.spi.CatalogConstants.DATASPACE_PROTOCOL;
-import static org.eclipse.edc.catalog.spi.CatalogConstants.IDS_MULTIPART_PROTOCOL;
+import static org.eclipse.edc.spi.CoreConstants.JSON_LD;
 
 @Extension(value = FederatedCatalogCacheExtension.NAME)
 public class FederatedCatalogCacheExtension implements ServiceExtension {
@@ -60,6 +62,13 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
     private ExecutionPlan executionPlan;
     private NodeQueryAdapterRegistryImpl nodeQueryAdapterRegistry;
     private ExecutionManager executionManager;
+    @Inject
+    private TypeManager typeManager;
+
+    @Inject
+    private TypeTransformerRegistry registry;
+    @Inject
+    private JsonLd jsonLdService;
 
     @Override
     public String name() {
@@ -106,8 +115,8 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
         if (nodeQueryAdapterRegistry == null) {
             nodeQueryAdapterRegistry = new NodeQueryAdapterRegistryImpl();
             // catalog queries via IDS multipart and DSP are supported by default
-            nodeQueryAdapterRegistry.register(IDS_MULTIPART_PROTOCOL, new IdsMultipartNodeQueryAdapter(context.getConnectorId(), dispatcherRegistry, context.getMonitor()));
-            nodeQueryAdapterRegistry.register(DATASPACE_PROTOCOL, new DspNodeQueryAdapter(dispatcherRegistry, context.getMonitor()));
+            var mapper = typeManager.getMapper(JSON_LD);
+            nodeQueryAdapterRegistry.register(DATASPACE_PROTOCOL, new DspNodeQueryAdapter(dispatcherRegistry, context.getMonitor(), mapper, registry, jsonLdService));
         }
         return nodeQueryAdapterRegistry;
     }
