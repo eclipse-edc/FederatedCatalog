@@ -21,8 +21,6 @@ import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.policy.model.Policy;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -41,8 +39,6 @@ public class TestUtil {
                 .id(id)
                 .assetId(id)
                 .policy(Policy.Builder.newInstance().build())
-                .contractStart(ZonedDateTime.now())
-                .contractEnd(ZonedDateTime.now().plus(365, ChronoUnit.DAYS))
                 .build();
     }
 

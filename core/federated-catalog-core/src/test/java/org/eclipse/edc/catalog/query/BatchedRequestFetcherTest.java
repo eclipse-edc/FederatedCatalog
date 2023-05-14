@@ -25,8 +25,6 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -95,8 +93,6 @@ class BatchedRequestFetcherTest {
                         .id("id" + i)
                         .policy(Policy.Builder.newInstance().build())
                         .assetId("asset" + i)
-                        .contractStart(ZonedDateTime.now())
-                        .contractEnd(ZonedDateTime.now().plus(365, ChronoUnit.DAYS))
                         .build())
                 .collect(Collectors.toList());
 
