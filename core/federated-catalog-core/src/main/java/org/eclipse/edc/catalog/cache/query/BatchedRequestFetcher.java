@@ -53,6 +53,7 @@ public class BatchedRequestFetcher {
                 .build();
     }
 
+
     /**
      * Gets all contract offers. Requests are split in digestible chunks to match {@code batchSize} until no more offers
      * can be obtained.
@@ -63,6 +64,7 @@ public class BatchedRequestFetcher {
      * @return A list of {@link ContractOffer} objects
      */
     public @NotNull CompletableFuture<Catalog> fetch(CatalogRequestMessage catalogRequest, int from, int batchSize) {
+
         var range = new Range(from, from + batchSize);
         var rq = catalogRequest.toBuilder().querySpec(QuerySpec.Builder.newInstance().range(range).build()).build();
 
@@ -78,6 +80,10 @@ public class BatchedRequestFetcher {
                         return CompletableFuture.completedFuture(catalog);
                     }
                 });
+    }
+
+    private QuerySpec forRange(Range range) {
+        return QuerySpec.Builder.newInstance().range(range).build();
     }
 
     private Catalog concat(Catalog target, Catalog source) {

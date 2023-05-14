@@ -24,8 +24,6 @@ import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.policy.model.Policy;
 
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -78,8 +76,6 @@ public class TestFunctions {
                 .id(id)
                 .assetId(id)
                 .policy(Policy.Builder.newInstance().build())
-                .contractStart(ZonedDateTime.now())
-                .contractEnd(ZonedDateTime.now().plus(365, ChronoUnit.DAYS))
                 .build();
     }
 

@@ -23,6 +23,7 @@ import org.eclipse.edc.spi.monitor.Monitor;
 
 import java.util.concurrent.CompletableFuture;
 
+@Deprecated(forRemoval = true, since = "milestone9")
 public class IdsMultipartNodeQueryAdapter implements NodeQueryAdapter {
     public static final String IDS_MULTIPART_PROTOCOL = "ids-multipart";
     private final String connectorId;
