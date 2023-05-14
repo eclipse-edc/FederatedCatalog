@@ -29,7 +29,7 @@ dependencies {
     runtimeOnly(libs.edc.core.dataPlane.selector)
 
     // IDS stuff
-    runtimeOnly(libs.edc.ids)
+    runtimeOnly(libs.bundles.edc.dsp)
     runtimeOnly(libs.edc.iam.mock)
 }
 

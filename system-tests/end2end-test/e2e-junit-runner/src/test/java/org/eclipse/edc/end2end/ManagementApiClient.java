@@ -36,7 +36,7 @@ import java.util.List;
 import static java.lang.String.format;
 
 class ManagementApiClient {
-    private static final String MANAGEMENT_BASE_URL = "http://localhost:9192/api/v1/management";
+    private static final String MANAGEMENT_BASE_URL = "http://localhost:9192/management/v2";
     private static final String CATALOG_BASE_URL = "http://localhost:8181/api";
     private static final TypeReference<List<Catalog>> LIST_TYPE_REFERENCE = new TypeReference<>() {
     };

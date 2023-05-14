@@ -18,6 +18,7 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import org.eclipse.edc.catalog.spi.Catalog;
+import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
@@ -80,7 +81,7 @@ public class TestFunctions {
     }
 
     public static void insertSingle(FederatedCacheNodeDirectory directory) {
-        directory.insert(new FederatedCacheNode("test-node", "http://test-node.com", singletonList("ids-multipart")));
+        directory.insert(new FederatedCacheNode("test-node", "http://test-node.com", singletonList(CatalogConstants.IDS_MULTIPART_PROTOCOL)));
     }
 
     public static List<Catalog> queryCatalogApi() {

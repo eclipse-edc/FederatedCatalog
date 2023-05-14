@@ -15,6 +15,7 @@
 package org.eclipse.edc.catalog.cache;
 
 import org.eclipse.edc.catalog.cache.query.IdsMultipartNodeQueryAdapter;
+import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeFilter;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
@@ -114,7 +115,7 @@ class FederatedCatalogCacheExtensionTest {
     void verifyProvider_cacheNodeAdapterRegistry() {
         var n = extension.createNodeQueryAdapterRegistry(context);
         assertThat(extension.createNodeQueryAdapterRegistry(context)).isSameAs(n);
-        assertThat(n.findForProtocol("ids-multipart")).hasSize(1)
+        assertThat(n.findForProtocol(CatalogConstants.IDS_MULTIPART_PROTOCOL)).hasSize(1)
                 .allSatisfy(qa -> assertThat(qa).isInstanceOf(IdsMultipartNodeQueryAdapter.class));
     }
 

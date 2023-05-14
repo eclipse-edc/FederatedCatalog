@@ -39,9 +39,27 @@ edc-util = { module = "org.eclipse.edc:util", version.ref = "edc" }
 failsafe-core = { module = "dev.failsafe:failsafe", version.ref = "failsafe" }
 restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssured" }
 
+# protocol modules
+edc-dsp-api-config = { module = "org.eclipse.edc:dsp-api-configuration", version.ref = "edc" }
+edc-dsp-catalog-api = { module = "org.eclipse.edc:dsp-catalog-api", version.ref = "edc" }
+edc-dsp-catalog-http-dispatcher = { module = "org.eclipse.edc:dsp-catalog-http-dispatcher", version.ref = "edc" }
+edc-dsp-catalog-transform = { module = "org.eclipse.edc:dsp-catalog-transform", version.ref = "edc" }
+edc-dsp-http-core = { module = "org.eclipse.edc:dsp-http-core", version.ref = "edc" }
+edc-dsp-http-spi = { module = "org.eclipse.edc:dsp-http-spi", version.ref = "edc" }
+edc-dsp-negotiation-api = { module = "org.eclipse.edc:dsp-negotiation-api", version.ref = "edc" }
+edc-dsp-negotiation-http-dispatcher = { module = "org.eclipse.edc:dsp-negotiation-http-dispatcher", version.ref = "edc" }
+edc-dsp-negotiation-transform = { module = "org.eclipse.edc:dsp-negotiation-transform", version.ref = "edc" }
+edc-dsp-transfer-process-api = { module = "org.eclipse.edc:dsp-transfer-process-api", version.ref = "edc" }
+edc-dsp-transfer-process-http-dispatcher = { module = "org.eclipse.edc:dsp-transfer-process-http-dispatcher", version.ref = "edc" }
+edc-dsp-transfer-process-transform = { module = "org.eclipse.edc:dsp-transfer-process-transform", version.ref = "edc" }
+edc-dsp-transform = { module = "org.eclipse.edc:dsp-transform", version.ref = "edc" }
+
 [bundles]
-edc-connector = [ "edc-boot", "edc-core-connector", "edc-core-jersey", "edc-api-observability" ]
-edc-dpf = [ "edc-dpf-transferclient", "edc-dpf-selector-client", "edc-dpf-selector-spi", "edc-dpf-selector-core", "edc-dpf-framework" ]
+edc-connector = ["edc-boot", "edc-core-connector", "edc-core-jersey", "edc-api-observability"]
+edc-dpf = ["edc-dpf-transferclient", "edc-dpf-selector-client", "edc-dpf-selector-spi", "edc-dpf-selector-core", "edc-dpf-framework"]
+edc-dsp = ["edc-dsp-api-config", "edc-dsp-catalog-api", "edc-dsp-catalog-http-dispatcher", "edc-dsp-catalog-transform", "edc-dsp-http-core", "edc-dsp-http-spi",
+    "edc-dsp-negotiation-api", "edc-dsp-negotiation-http-dispatcher", "edc-dsp-negotiation-transform", "edc-dsp-transfer-process-api",
+    "edc-dsp-transfer-process-http-dispatcher", "edc-dsp-transfer-process-transform", "edc-dsp-transform"]
 
 [plugins]
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }

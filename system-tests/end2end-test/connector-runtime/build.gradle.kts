@@ -27,8 +27,8 @@ dependencies {
     runtimeOnly(libs.edc.config.filesystem)
     runtimeOnly(libs.edc.ext.http)
 
-    // IDS
-    runtimeOnly(libs.edc.ids)
+    // protocol modules
+    runtimeOnly(libs.bundles.edc.dsp)
     runtimeOnly(libs.edc.iam.mock)
 
     // Embedded DPF

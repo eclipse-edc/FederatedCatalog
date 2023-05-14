@@ -14,6 +14,7 @@
 
 package org.eclipse.edc.catalog.cache.query;
 
+import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.catalog.spi.NodeQueryAdapter;
 import org.eclipse.edc.catalog.spi.model.UpdateRequest;
@@ -25,7 +26,6 @@ import java.util.concurrent.CompletableFuture;
 
 @Deprecated(forRemoval = true, since = "milestone9")
 public class IdsMultipartNodeQueryAdapter implements NodeQueryAdapter {
-    public static final String IDS_MULTIPART_PROTOCOL = "ids-multipart";
     private final String connectorId;
     private final BatchedRequestFetcher requestFetcher;
 
@@ -38,7 +38,7 @@ public class IdsMultipartNodeQueryAdapter implements NodeQueryAdapter {
     public CompletableFuture<UpdateResponse> sendRequest(UpdateRequest updateRequest) {
 
         var catalogRequest = CatalogRequestMessage.Builder.newInstance()
-                .protocol(IDS_MULTIPART_PROTOCOL)
+                .protocol(CatalogConstants.IDS_MULTIPART_PROTOCOL)
                 .counterPartyAddress(getNodeUrl(updateRequest))
                 .connectorId(connectorId)
                 .build();

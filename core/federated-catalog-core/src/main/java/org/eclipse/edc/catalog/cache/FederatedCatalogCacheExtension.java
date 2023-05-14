@@ -36,7 +36,8 @@ import org.eclipse.edc.spi.system.health.HealthCheckResult;
 import org.eclipse.edc.spi.system.health.HealthCheckService;
 
 import static java.util.Optional.ofNullable;
-import static org.eclipse.edc.catalog.cache.query.IdsMultipartNodeQueryAdapter.IDS_MULTIPART_PROTOCOL;
+import static org.eclipse.edc.catalog.spi.CatalogConstants.DATASPACE_PROTOCOL;
+import static org.eclipse.edc.catalog.spi.CatalogConstants.IDS_MULTIPART_PROTOCOL;
 
 @Extension(value = FederatedCatalogCacheExtension.NAME)
 public class FederatedCatalogCacheExtension implements ServiceExtension {
@@ -106,7 +107,7 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
             nodeQueryAdapterRegistry = new NodeQueryAdapterRegistryImpl();
             // catalog queries via IDS multipart and DSP are supported by default
             nodeQueryAdapterRegistry.register(IDS_MULTIPART_PROTOCOL, new IdsMultipartNodeQueryAdapter(context.getConnectorId(), dispatcherRegistry, context.getMonitor()));
-            nodeQueryAdapterRegistry.register(DspNodeQueryAdapter.DATASPACE_PROTOCOL, new DspNodeQueryAdapter(dispatcherRegistry, context.getMonitor()));
+            nodeQueryAdapterRegistry.register(DATASPACE_PROTOCOL, new DspNodeQueryAdapter(dispatcherRegistry, context.getMonitor()));
         }
         return nodeQueryAdapterRegistry;
     }

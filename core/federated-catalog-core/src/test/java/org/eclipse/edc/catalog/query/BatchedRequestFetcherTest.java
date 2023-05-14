@@ -16,6 +16,7 @@ package org.eclipse.edc.catalog.query;
 
 import org.eclipse.edc.catalog.cache.query.BatchedRequestFetcher;
 import org.eclipse.edc.catalog.spi.Catalog;
+import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.policy.model.Policy;
@@ -79,7 +80,7 @@ class BatchedRequestFetcherTest {
         return CatalogRequestMessage.Builder.newInstance()
                 .connectorId("test-connector")
                 .counterPartyAddress("test-address")
-                .protocol("ids-multipart")
+                .protocol(CatalogConstants.IDS_MULTIPART_PROTOCOL)
                 .build();
     }
 
