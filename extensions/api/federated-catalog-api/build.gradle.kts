@@ -24,6 +24,9 @@ dependencies {
 
     runtimeOnly(libs.edc.core.connector)
     implementation(libs.edc.api.management.config)
+    runtimeOnly(libs.edc.spi.jsonld)
+    runtimeOnly(libs.edc.jsonld)
+    runtimeOnly(libs.edc.dsp.transform)
 
     // required for integration test
     testImplementation(testFixtures(project(":core:federated-catalog-core"))) // provides the TestUtil

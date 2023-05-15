@@ -21,7 +21,9 @@ import org.eclipse.edc.catalog.cache.query.BatchedRequestFetcher;
 import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.spi.CatalogRequestMessage;
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
+import org.eclipse.edc.catalog.spi.DataService;
+import org.eclipse.edc.catalog.spi.Dataset;
+import org.eclipse.edc.catalog.spi.Distribution;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.message.Range;
@@ -55,6 +57,14 @@ class BatchedRequestFetcherTest {
     private ObjectMapper objectMapper;
     private TitaniumJsonLd jsonLdService;
 
+    public static Dataset createDataset(String id) {
+        return Dataset.Builder.newInstance()
+                .offer("test-offer", Policy.Builder.newInstance().build())
+                .distribution(Distribution.Builder.newInstance().format("test-format").dataService(DataService.Builder.newInstance().build()).build())
+                .id(id)
+                .build();
+    }
+
     @BeforeEach
     void setup() {
         dispatcherMock = mock(RemoteMessageDispatcherRegistry.class);
@@ -82,9 +92,9 @@ class BatchedRequestFetcherTest {
 
         var request = createRequest();
 
-        var offers = fetcher.fetch(request, 0, 5);
-        assertThat(offers).isCompletedWithValueMatching(list -> list.getContractOffers().size() == 13 &&
-                list.getContractOffers().stream().allMatch(o -> o.getId().matches("(id)\\d|1[0-3]")));
+        var catalog = fetcher.fetch(request, 0, 5);
+        assertThat(catalog).isCompletedWithValueMatching(list -> list.getDatasets().size() == 13 &&
+                list.getDatasets().stream().allMatch(o -> o.getId().matches("(dataset-)\\d|1[0-3]")));
 
 
         var captor = forClass(CatalogRequestMessage.class);
@@ -113,18 +123,14 @@ class BatchedRequestFetcherTest {
     }
 
     private Catalog emptyCatalog() {
-        return Catalog.Builder.newInstance().id("id").contractOffers(Collections.emptyList()).build();
+        return Catalog.Builder.newInstance().id("id").datasets(Collections.emptyList()).build();
     }
 
     private Catalog createCatalog(int howManyOffers) {
-        var contractOffers = IntStream.range(0, howManyOffers)
-                .mapToObj(i -> ContractOffer.Builder.newInstance()
-                        .id("id" + i)
-                        .policy(Policy.Builder.newInstance().build())
-                        .assetId("asset" + i)
-                        .build())
+        var datasets = IntStream.range(0, howManyOffers)
+                .mapToObj(i -> createDataset("dataset-" + i))
                 .collect(Collectors.toList());
 
-        return Catalog.Builder.newInstance().id("catalog").contractOffers(contractOffers).build();
+        return Catalog.Builder.newInstance().id("catalog").datasets(datasets).build();
     }
 }

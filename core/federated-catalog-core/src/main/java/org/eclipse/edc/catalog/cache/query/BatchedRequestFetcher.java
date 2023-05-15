@@ -33,7 +33,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static java.lang.String.format;
@@ -61,16 +60,6 @@ public class BatchedRequestFetcher {
         this.jsonLdService = jsonLdService;
     }
 
-    private static Catalog copyCatalogWithoutNulls(Catalog catalog) {
-        return Catalog.Builder.newInstance().id(catalog.getId())
-                .contractOffers(ofNullable(catalog.getContractOffers()).orElseGet(ArrayList::new))
-                .properties(ofNullable(catalog.getProperties()).orElseGet(HashMap::new))
-                .dataServices(ofNullable(catalog.getDataServices()).orElseGet(ArrayList::new))
-                .datasets(ofNullable(catalog.getDatasets()).orElseGet(ArrayList::new))
-                .build();
-    }
-
-
     /**
      * Gets all contract offers. Requests are split in digestible chunks to match {@code batchSize} until no more offers
      * can be obtained.
@@ -93,8 +82,8 @@ public class BatchedRequestFetcher {
                 .thenCompose(catalog -> completedFuture(copyCatalogWithoutNulls(catalog)))
                 .thenCompose(catalog -> {
 
-                    var offers = catalog.getContractOffers();
-                    if (offers.size() >= batchSize) {
+                    var datasets = catalog.getDatasets();
+                    if (datasets.size() >= batchSize) {
                         monitor.debug(format("Fetching next batch from %s to %s", from, from + batchSize));
                         return fetch(rq, range.getFrom() + batchSize, batchSize)
                                 .thenApply(o -> concat(catalog, o));
@@ -102,6 +91,15 @@ public class BatchedRequestFetcher {
                         return completedFuture(catalog);
                     }
                 });
+    }
+
+    private Catalog copyCatalogWithoutNulls(Catalog catalog) {
+        return Catalog.Builder.newInstance().id(catalog.getId())
+                .contractOffers(ofNullable(catalog.getContractOffers()).orElseGet(ArrayList::new))
+                .properties(ofNullable(catalog.getProperties()).orElseGet(HashMap::new))
+                .dataServices(ofNullable(catalog.getDataServices()).orElseGet(ArrayList::new))
+                .datasets(ofNullable(catalog.getDatasets()).orElseGet(ArrayList::new))
+                .build();
     }
 
     private CompletableFuture<Catalog> readCatalogFrom(byte[] bytes) {
@@ -123,17 +121,13 @@ public class BatchedRequestFetcher {
                 .counterPartyAddress(catalogRequest.getCounterPartyAddress());
     }
 
-    private QuerySpec forRange(Range range) {
-        return QuerySpec.Builder.newInstance().range(range).build();
-    }
 
     private Catalog concat(Catalog target, Catalog source) {
         target.getContractOffers().addAll(source.getContractOffers());
+        target.getDatasets().addAll(source.getDatasets());
+        target.getDataServices().addAll(source.getDataServices());
+        target.getProperties().putAll(source.getProperties());
         return target;
     }
 
-    private List<ContractOffer> concat(List<ContractOffer> list1, List<ContractOffer> list2) {
-        list1.addAll(list2);
-        return list1;
-    }
 }

@@ -14,15 +14,22 @@
 
 package org.eclipse.edc.catalog;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.json.JsonObject;
 import org.eclipse.edc.catalog.spi.Catalog;
-import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.spi.CatalogRequestMessage;
+import org.eclipse.edc.catalog.spi.Dataset;
 import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
+import org.eclipse.edc.jsonld.TitaniumJsonLd;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
-import org.eclipse.edc.spi.message.RemoteMessageDispatcher;
+import org.eclipse.edc.protocol.dsp.spi.dispatcher.DspHttpRemoteMessageDispatcher;
+import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,17 +52,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.catalog.TestFunctions.catalogBuilder;
 import static org.eclipse.edc.catalog.TestFunctions.catalogOf;
-import static org.eclipse.edc.catalog.TestFunctions.createOffer;
+import static org.eclipse.edc.catalog.TestFunctions.createDataset;
 import static org.eclipse.edc.catalog.TestFunctions.emptyCatalog;
 import static org.eclipse.edc.catalog.TestFunctions.insertSingle;
 import static org.eclipse.edc.catalog.TestFunctions.queryCatalogApi;
 import static org.eclipse.edc.catalog.TestFunctions.randomCatalog;
 import static org.eclipse.edc.catalog.matchers.CatalogRequestMatcher.sentTo;
+import static org.eclipse.edc.catalog.spi.CatalogConstants.DATASPACE_PROTOCOL;
 import static org.eclipse.edc.catalog.spi.CatalogConstants.PROPERTY_ORIGINATOR;
+import static org.eclipse.edc.jsonld.util.JacksonJsonLd.createObjectMapper;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -64,6 +74,9 @@ import static org.mockito.Mockito.when;
 public class CatalogRuntimeComponentTest {
     public static final String TEST_CATALOG_ID = "test-catalog-id";
     private static final Duration TEST_TIMEOUT = ofSeconds(10);
+    private static ObjectMapper objectMapper = createObjectMapper();
+    private static JsonLd jsonLdService = new TitaniumJsonLd(mock(Monitor.class));
+    private DspHttpRemoteMessageDispatcher dispatcher;
 
     @BeforeEach
     void setup(EdcExtension extension) {
@@ -77,232 +90,253 @@ public class CatalogRuntimeComponentTest {
                 "web.http.port", valueOf(TestFunctions.PORT),
                 "web.http.path", TestFunctions.BASE_PATH
         ));
+        dispatcher = mock(DspHttpRemoteMessageDispatcher.class);
+        when(dispatcher.protocol()).thenReturn(DATASPACE_PROTOCOL);
     }
 
     @Test
     @DisplayName("Crawl a single target, yields no results")
-    void crawlSingle_noResults(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
+    void crawlSingle_noResults(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, FederatedCacheNodeDirectory directory) {
         // prepare node directory
         insertSingle(directory);
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
-                .thenReturn(emptyCatalog());
+        reg.register(dispatcher);
+        when(dispatcher.send(eq(byte[].class), isA(CatalogRequestMessage.class)))
+                .thenReturn(emptyCatalog(catalog -> toBytes(ttr, catalog)));
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    var response = queryCatalogApi();
+                    var response = queryCatalogApi(jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
                     assertThat(response).hasSize(1);
-                    assertThat(response).allSatisfy(c -> assertThat(c.getContractOffers()).isEmpty());
+                    assertThat(response).allSatisfy(c -> assertThat(c.getDatasets()).isNullOrEmpty());
                 });
     }
 
     @Test
     @DisplayName("Crawl a single target, yields some results")
-    void crawlSingle_withResults(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
+    void crawlSingle_withResults(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, FederatedCacheNodeDirectory directory) {
         // prepare node directory
         insertSingle(directory);
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
-                .thenReturn(randomCatalog(TEST_CATALOG_ID, 5))
-                .thenReturn(emptyCatalog()); // this is important, otherwise there is an endless loop!
+        reg.register(dispatcher);
+        when(dispatcher.send(eq(byte[].class), isA(CatalogRequestMessage.class)))
+                .thenReturn(randomCatalog(catalog -> toBytes(ttr, catalog), TEST_CATALOG_ID, 5))
+                .thenReturn(emptyCatalog(catalog -> toBytes(ttr, catalog))); // this is important, otherwise there is an endless loop!
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    var catalogs = queryCatalogApi();
-                    assertThat(catalogs).allSatisfy(c -> assertThat(c.getContractOffers()).hasSize(5));
+                    var catalogs = queryCatalogApi(jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
+                    assertThat(catalogs).allSatisfy(c -> assertThat(c.getDatasets()).hasSize(5));
                 });
     }
 
     @Test
     @DisplayName("Crawl a single targets, > 100 results, needs paging")
-    void crawlSingle_withPagedResults(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
+    void crawlSingle_withPagedResults(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, FederatedCacheNodeDirectory directory) {
         // prepare node directory
         insertSingle(directory);
 
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
-                .thenReturn(randomCatalog(TEST_CATALOG_ID, 100))
-                .thenReturn(randomCatalog(TEST_CATALOG_ID, 100))
-                .thenReturn(randomCatalog(TEST_CATALOG_ID, 50));
+        reg.register(dispatcher);
+        when(dispatcher.send(eq(byte[].class), isA(CatalogRequestMessage.class)))
+                .thenReturn(randomCatalog(catalog -> toBytes(ttr, catalog), TEST_CATALOG_ID, 100))
+                .thenReturn(randomCatalog(catalog -> toBytes(ttr, catalog), TEST_CATALOG_ID, 100))
+                .thenReturn(randomCatalog(catalog -> toBytes(ttr, catalog), TEST_CATALOG_ID, 50));
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    var catalogs = queryCatalogApi();
+                    var catalogs = queryCatalogApi(jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
                     assertThat(catalogs.size()).isEqualTo(1);
-                    assertThat(catalogs.get(0).getContractOffers()).hasSize(250);
+                    assertThat(catalogs.get(0).getDatasets()).hasSize(250);
                 });
-        verify(dispatcher, atLeast(3)).send(eq(Catalog.class), isA(CatalogRequestMessage.class));
+        verify(dispatcher, atLeast(3)).send(eq(byte[].class), isA(CatalogRequestMessage.class));
 
     }
 
     @Test
     @DisplayName("Crawl a single target twice, emulate deletion of assets")
-    void crawlSingle_withDeletions_shouldRemove(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
+    void crawlSingle_withDeletions_shouldRemove(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, FederatedCacheNodeDirectory directory) {
         // prepare node directory
         insertSingle(directory);
 
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
-                .thenReturn(completedFuture(catalogBuilder().id(TEST_CATALOG_ID).contractOffers(new ArrayList<>(List.of(
-                        createOffer("offer1"), createOffer("offer2"), createOffer("offer3")
-                ))).build()))
-                .thenReturn(emptyCatalog(TEST_CATALOG_ID))
-                .thenReturn(completedFuture(catalogBuilder().id(TEST_CATALOG_ID).contractOffers(new ArrayList<>(List.of(
-                        createOffer("offer1"), createOffer("offer2")/* this one is "deleted": createOffer("offer3") */
-                ))).build()));
+        reg.register(dispatcher);
+        when(dispatcher.send(eq(byte[].class), isA(CatalogRequestMessage.class)))
+                .thenReturn(completedFuture(toBytes(ttr, catalogBuilder().id(TEST_CATALOG_ID).datasets(new ArrayList<>(List.of(
+                        createDataset("offer1"), createDataset("offer2"), createDataset("offer3")
+                ))).build())))
+                .thenReturn(emptyCatalog(catalog -> toBytes(ttr, catalog), TEST_CATALOG_ID))
+                .thenReturn(completedFuture(toBytes(ttr, catalogBuilder().id(TEST_CATALOG_ID).datasets(new ArrayList<>(List.of(
+                        createDataset("offer1"), createDataset("offer2")/* this one is "deleted": createDataset("offer3") */
+                ))).build())));
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    var catalogs = queryCatalogApi();
+                    var catalogs = queryCatalogApi(jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
                     assertThat(catalogs).hasSize(1);
-                    assertThat(catalogs.get(0).getContractOffers()).hasSize(2)
+                    assertThat(catalogs.get(0).getDatasets()).hasSize(2)
                             .noneMatch(offer -> offer.getId().equals("offer3"));
-                    verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequestMessage.class));
+                    verify(dispatcher, atLeast(4)).send(eq(byte[].class), isA(CatalogRequestMessage.class));
                 });
 
     }
 
     @Test
     @DisplayName("Crawl a single target twice, emulate deleting and re-adding of assets with same ID")
-    void crawlSingle_withUpdates_shouldReplace(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
+    void crawlSingle_withUpdates_shouldReplace(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, FederatedCacheNodeDirectory directory) {
         // prepare node directory
         insertSingle(directory);
 
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
-                .thenReturn(completedFuture(catalogBuilder().id(TEST_CATALOG_ID).contractOffers(new ArrayList<>(List.of(
-                        createOffer("offer1"), createOffer("offer2"), createOffer("offer3")
-                ))).build()))
-                .thenReturn(emptyCatalog(TEST_CATALOG_ID))
-                .thenReturn(completedFuture(catalogBuilder().id(TEST_CATALOG_ID).contractOffers(new ArrayList<>(List.of(
-                        createOffer("offer1"), createOffer("offer2"), createOffer("offer3")
-                ))).build()));
+        reg.register(dispatcher);
+        when(dispatcher.send(eq(byte[].class), isA(CatalogRequestMessage.class)))
+                .thenReturn(completedFuture(toBytes(ttr, catalogBuilder().id(TEST_CATALOG_ID).datasets(new ArrayList<>(List.of(
+                        createDataset("offer1"), createDataset("offer2"), createDataset("offer3")
+                ))).build())))
+                .thenReturn(emptyCatalog(catalog -> toBytes(ttr, catalog), TEST_CATALOG_ID))
+                .thenReturn(completedFuture(toBytes(ttr, catalogBuilder().id(TEST_CATALOG_ID).datasets(new ArrayList<>(List.of(
+                        createDataset("offer1"), createDataset("offer2"), createDataset("offer3")
+                ))).build())));
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    var catalogs = queryCatalogApi();
+                    var catalogs = queryCatalogApi(jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
                     assertThat(catalogs).hasSize(1);
-                    assertThat(catalogs.get(0).getContractOffers()).hasSize(3);
-                    verify(dispatcher, atLeast(4)).send(eq(Catalog.class), isA(CatalogRequestMessage.class));
+                    assertThat(catalogs.get(0).getDatasets()).hasSize(3);
+                    verify(dispatcher, atLeast(4)).send(eq(byte[].class), isA(CatalogRequestMessage.class));
                 });
 
     }
 
     @Test
     @DisplayName("Crawl a single target twice, emulate addition of assets")
-    void crawlSingle_withAdditions_shouldAdd(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
+    void crawlSingle_withAdditions_shouldAdd(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, FederatedCacheNodeDirectory directory) {
         // prepare node directory
         insertSingle(directory);
 
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
-                .thenReturn(completedFuture(catalogBuilder().id("test-cat").contractOffers(new ArrayList<>(List.of(
-                        createOffer("offer1"), createOffer("offer2"), createOffer("offer3")
-                ))).build()))
-                .thenReturn(completedFuture(catalogBuilder().id("test-cat").contractOffers(new ArrayList<>(List.of(
-                        createOffer("offer1"), createOffer("offer2"), createOffer("offer3"), createOffer("offer4"), createOffer("offer5")
-                ))).build()));
+        reg.register(dispatcher);
+        when(dispatcher.send(eq(byte[].class), isA(CatalogRequestMessage.class)))
+                .thenAnswer(a -> completedFuture(toBytes(ttr, catalogBuilder().id("test-cat")
+                        .datasets(List.of(createDataset("dataset1"), createDataset("dataset2"))).build())))
+                .thenAnswer(a -> completedFuture(toBytes(ttr, catalogBuilder().id("test-cat")
+                        .datasets(List.of(createDataset("dataset1"), createDataset("dataset2"),
+                                createDataset("dataset3"), createDataset("dataset4"))).build())));
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    var catalogs = queryCatalogApi();
+                    var catalogs = queryCatalogApi(jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
                     assertThat(catalogs).hasSize(1);
                     assertThat(catalogs)
-                            .allSatisfy(cat -> assertThat(cat.getContractOffers()).hasSize(5))
-                            .allSatisfy(co -> assertThat(Integer.parseInt(co.getContractOffers().get(0).getId().replace("offer", ""))).isIn(1, 2, 3, 4, 5));
-                    verify(dispatcher, atLeast(2)).send(eq(Catalog.class), isA(CatalogRequestMessage.class));
+                            .allSatisfy(cat -> assertThat(cat.getDatasets()).hasSize(4))
+                            .allSatisfy(co -> assertThat(co.getDatasets().stream().map(Dataset::getId).map(id -> id.replace("dataset", "")))
+                                    .containsExactlyInAnyOrder("1", "2", "3", "4"));
+                    verify(dispatcher, atLeast(2)).send(eq(byte[].class), isA(CatalogRequestMessage.class));
                 });
 
     }
 
     @Test
     @DisplayName("Crawl a single target, verify that the originator information is properly inserted")
-    void crawlSingle_verifyCorrectOriginator(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
+    void crawlSingle_verifyCorrectOriginator(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, FederatedCacheNodeDirectory directory) {
         // prepare node directory
         insertSingle(directory);
         // intercept request egress
-        when(dispatcher.send(eq(Catalog.class), isA(CatalogRequestMessage.class)))
-                .thenReturn(randomCatalog(TEST_CATALOG_ID, 5))
-                .thenReturn(emptyCatalog()); // this is important, otherwise there is an endless loop!
+        reg.register(dispatcher);
+        when(dispatcher.send(eq(byte[].class), isA(CatalogRequestMessage.class)))
+                .thenReturn(randomCatalog(catalog -> toBytes(ttr, catalog), TEST_CATALOG_ID, 5))
+                .thenReturn(emptyCatalog(catalog -> toBytes(ttr, catalog))); // this is important, otherwise there is an endless loop!
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    var catalogs = queryCatalogApi();
+                    var catalogs = queryCatalogApi(jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
                     assertThat(catalogs).hasSize(1);
-                    assertThat(catalogs.get(0).getContractOffers()).hasSize(5);
-                    assertThat(catalogs).extracting(Catalog::getProperties).allSatisfy(a -> assertThat(a).containsEntry(PROPERTY_ORIGINATOR, "http://test-node.com/api/v1/ids/data"));
+                    assertThat(catalogs.get(0).getDatasets()).hasSize(5);
+                    assertThat(catalogs).extracting(Catalog::getProperties).allSatisfy(a -> assertThat(a).containsEntry(PROPERTY_ORIGINATOR, "http://test-node.com"));
                 });
     }
 
-
     @Test
     @DisplayName("Crawl 1000 targets, verify that all offers are collected")
-    void crawlMany_shouldCollectAll(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
+    void crawlMany_shouldCollectAll(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, FederatedCacheNodeDirectory directory) {
 
         var numTotalAssets = new AtomicInteger();
         var rnd = new SecureRandom();
 
         // create 1000 crawl targets, setup dispatcher mocks for them
-        range(0, 1000)
+        reg.register(dispatcher);
+        var numTargets = 1000;
+        range(0, numTargets)
                 .forEach(i -> {
                     var nodeUrl = format("http://test-node%s.com", i);
-                    var node = new FederatedCacheNode("test-node" + i, nodeUrl, singletonList(CatalogConstants.DATASPACE_PROTOCOL));
+                    var node = new FederatedCacheNode("test-node-" + i, nodeUrl, singletonList(DATASPACE_PROTOCOL));
                     directory.insert(node);
 
-                    var numAssets = rnd.nextInt(50);
-
-                    when(dispatcher.send(eq(Catalog.class), argThat(sentTo(nodeUrl + "/api/v1/ids/data"))))
-                            .thenReturn(randomCatalog("catalog-" + nodeUrl, numAssets));
+                    var numAssets = 1 + rnd.nextInt(10);
+                    when(dispatcher.send(eq(byte[].class), argThat(sentTo(nodeUrl))))
+                            .thenReturn(randomCatalog(catalog -> toBytes(ttr, catalog), "catalog-" + nodeUrl, numAssets));
                     numTotalAssets.addAndGet(numAssets);
                 });
 
         await().pollDelay(ofSeconds(1))
-                .atMost(TEST_TIMEOUT)
+                .atMost(TEST_TIMEOUT.plus(TEST_TIMEOUT))
                 .untilAsserted(() -> {
-                    var catalogs = queryCatalogApi();
-                    assertThat(catalogs).hasSize(1000);
+                    var catalogs = queryCatalogApi(jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
+                    assertThat(catalogs).hasSize(numTargets);
                     //assert that the total number of offers across all catalogs is corrects
-                    assertThat(catalogs.stream().mapToLong(c -> c.getContractOffers().size()).sum()).isEqualTo(numTotalAssets.get());
+                    assertThat(catalogs.stream().mapToLong(c -> c.getDatasets().size()).sum()).isEqualTo(numTotalAssets.get());
                 });
     }
 
     @Test
     @DisplayName("Crawl multiple targets with conflicting asset IDs")
-    void crawlMultiple_whenConflictingAssetIds_shouldOverwrite(RemoteMessageDispatcher dispatcher, FederatedCacheNodeDirectory directory) {
-        var node1 = new FederatedCacheNode("test-node1", "http://test-node1.com", singletonList(CatalogConstants.DATASPACE_PROTOCOL));
-        var node2 = new FederatedCacheNode("test-node2", "http://test-node2.com", singletonList(CatalogConstants.DATASPACE_PROTOCOL));
+    void crawlMultiple_whenConflictingAssetIds_shouldOverwrite(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, FederatedCacheNodeDirectory directory) {
+        var node1 = new FederatedCacheNode("test-node1", "http://test-node1.com", singletonList(DATASPACE_PROTOCOL));
+        var node2 = new FederatedCacheNode("test-node2", "http://test-node2.com", singletonList(DATASPACE_PROTOCOL));
 
         directory.insert(node1);
         directory.insert(node2);
+        reg.register(dispatcher);
 
-        when(dispatcher.send(eq(Catalog.class), argThat(sentTo("http://test-node1.com/api/v1/ids/data"))))
-                .thenReturn(catalogOf("catalog-" + node1.getTargetUrl(), createOffer("offer1"), createOffer("offer2"), createOffer("offer3")))
-                .thenReturn(emptyCatalog());
+        when(dispatcher.send(eq(byte[].class), argThat(sentTo("http://test-node1.com"))))
+                .thenReturn(catalogOf(catalog -> toBytes(ttr, catalog), "catalog-" + node1.getTargetUrl(), createDataset("offer1"), createDataset("offer2"), createDataset("offer3")))
+                .thenReturn(emptyCatalog(catalog -> toBytes(ttr, catalog)));
 
-        when(dispatcher.send(eq(Catalog.class), argThat(sentTo("http://test-node2.com/api/v1/ids/data"))))
-                .thenReturn(catalogOf("catalog-" + node2.getTargetUrl(), createOffer("offer14"), createOffer("offer32"), /*this one is conflicting:*/createOffer("offer3")))
-                .thenReturn(emptyCatalog());
+        when(dispatcher.send(eq(byte[].class), argThat(sentTo("http://test-node2.com"))))
+                .thenReturn(catalogOf(catalog -> toBytes(ttr, catalog), "catalog-" + node2.getTargetUrl(), createDataset("offer14"), createDataset("offer32"), /*this one is conflicting:*/createDataset("offer3")))
+                .thenReturn(emptyCatalog(catalog -> toBytes(ttr, catalog)));
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    var catalogs = queryCatalogApi();
+                    var catalogs = queryCatalogApi(jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
                     assertThat(catalogs).hasSize(2);
                     assertThat(catalogs).anySatisfy(c -> assertThat(c.getProperties().get(PROPERTY_ORIGINATOR).toString()).startsWith("http://test-node1.com"));
                     assertThat(catalogs).anySatisfy(c -> assertThat(c.getProperties().get(PROPERTY_ORIGINATOR).toString()).startsWith("http://test-node2.com"));
-                    assertThat(catalogs.stream().mapToLong(c -> c.getContractOffers().size()).sum()).isEqualTo(6);
-                    assertThat(catalogs.stream().flatMap(c -> c.getContractOffers().stream()).map(ContractOffer::getAssetId))
+                    assertThat(catalogs.stream().mapToLong(c -> c.getDatasets().size()).sum()).isEqualTo(6);
+                    assertThat(catalogs.stream().flatMap(c -> c.getDatasets().stream()).map(Dataset::getId))
                             .containsExactlyInAnyOrder("offer1", "offer2", "offer3", "offer14", "offer32", "offer3");
                 });
 
 
+    }
+
+    private byte[] toBytes(TypeTransformerRegistry transformerRegistry, Catalog cat1) {
+        try {
+            var jo = transformerRegistry.transform(cat1, JsonObject.class).orElseThrow(AssertionError::new);
+            var expanded = jsonLdService.expand(jo).orElseThrow(AssertionError::new);
+            var expandedStr = objectMapper.writeValueAsString(expanded);
+            return expandedStr.getBytes();
+        } catch (JsonProcessingException ex) {
+            throw new AssertionError(ex);
+        }
     }
 
 

@@ -18,6 +18,7 @@ edc-config-filesystem = { module = "org.eclipse.edc:configuration-filesystem", v
 edc-core-connector = { module = "org.eclipse.edc:connector-core", version.ref = "edc" }
 edc-core-controlplane = { module = "org.eclipse.edc:control-plane-core", version.ref = "edc" }
 edc-core-dataPlane-selector = { module = "org.eclipse.edc:data-plane-selector-core", version.ref = "edc" }
+edc-core-catalog = { module = "org.eclipse.edc:catalog-core", version.ref = "edc" }
 edc-core-jersey = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
 edc-core-jetty = { module = "org.eclipse.edc:jetty-core", version.ref = "edc" }
 edc-dpf-framework = { module = "org.eclipse.edc:data-plane-framework", version.ref = "edc" }
