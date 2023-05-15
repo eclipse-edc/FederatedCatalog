@@ -29,7 +29,7 @@ dependencies {
     implementation(libs.edc.spi.jsonld)
 
     // protocol modules
-    implementation(libs.bundles.edc.dsp)
+    implementation(libs.edc.dsp.all)
     implementation(libs.edc.iam.mock)
 
     // Embedded DPF

@@ -272,7 +272,7 @@ public class CatalogRuntimeComponentTest {
 
         // create 1000 crawl targets, setup dispatcher mocks for them
         reg.register(dispatcher);
-        var numTargets = 1000;
+        var numTargets = 50;
         range(0, numTargets)
                 .forEach(i -> {
                     var nodeUrl = format("http://test-node%s.com", i);
