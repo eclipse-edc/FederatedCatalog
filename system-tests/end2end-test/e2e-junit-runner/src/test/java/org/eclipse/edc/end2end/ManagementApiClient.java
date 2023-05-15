@@ -24,7 +24,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
-import org.eclipse.edc.connector.api.management.asset.model.AssetEntryNewDto;
 import org.eclipse.edc.spi.result.Result;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,7 +52,7 @@ class ManagementApiClient {
         return CATALOG_BASE_URL + path;
     }
 
-    Result<String> postAsset(AssetEntryNewDto entry) {
+    Result<String> postAsset(JsonObject entry) {
         return postObjectWithId(createPostRequest(entry, mgmt("/assets")));
     }
 

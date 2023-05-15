@@ -18,9 +18,10 @@ import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
-import org.eclipse.edc.connector.api.management.asset.model.AssetEntryNewDto;
 import org.eclipse.edc.spi.types.domain.asset.Asset;
 
+import static org.eclipse.edc.connector.api.management.asset.model.AssetEntryNewDto.EDC_ASSET_ENTRY_DTO_ASSET;
+import static org.eclipse.edc.connector.api.management.asset.model.AssetEntryNewDto.EDC_ASSET_ENTRY_DTO_DATA_ADDRESS;
 import static org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto.CONTRACT_DEFINITION_ACCESSPOLICY_ID;
 import static org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto.CONTRACT_DEFINITION_CONTRACTPOLICY_ID;
 import static org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto.CONTRACT_DEFINITION_CRITERIA;
@@ -44,10 +45,10 @@ public class TestFunctions {
         return json;
     }
 
-    public static AssetEntryNewDto createAssetEntryDto(String assetId) {
-        return AssetEntryNewDto.Builder.newInstance()
-                .asset(createAssetJson(assetId).build())
-                .dataAddress(createDataAddressJson())
+    public static JsonObject createAssetEntryDto(String assetId) {
+        return Json.createObjectBuilder()
+                .add(EDC_ASSET_ENTRY_DTO_ASSET, createAssetJson(assetId))
+                .add(EDC_ASSET_ENTRY_DTO_DATA_ADDRESS, createDataAddressJson())
                 .build();
     }
 
