@@ -21,6 +21,7 @@ dependencies {
     testImplementation(libs.edc.api.management)
     testImplementation(libs.awaitility)
     testImplementation(libs.edc.junit)
+    testImplementation(libs.edc.jsonld)
 }
 
 edcBuild {

@@ -14,35 +14,33 @@
 
 package org.eclipse.edc.end2end;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.eclipse.edc.api.model.CriterionDto;
-import org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto;
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
+import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.types.domain.asset.Asset;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
-import java.util.List;
+import java.time.Duration;
 import java.util.UUID;
 
 import static java.time.Duration.ofSeconds;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.eclipse.edc.end2end.TestFunctions.createAsset;
+import static org.eclipse.edc.end2end.TestFunctions.createAssetEntryDto;
+import static org.eclipse.edc.end2end.TestFunctions.createContractDef;
 import static org.eclipse.edc.end2end.TestFunctions.createPolicy;
 
 @EndToEndTest
 class FederatedCatalogTest {
+    public static final Duration TIMEOUT = ofSeconds(60);
     private final ManagementApiClient apiClient = createManagementClient();
 
     @NotNull
     private static ManagementApiClient createManagementClient() {
-        var mapper = new ObjectMapper();
+        var mapper = JacksonJsonLd.createObjectMapper();
         //needed for ZonedDateTime
         mapper.registerModule(new JavaTimeModule());
         return new ManagementApiClient(mapper);
@@ -52,31 +50,36 @@ class FederatedCatalogTest {
     void crawl_whenOfferAvailable_shouldContainOffer(TestInfo testInfo) {
         // setup
         var id = String.format("%s-%s", testInfo.getDisplayName(), UUID.randomUUID());
-        var asset = createAsset(id);
+        var asset = createAssetEntryDto(id);
         var r = apiClient.postAsset(asset);
         assertThat(r.succeeded()).withFailMessage(getError(r)).isTrue();
+
+        var assetId = r.getContent();
 
         var policyId = "policy-" + id;
         var policy = createPolicy(policyId, id);
         var pr = apiClient.postPolicy(policy);
         assertThat(r.succeeded()).withFailMessage(getError(pr)).isTrue();
 
-        var request = ContractDefinitionRequestDto.Builder.newInstance().id("def-" + id)
-                .accessPolicyId(policyId)
-                .contractPolicyId(policyId)
-                .criteria(List.of(CriterionDto.from(Asset.PROPERTY_ID, "=", id)))
-                .build();
+        policyId = pr.getContent();
+
+        var request = createContractDef("def-" + id, policyId, policyId, assetId);
+
         var dr = apiClient.postContractDefinition(request);
         assertThat(dr.succeeded()).withFailMessage(getError(dr)).isTrue();
 
         // act-assert
         await().pollDelay(ofSeconds(1))
                 .pollInterval(ofSeconds(1))
-                .atMost(ofSeconds(20))
+                .atMost(TIMEOUT)
                 .untilAsserted(() -> {
                     var catalogs = apiClient.getContractOffers();
                     assertThat(catalogs).hasSize(1);
-                    assertThat(catalogs.get(0).getContractOffers()).extracting(ContractOffer::getAssetId).contains(id);
+                    assertThat(catalogs.get(0).getDatasets())
+                            .allSatisfy(dataset -> {
+                                assertThat(dataset.getOffers()).hasSize(1);
+                                assertThat(dataset.getOffers().keySet()).allMatch(key -> key.contains(assetId));
+                            });
                 });
     }
 
