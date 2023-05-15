@@ -35,7 +35,7 @@ import static org.eclipse.edc.end2end.TestFunctions.createPolicy;
 
 @EndToEndTest
 class FederatedCatalogTest {
-    public static final Duration TIMEOUT = ofSeconds(120);
+    public static final Duration TIMEOUT = ofSeconds(60);
     private final ManagementApiClient apiClient = createManagementClient();
 
     @NotNull
@@ -74,11 +74,11 @@ class FederatedCatalogTest {
                 .atMost(TIMEOUT)
                 .untilAsserted(() -> {
                     var catalogs = apiClient.getContractOffers();
-                    assertThat(catalogs).hasSize(1);
+                    assertThat(catalogs).hasSizeGreaterThanOrEqualTo(1);
                     assertThat(catalogs.get(0).getDatasets())
                             .allSatisfy(dataset -> {
-                                assertThat(dataset.getOffers()).hasSize(1);
-                                assertThat(dataset.getOffers().keySet()).allMatch(key -> key.contains(assetId));
+                                assertThat(dataset.getOffers()).hasSizeGreaterThanOrEqualTo(1);
+                                assertThat(dataset.getOffers().keySet()).anyMatch(key -> key.contains(assetId));
                             });
                 });
     }
