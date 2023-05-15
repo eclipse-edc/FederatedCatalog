@@ -40,7 +40,7 @@ jobs:
         # Disabled our dependency rules for now, as they are outdated and need to be refactored:
         # https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/2132
         # explicitly set 1G heap space because we've seen OOMs previously
-        run: ./gradlew -Dorg.gradle.jvmargs="-Xmx1g" buildHealth -Pdependency.analysis=warn -Pdependency.analysis.clear.artifacts=false --refresh-dependencies
+        run: ./gradlew -Dorg.gradle.jvmargs="-Xmx1g" buildHealth -Pdependency.analysis=warn -Pdependency.analysis.clear.artifacts=false
 
       - name: Dependency analysis report
         run: cat build/reports/dependency-analysis/build-health-report.txt
@@ -56,7 +56,7 @@ jobs:
       - name: Run unit tests
         uses: ./.github/actions/run-tests
         with:
-          command: ./gradlew test jacocoTestReport --refresh-dependencies
+          command: ./gradlew test jacocoTestReport
 
   Azure-Storage-Integration-Tests:
     runs-on: ubuntu-latest
@@ -143,7 +143,7 @@ jobs:
       - name: Component Tests
         uses: ./.github/actions/run-tests
         with:
-          command: ./gradlew :system-tests:component-tests:test jacocoTestReport -DincludeTags="ComponentTest" --refresh-dependencies
+          command: ./gradlew :system-tests:component-tests:test jacocoTestReport -DincludeTags="ComponentTest"
 
   End-To-End-Tests:
     runs-on: ubuntu-latest
@@ -153,7 +153,7 @@ jobs:
 
       - name: 'Build Launchers'
         run: |
-          ./gradlew -p system-tests/end2end-test clean shadowJar --refresh-dependencies
+          ./gradlew -p system-tests/end2end-test clean shadowJar 
 
       - name: 'Install docker compose plugin'
         run: |
