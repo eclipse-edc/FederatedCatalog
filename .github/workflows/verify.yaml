@@ -40,7 +40,7 @@ jobs:
         # Disabled our dependency rules for now, as they are outdated and need to be refactored:
         # https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/2132
         # explicitly set 1G heap space because we've seen OOMs previously
-        run: ./gradlew -Dorg.gradle.jvmargs="-Xmx1g" buildHealth -Pdependency.analysis=warn -Pdependency.analysis.clear.artifacts=false
+        run: ./gradlew -Dorg.gradle.jvmargs="-Xmx1g" buildHealth -Pdependency.analysis=warn -Pdependency.analysis.clear.artifacts=false --refresh-dependencies
 
       - name: Dependency analysis report
         run: cat build/reports/dependency-analysis/build-health-report.txt
@@ -56,7 +56,7 @@ jobs:
       - name: Run unit tests
         uses: ./.github/actions/run-tests
         with:
-          command: ./gradlew test jacocoTestReport
+          command: ./gradlew test jacocoTestReport --refresh-dependencies
 
   Azure-Storage-Integration-Tests:
     runs-on: ubuntu-latest
@@ -143,7 +143,7 @@ jobs:
       - name: Component Tests
         uses: ./.github/actions/run-tests
         with:
-          command: ./gradlew :system-tests:component-tests:test jacocoTestReport -DincludeTags="ComponentTest"
+          command: ./gradlew :system-tests:component-tests:test jacocoTestReport -DincludeTags="ComponentTest" --refresh-dependencies
 
   End-To-End-Tests:
     runs-on: ubuntu-latest
@@ -153,8 +153,7 @@ jobs:
 
       - name: 'Build Launchers'
         run: |
-          ./gradlew :system-tests:end2end-test:catalog-runtime:shadowJar --refresh-dependencies
-          ./gradlew :system-tests:end2end-test:connector-runtime:shadowJar --refresh-dependencies
+          ./gradlew -p system-tests/end2end-test clean shadowJar --refresh-dependencies
 
       - name: 'Install docker compose plugin'
         run: |
@@ -170,7 +169,7 @@ jobs:
       - name: 'End to End Integration Tests'
         uses: ./.github/actions/run-tests
         with:
-          command: ./gradlew system-tests:end2end-test:e2e-junit:test -DincludeTags="EndToEndTest" || docker compose -f system-tests/end2end-test/docker-compose.yml logs
+          command: ./gradlew system-tests:end2end-test:e2e-junit:test -DincludeTags="EndToEndTest"  || docker compose -f system-tests/end2end-test/docker-compose.yml logs
 
   API-Tests:
     env:
