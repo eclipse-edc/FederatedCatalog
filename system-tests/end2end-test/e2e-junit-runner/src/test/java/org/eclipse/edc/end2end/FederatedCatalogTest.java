@@ -35,7 +35,7 @@ import static org.eclipse.edc.end2end.TestFunctions.createPolicy;
 
 @EndToEndTest
 class FederatedCatalogTest {
-    public static final Duration TIMEOUT = ofSeconds(60);
+    public static final Duration TIMEOUT = ofSeconds(120);
     private final ManagementApiClient apiClient = createManagementClient();
 
     @NotNull
