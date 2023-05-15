@@ -17,16 +17,13 @@ package org.eclipse.edc.end2end;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.json.JsonObject;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import org.eclipse.edc.api.model.IdResponseDto;
 import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
-import org.eclipse.edc.connector.api.management.asset.model.AssetEntryDto;
-import org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto;
-import org.eclipse.edc.connector.api.management.policy.model.PolicyDefinitionRequestDto;
 import org.eclipse.edc.spi.result.Result;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,7 +33,7 @@ import java.util.List;
 import static java.lang.String.format;
 
 class ManagementApiClient {
-    private static final String MANAGEMENT_BASE_URL = "http://localhost:9192/api/v1/management";
+    private static final String MANAGEMENT_BASE_URL = "http://localhost:9192/management/v2";
     private static final String CATALOG_BASE_URL = "http://localhost:8181/api";
     private static final TypeReference<List<Catalog>> LIST_TYPE_REFERENCE = new TypeReference<>() {
     };
@@ -55,15 +52,15 @@ class ManagementApiClient {
         return CATALOG_BASE_URL + path;
     }
 
-    Result<String> postAsset(AssetEntryDto entry) {
+    Result<String> postAsset(JsonObject entry) {
         return postObjectWithId(createPostRequest(entry, mgmt("/assets")));
     }
 
-    Result<String> postPolicy(PolicyDefinitionRequestDto policy) {
-        return postObjectWithId(createPostRequest(policy, mgmt("/policydefinitions")));
+    Result<String> postPolicy(String policyJsonLd) {
+        return postObjectWithId(createPostRequest(policyJsonLd, mgmt("/policydefinitions")));
     }
 
-    Result<String> postContractDefinition(ContractDefinitionRequestDto definition) {
+    Result<String> postContractDefinition(JsonObject definition) {
         return postObjectWithId(createPostRequest(definition, mgmt("/contractdefinitions")));
     }
 
@@ -85,8 +82,9 @@ class ManagementApiClient {
         try (var response = getClient()
                 .newCall(policy)
                 .execute()) {
+            var stringbody = response.body().string();
             return response.isSuccessful() ?
-                    Result.success(fromJson(response.body().string(), IdResponseDto.class).getId()) :
+                    Result.success(fromJson(stringbody, JsonObject.class).getString("@id")) :
                     Result.failure(response.message());
 
 
@@ -110,7 +108,7 @@ class ManagementApiClient {
 
     private String asJson(Object entry) {
         try {
-            return mapper.writeValueAsString(entry);
+            return entry instanceof String ? (String) entry : mapper.writeValueAsString(entry);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

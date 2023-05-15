@@ -20,10 +20,18 @@ dependencies {
     implementation(project(":core:federated-catalog-core"))
     implementation(project(":extensions:api:federated-catalog-api"))
     runtimeOnly(libs.bundles.edc.connector)
+    runtimeOnly(libs.edc.core.controlplane)
+    runtimeOnly(libs.edc.core.dataPlane.selector)
+
 
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)
     testImplementation(libs.awaitility)
+
+    testImplementation(libs.edc.spi.jsonld)
+    testImplementation(libs.edc.dsp.all)
+    testImplementation(libs.edc.jsonld)
+    testRuntimeOnly(libs.edc.iam.mock)
 }
 
 edcBuild {

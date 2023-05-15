@@ -14,21 +14,31 @@
 
 package org.eclipse.edc.catalog.cache.query;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.json.JsonObject;
 import org.eclipse.edc.catalog.spi.Catalog;
+import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
+import org.eclipse.edc.jsonld.spi.JsonLd;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.message.Range;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.QuerySpec;
+import org.eclipse.edc.spi.result.Failure;
+import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
+import static java.util.concurrent.CompletableFuture.completedFuture;
+import static java.util.concurrent.CompletableFuture.failedFuture;
 
 /**
  * Helper class that runs through a loop and sends {@link CatalogRequestMessage}s until no more {@link ContractOffer}s are
@@ -38,21 +48,17 @@ import static java.lang.String.format;
 public class BatchedRequestFetcher {
     private final RemoteMessageDispatcherRegistry dispatcherRegistry;
     private final Monitor monitor;
+    private final ObjectMapper objectMapper;
+    private final TypeTransformerRegistry transformerRegistry;
+    private final JsonLd jsonLdService;
 
-    public BatchedRequestFetcher(RemoteMessageDispatcherRegistry dispatcherRegistry, Monitor monitor) {
+    public BatchedRequestFetcher(RemoteMessageDispatcherRegistry dispatcherRegistry, Monitor monitor, ObjectMapper objectMapper, TypeTransformerRegistry transformerRegistry, JsonLd jsonLdService) {
         this.dispatcherRegistry = dispatcherRegistry;
         this.monitor = monitor;
+        this.objectMapper = objectMapper;
+        this.transformerRegistry = transformerRegistry;
+        this.jsonLdService = jsonLdService;
     }
-
-    private static Catalog copyCatalogWithoutNulls(Catalog catalog) {
-        return Catalog.Builder.newInstance().id(catalog.getId())
-                .contractOffers(catalog.getContractOffers())
-                .properties(new HashMap<>())
-                .dataServices(new ArrayList<>())
-                .datasets(new ArrayList<>())
-                .build();
-    }
-
 
     /**
      * Gets all contract offers. Requests are split in digestible chunks to match {@code batchSize} until no more offers
@@ -66,33 +72,62 @@ public class BatchedRequestFetcher {
     public @NotNull CompletableFuture<Catalog> fetch(CatalogRequestMessage catalogRequest, int from, int batchSize) {
 
         var range = new Range(from, from + batchSize);
-        var rq = catalogRequest.toBuilder().querySpec(QuerySpec.Builder.newInstance().range(range).build()).build();
+        var rq = toBuilder(catalogRequest)
+                .protocol(CatalogConstants.DATASPACE_PROTOCOL)
+                .querySpec(QuerySpec.Builder.newInstance().range(range).build())
+                .build();
 
-        return dispatcherRegistry.send(Catalog.class, rq)
-                .thenCompose(catalog -> CompletableFuture.completedFuture(copyCatalogWithoutNulls(catalog)))
+        return dispatcherRegistry.send(byte[].class, rq)
+                .thenCompose(this::readCatalogFrom)
+                .thenCompose(catalog -> completedFuture(copyCatalogWithoutNulls(catalog)))
                 .thenCompose(catalog -> {
-                    var offers = catalog.getContractOffers();
-                    if (offers.size() >= batchSize) {
+
+                    var datasets = catalog.getDatasets();
+                    if (datasets.size() >= batchSize) {
                         monitor.debug(format("Fetching next batch from %s to %s", from, from + batchSize));
                         return fetch(rq, range.getFrom() + batchSize, batchSize)
                                 .thenApply(o -> concat(catalog, o));
                     } else {
-                        return CompletableFuture.completedFuture(catalog);
+                        return completedFuture(catalog);
                     }
                 });
     }
 
-    private QuerySpec forRange(Range range) {
-        return QuerySpec.Builder.newInstance().range(range).build();
+    private Catalog copyCatalogWithoutNulls(Catalog catalog) {
+        return Catalog.Builder.newInstance().id(catalog.getId())
+                .contractOffers(ofNullable(catalog.getContractOffers()).orElseGet(ArrayList::new))
+                .properties(ofNullable(catalog.getProperties()).orElseGet(HashMap::new))
+                .dataServices(ofNullable(catalog.getDataServices()).orElseGet(ArrayList::new))
+                .datasets(ofNullable(catalog.getDatasets()).orElseGet(ArrayList::new))
+                .build();
     }
+
+    private CompletableFuture<Catalog> readCatalogFrom(byte[] bytes) {
+        try {
+            var json = new String(bytes);
+            var catalogJsonObject = objectMapper.readValue(json, JsonObject.class);
+            return jsonLdService.expand(catalogJsonObject)
+                    .compose(expandedJson -> transformerRegistry.transform(expandedJson, Catalog.class))
+                    .map(CompletableFuture::completedFuture)
+                    .orElse((Failure f) -> failedFuture(new EdcException(f.getFailureDetail())));
+        } catch (JsonProcessingException e) {
+            monitor.severe(() -> "Error parsing Catalog from byes", e);
+            return failedFuture(e);
+        }
+    }
+
+    private CatalogRequestMessage.Builder toBuilder(CatalogRequestMessage catalogRequest) {
+        return CatalogRequestMessage.Builder.newInstance()
+                .counterPartyAddress(catalogRequest.getCounterPartyAddress());
+    }
+
 
     private Catalog concat(Catalog target, Catalog source) {
         target.getContractOffers().addAll(source.getContractOffers());
+        target.getDatasets().addAll(source.getDatasets());
+        target.getDataServices().addAll(source.getDataServices());
+        target.getProperties().putAll(source.getProperties());
         return target;
     }
 
-    private List<ContractOffer> concat(List<ContractOffer> list1, List<ContractOffer> list2) {
-        list1.addAll(list2);
-        return list1;
-    }
 }

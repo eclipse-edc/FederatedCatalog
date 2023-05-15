@@ -20,16 +20,17 @@ plugins {
 
 dependencies {
 
-    runtimeOnly(libs.edc.core.controlplane)
-    runtimeOnly(libs.edc.core.dataPlane.selector)
+    implementation(libs.edc.core.controlplane)
+    implementation(libs.edc.core.dataPlane.selector)
     runtimeOnly(libs.edc.api.observability)
     runtimeOnly(libs.edc.api.management)
     runtimeOnly(libs.edc.config.filesystem)
-    runtimeOnly(libs.edc.ext.http)
+    implementation(libs.edc.ext.http)
+    implementation(libs.edc.spi.jsonld)
 
-    // IDS
-    runtimeOnly(libs.edc.ids)
-    runtimeOnly(libs.edc.iam.mock)
+    // protocol modules
+    implementation(libs.edc.dsp.all)
+    implementation(libs.edc.iam.mock)
 
     // Embedded DPF
     runtimeOnly(libs.bundles.edc.dpf)

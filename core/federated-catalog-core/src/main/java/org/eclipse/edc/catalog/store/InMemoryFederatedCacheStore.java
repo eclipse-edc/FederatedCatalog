@@ -15,6 +15,7 @@
 package org.eclipse.edc.catalog.store;
 
 import org.eclipse.edc.catalog.spi.Catalog;
+import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.CriterionConverter;
@@ -26,6 +27,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * An ephemeral in-memory cache store.
@@ -43,7 +46,12 @@ public class InMemoryFederatedCacheStore implements FederatedCacheStore {
 
     @Override
     public void save(Catalog catalog) {
-        lockManager.writeLock(() -> cache.put(catalog.getId(), new MarkableEntry<>(false, catalog)));
+        lockManager.writeLock(() -> {
+            var id = ofNullable(catalog.getProperties().get(CatalogConstants.PROPERTY_ORIGINATOR))
+                    .map(Object::toString)
+                    .orElse(catalog.getId());
+            return cache.put(id, new MarkableEntry<>(false, catalog));
+        });
     }
 
     @Override

@@ -1,16 +1,9 @@
 [
   {
     "name": "connector1",
-    "url": "http://connector1:8282",
+    "url": "http://connector1:8282/api/v1/dsp",
     "supportedProtocols": [
-      "ids-multipart"
-    ]
-  },
-  {
-    "name": "connector2",
-    "url": "http://connector1:8383",
-    "supportedProtocols": [
-      "ids-multipart"
+      "dataspace-protocol-http"
     ]
   }
 ]

@@ -14,6 +14,7 @@
 
 package org.eclipse.edc.catalog.instrumentation;
 
+import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcher;
@@ -39,7 +40,7 @@ public class MockInjectionExtension implements ServiceExtension {
     public RemoteMessageDispatcher createDispatcher() {
         if (dispatcher == null) {
             dispatcher = mock(RemoteMessageDispatcher.class);
-            when(dispatcher.protocol()).thenReturn("ids-multipart");
+            when(dispatcher.protocol()).thenReturn(CatalogConstants.DATASPACE_PROTOCOL);
         }
 
         return dispatcher;

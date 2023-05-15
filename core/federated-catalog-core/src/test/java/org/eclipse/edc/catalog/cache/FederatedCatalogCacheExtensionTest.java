@@ -14,7 +14,8 @@
 
 package org.eclipse.edc.catalog.cache;
 
-import org.eclipse.edc.catalog.cache.query.IdsMultipartNodeQueryAdapter;
+import org.eclipse.edc.catalog.cache.query.DspNodeQueryAdapter;
+import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeFilter;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
@@ -73,7 +74,6 @@ class FederatedCatalogCacheExtensionTest {
 
         verify(context, atLeastOnce()).getMonitor();
         verify(context).getSetting("edc.catalog.cache.partition.num.crawlers", 2);
-        verify(context).getConnectorId();
     }
 
     @Test
@@ -114,8 +114,8 @@ class FederatedCatalogCacheExtensionTest {
     void verifyProvider_cacheNodeAdapterRegistry() {
         var n = extension.createNodeQueryAdapterRegistry(context);
         assertThat(extension.createNodeQueryAdapterRegistry(context)).isSameAs(n);
-        assertThat(n.findForProtocol("ids-multipart")).hasSize(1)
-                .allSatisfy(qa -> assertThat(qa).isInstanceOf(IdsMultipartNodeQueryAdapter.class));
+        assertThat(n.findForProtocol(CatalogConstants.DATASPACE_PROTOCOL)).hasSize(1)
+                .allSatisfy(qa -> assertThat(qa).isInstanceOf(DspNodeQueryAdapter.class));
     }
 
 }

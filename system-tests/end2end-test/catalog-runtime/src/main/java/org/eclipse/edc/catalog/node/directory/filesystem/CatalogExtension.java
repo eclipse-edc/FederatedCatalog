@@ -36,11 +36,6 @@ public class CatalogExtension implements ServiceExtension {
     @Inject
     private TypeManager typeManager;
 
-    @Override
-    public void initialize(ServiceExtensionContext context) {
-
-    }
-
     @Provider
     public FederatedCacheNodeDirectory createFileSystemDirectory(ServiceExtensionContext context) {
         var setting = ofNullable(context.getSetting(FILE_LOCATION_SETTING, null))

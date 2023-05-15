@@ -23,9 +23,9 @@ HEALTHCHECK --interval=5s --timeout=5s --retries=10 CMD curl --fail http://local
 ENV WEB_HTTP_PORT="8181"
 ENV WEB_HTTP_PATH="/api"
 ENV WEB_HTTP_MANAGEMENT_PORT="9191"
-ENV WEB_HTTP_MANAGEMENT_PATH="/api/v1/management"
-ENV WEB_HTTP_IDS_PORT="8282"
-ENV WEB_HTTP_IDS_PATH="/api/v1/ids"
+ENV WEB_HTTP_MANAGEMENT_PATH="/management"
+ENV WEB_HTTP_PROTOCOL_PORT="8282"
+ENV WEB_HTTP_PROTOCOL_PATH="/api/v1/dsp"
 
 # Use "exec" for graceful termination (SIGINT) to reach JVM.
 # ARG can not be used in ENTRYPOINT so storing values in ENV variables

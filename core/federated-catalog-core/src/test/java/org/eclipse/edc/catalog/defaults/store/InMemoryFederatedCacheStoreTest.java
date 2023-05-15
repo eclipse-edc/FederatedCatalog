@@ -54,9 +54,8 @@ class InMemoryFederatedCacheStoreTest {
 
     private static Catalog createEntry(String id, Asset asset) {
         var offer = createContractOffer("offer-" + id, asset);
-        var catalog = Catalog.Builder.newInstance().contractOffers(List.of(offer)).id(id)
-                .property(CatalogConstants.PROPERTY_ORIGINATOR, "http://test.source").build();
-        return catalog;
+        return Catalog.Builder.newInstance().contractOffers(List.of(offer)).id(id)
+                .property(CatalogConstants.PROPERTY_ORIGINATOR, "http://test.source/" + id).build();
     }
 
     @BeforeEach

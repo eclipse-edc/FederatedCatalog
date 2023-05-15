@@ -14,41 +14,88 @@
 
 package org.eclipse.edc.end2end;
 
-import org.eclipse.edc.api.model.DataAddressDto;
-import org.eclipse.edc.connector.api.management.asset.model.AssetCreationRequestDto;
-import org.eclipse.edc.connector.api.management.asset.model.AssetEntryDto;
-import org.eclipse.edc.connector.api.management.policy.model.PolicyDefinitionRequestDto;
-import org.eclipse.edc.policy.model.Policy;
+import jakarta.json.Json;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import org.eclipse.edc.spi.types.domain.asset.Asset;
 
-import java.util.Map;
+import static org.eclipse.edc.connector.api.management.asset.model.AssetEntryNewDto.EDC_ASSET_ENTRY_DTO_ASSET;
+import static org.eclipse.edc.connector.api.management.asset.model.AssetEntryNewDto.EDC_ASSET_ENTRY_DTO_DATA_ADDRESS;
+import static org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto.CONTRACT_DEFINITION_ACCESSPOLICY_ID;
+import static org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto.CONTRACT_DEFINITION_CONTRACTPOLICY_ID;
+import static org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto.CONTRACT_DEFINITION_CRITERIA;
+import static org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto.CONTRACT_DEFINITION_TYPE;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
+import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileContentAsString;
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.CoreConstants.EDC_PREFIX;
+import static org.eclipse.edc.spi.types.domain.asset.Asset.EDC_ASSET_TYPE;
 
 public class TestFunctions {
-    public static AssetEntryDto createAsset(String id) {
-        return AssetEntryDto.Builder.newInstance()
-                .asset(AssetCreationRequestDto.Builder.newInstance()
-                        .id(id)
-                        .properties(Map.of(
-                                Asset.PROPERTY_CONTENT_TYPE, "application/octet-stream",
-                                Asset.PROPERTY_VERSION, "1.0",
-                                Asset.PROPERTY_NAME, id
-                        ))
-                        .build())
-                .dataAddress(DataAddressDto.Builder.newInstance()
-                        .properties(Map.of(
-                                "type", "test-type"
-                        ))
-                        .build())
+
+    public static String createPolicy(String policyId, String assetId) {
+        var json = getResourceFileContentAsString("policy.json");
+
+        json = json.replace("http://example.com/policy:1010", policyId)
+                .replace("http://example.com/asset:9898.movie", assetId);
+        return json;
+    }
+
+    public static JsonObject createAssetEntryDto(String assetId) {
+        return Json.createObjectBuilder()
+                .add(EDC_ASSET_ENTRY_DTO_ASSET, createAssetJson(assetId))
+                .add(EDC_ASSET_ENTRY_DTO_DATA_ADDRESS, createDataAddressJson())
                 .build();
     }
 
-    public static PolicyDefinitionRequestDto createPolicy(String policyId, String assetId) {
-        return PolicyDefinitionRequestDto.Builder.newInstance()
-                .id(policyId)
-                .policy(Policy.Builder.newInstance()
-                        .target(assetId)
-                        .build()
-                )
+    public static JsonObject createContractDef(String id, String accessPolicyId, String contractPolicyId, String assetId) {
+        return Json.createObjectBuilder()
+                .add(TYPE, CONTRACT_DEFINITION_TYPE)
+                .add(ID, id)
+                .add(CONTRACT_DEFINITION_ACCESSPOLICY_ID, accessPolicyId)
+                .add(CONTRACT_DEFINITION_CONTRACTPOLICY_ID, contractPolicyId)
+                .add(CONTRACT_DEFINITION_CRITERIA, createCriterionBuilder(assetId).build())
+                .build();
+    }
+
+    private static JsonArrayBuilder createCriterionBuilder(String assetId) {
+        return Json.createArrayBuilder()
+                .add(Json.createObjectBuilder()
+                        .add(TYPE, EDC_NAMESPACE + "CriterionDto")
+                        .add(EDC_NAMESPACE + "operandLeft", Asset.PROPERTY_ID)
+                        .add(EDC_NAMESPACE + "operator", "=")
+                        .add(EDC_NAMESPACE + "operandRight", assetId)
+                );
+    }
+
+    private static JsonObjectBuilder createAssetJson(String assetId) {
+        return Json.createObjectBuilder()
+                .add(CONTEXT, createContextBuilder().build())
+                .add(TYPE, EDC_ASSET_TYPE)
+                .add(ID, assetId)
+                .add("properties", createPropertiesBuilder(assetId).build());
+    }
+
+    private static JsonObjectBuilder createPropertiesBuilder(String id) {
+        return Json.createObjectBuilder()
+                .add(Asset.PROPERTY_NAME, "test-asset-" + id)
+                .add(Asset.PROPERTY_ID, id);
+    }
+
+    private static JsonObjectBuilder createContextBuilder() {
+        return Json.createObjectBuilder()
+                .add(VOCAB, EDC_NAMESPACE)
+                .add(EDC_PREFIX, EDC_NAMESPACE);
+    }
+
+    private static JsonObject createDataAddressJson() {
+        return Json.createObjectBuilder()
+                .add(TYPE, EDC_NAMESPACE + "DataAddress")
+                .add(EDC_NAMESPACE + "type", "test-type")
                 .build();
     }
 }
