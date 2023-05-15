@@ -169,7 +169,7 @@ jobs:
       - name: 'End to End Integration Tests'
         uses: ./.github/actions/run-tests
         with:
-          command: ./gradlew system-tests:end2end-test:e2e-junit:test -DincludeTags="EndToEndTest"  || docker compose -f system-tests/end2end-test/docker-compose.yml logs
+          command: ./gradlew system-tests:end2end-test:e2e-junit:test -DincludeTags="EndToEndTest"
 
   API-Tests:
     env:
