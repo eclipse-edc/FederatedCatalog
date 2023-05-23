@@ -17,9 +17,7 @@ plugins {
     `java-library`
 }
 
-val javaVersion: String by project
 val fccScmConnection: String by project
-val fccWebsiteUrl: String by project
 val fccScmUrl: String by project
 val annotationProcessorVersion: String by project
 val metaModelVersion: String by project
@@ -46,9 +44,6 @@ allprojects {
             metaModel.set(metaModelVersion)
         }
         pom {
-            projectName.set(project.name)
-            description.set("edc :: ${project.name}")
-            projectUrl.set(fccWebsiteUrl)
             scmConnection.set(fccScmConnection)
             scmUrl.set(fccScmUrl)
         }
@@ -59,7 +54,6 @@ allprojects {
             outputFilename.set(project.name)
             outputDirectory.set(file("${rootProject.projectDir.path}/resources/openapi/yaml"))
         }
-        javaLanguageVersion.set(JavaLanguageVersion.of(javaVersion))
     }
 
     configure<CheckstyleExtension> {
