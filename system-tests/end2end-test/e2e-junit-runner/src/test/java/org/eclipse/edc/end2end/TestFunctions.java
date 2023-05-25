@@ -24,7 +24,7 @@ import static org.eclipse.edc.connector.api.management.asset.model.AssetEntryNew
 import static org.eclipse.edc.connector.api.management.asset.model.AssetEntryNewDto.EDC_ASSET_ENTRY_DTO_DATA_ADDRESS;
 import static org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto.CONTRACT_DEFINITION_ACCESSPOLICY_ID;
 import static org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto.CONTRACT_DEFINITION_CONTRACTPOLICY_ID;
-import static org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto.CONTRACT_DEFINITION_CRITERIA;
+import static org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto.CONTRACT_DEFINITION_SELECTOR_EXPRESSION;
 import static org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto.CONTRACT_DEFINITION_TYPE;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
@@ -58,7 +58,7 @@ public class TestFunctions {
                 .add(ID, id)
                 .add(CONTRACT_DEFINITION_ACCESSPOLICY_ID, accessPolicyId)
                 .add(CONTRACT_DEFINITION_CONTRACTPOLICY_ID, contractPolicyId)
-                .add(CONTRACT_DEFINITION_CRITERIA, createCriterionBuilder(assetId).build())
+                .add(CONTRACT_DEFINITION_SELECTOR_EXPRESSION, createCriterionBuilder(assetId).build())
                 .build();
     }
 
