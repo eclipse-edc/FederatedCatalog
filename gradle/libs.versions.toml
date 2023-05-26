@@ -25,7 +25,6 @@ edc-dpf-framework = { module = "org.eclipse.edc:data-plane-framework", version.r
 edc-dpf-selector-client = { module = "org.eclipse.edc:data-plane-selector-client", version.ref = "edc" }
 edc-dpf-selector-core = { module = "org.eclipse.edc:data-plane-selector-core", version.ref = "edc" }
 edc-dpf-selector-spi = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
-edc-dpf-transferclient = { module = "org.eclipse.edc:data-plane-transfer-client", version.ref = "edc" }
 edc-ext-azure-cosmos-core = { module = "org.eclipse.edc:azure-cosmos-core", version.ref = "edc" }
 edc-ext-azure-test = { module = "org.eclipse.edc:azure-test", version.ref = "edc" }
 edc-ext-http = { module = "org.eclipse.edc:http", version.ref = "edc" }
@@ -47,7 +46,7 @@ edc-dsp-all = { module = "org.eclipse.edc:dsp", version.ref = "edc" }
 
 [bundles]
 edc-connector = ["edc-boot", "edc-core-connector", "edc-core-jersey", "edc-api-observability"]
-edc-dpf = ["edc-dpf-transferclient", "edc-dpf-selector-client", "edc-dpf-selector-spi", "edc-dpf-selector-core", "edc-dpf-framework"]
+edc-dpf = ["edc-dpf-selector-client", "edc-dpf-selector-spi", "edc-dpf-selector-core", "edc-dpf-framework"]
 
 [plugins]
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
