@@ -7,7 +7,7 @@
 # The Eclipse Dash Licenses tool was executed and resulted in an file (e.g., NOTICES)
 # listing all dependencies of the project.
 # To process the dependencies of a specific module, execute the following command:
-#   gradle dependencies | grep -Poh "(?<=\s)[\w\.-]+:[\w\.-]+:[^:\s]+" | sort | uniq | java -jar /path/org.eclipse.dash.licenses-0.0.1-SNAPSHOT.jar - -summary NOTICES
+#   gradle dependencies | grep -Poh "(?<=\s)[\w\.-]+:[\w\.-]+:[^:\s]+" | sort | uniq | java -jar /path/org.eclipse.dash.licenses-<VERSION>.jar - -summary NOTICES
 #
 # Comments:
 # Gradle doesn't support listing all dependencies of a multi-module project out of the box.
