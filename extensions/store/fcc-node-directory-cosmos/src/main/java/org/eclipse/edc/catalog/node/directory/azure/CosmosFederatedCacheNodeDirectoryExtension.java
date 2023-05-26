@@ -26,6 +26,7 @@ import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.health.HealthCheckService;
+import org.eclipse.edc.spi.types.TypeManager;
 
 /**
  * Provides a persistent implementation of the {@link FederatedCacheNodeDirectory} using CosmosDB.
@@ -41,6 +42,9 @@ public class CosmosFederatedCacheNodeDirectoryExtension implements ServiceExtens
     @Inject
     private CosmosClientProvider clientProvider;
 
+    @Inject
+    private TypeManager typeManager;
+
     @Override
     public String name() {
         return NAME;
@@ -51,10 +55,10 @@ public class CosmosFederatedCacheNodeDirectoryExtension implements ServiceExtens
         var configuration = new FederatedCacheNodeDirectoryCosmosConfig(context);
 
         var cosmosDbApi = new CosmosDbApiImpl(configuration, clientProvider.createClient(vault, configuration));
-        FederatedCacheNodeDirectory directory = new CosmosFederatedCacheNodeDirectory(cosmosDbApi, configuration.getPartitionKey(), context.getTypeManager(), context.getService(RetryPolicy.class));
+        FederatedCacheNodeDirectory directory = new CosmosFederatedCacheNodeDirectory(cosmosDbApi, configuration.getPartitionKey(), typeManager, context.getService(RetryPolicy.class));
         context.registerService(FederatedCacheNodeDirectory.class, directory);
 
-        context.getTypeManager().registerTypes(FederatedCacheNodeDocument.class);
+        typeManager.registerTypes(FederatedCacheNodeDocument.class);
 
         context.getService(HealthCheckService.class).addReadinessProvider(() -> cosmosDbApi.get().forComponent(name()));
 
