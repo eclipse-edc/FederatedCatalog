@@ -14,7 +14,9 @@
 
 package org.eclipse.edc.catalog.spi;
 
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+
 public interface CatalogConstants {
-    String PROPERTY_ORIGINATOR = "asset:prop:originator";
+    String PROPERTY_ORIGINATOR = EDC_NAMESPACE + "originator";
     String DATASPACE_PROTOCOL = "dataspace-protocol-http";
 }

@@ -45,6 +45,9 @@ public class CosmosFederatedCacheNodeDirectoryExtension implements ServiceExtens
     @Inject
     private TypeManager typeManager;
 
+    @Inject
+    private RetryPolicy<Object> retryPolicy;
+
     @Override
     public String name() {
         return NAME;
@@ -55,13 +58,13 @@ public class CosmosFederatedCacheNodeDirectoryExtension implements ServiceExtens
         var configuration = new FederatedCacheNodeDirectoryCosmosConfig(context);
 
         var cosmosDbApi = new CosmosDbApiImpl(configuration, clientProvider.createClient(vault, configuration));
-        FederatedCacheNodeDirectory directory = new CosmosFederatedCacheNodeDirectory(cosmosDbApi, configuration.getPartitionKey(), typeManager, context.getService(RetryPolicy.class));
+
+        var directory = new CosmosFederatedCacheNodeDirectory(cosmosDbApi, configuration.getPartitionKey(), typeManager, retryPolicy);
         context.registerService(FederatedCacheNodeDirectory.class, directory);
 
         typeManager.registerTypes(FederatedCacheNodeDocument.class);
 
         context.getService(HealthCheckService.class).addReadinessProvider(() -> cosmosDbApi.get().forComponent(name()));
-
     }
 
 }
