@@ -9,7 +9,6 @@ restAssured = "5.3.0"
 
 [libraries]
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
-azure-cosmos = { group = "com.azure", name = "azure-cosmos", version = "4.45.1" }
 edc-api-management = { module = "org.eclipse.edc:management-api", version.ref = "edc" }
 edc-api-management-config = { module = "org.eclipse.edc:management-api-configuration", version.ref = "edc" }
 edc-api-observability = { module = "org.eclipse.edc:api-observability", version.ref = "edc" }
@@ -25,8 +24,6 @@ edc-dpf-framework = { module = "org.eclipse.edc:data-plane-framework", version.r
 edc-dpf-selector-client = { module = "org.eclipse.edc:data-plane-selector-client", version.ref = "edc" }
 edc-dpf-selector-core = { module = "org.eclipse.edc:data-plane-selector-core", version.ref = "edc" }
 edc-dpf-selector-spi = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
-edc-ext-azure-cosmos-core = { module = "org.eclipse.edc:azure-cosmos-core", version.ref = "edc" }
-edc-ext-azure-test = { module = "org.eclipse.edc:azure-test", version.ref = "edc" }
 edc-ext-http = { module = "org.eclipse.edc:http", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
 edc-ids = { module = "org.eclipse.edc:ids", version.ref = "edc" }

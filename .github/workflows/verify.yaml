@@ -58,60 +58,6 @@ jobs:
         with:
           command: ./gradlew test jacocoTestReport
 
-  Azure-Storage-Integration-Tests:
-    runs-on: ubuntu-latest
-    # deactivate until we actually have implementations based on Azure Storage Blob
-    if: ${{ false }}
-
-    services:
-      azurite:
-        image: mcr.microsoft.com/azure-storage/azurite
-        ports:
-          - 10000:10000
-        env:
-          AZURITE_ACCOUNTS: account1:key1;account2:key2
-
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/setup-build
-
-      - name: Azure Storage Tests
-        uses: ./.github/actions/run-tests
-        with:
-          command: |
-            ./gradlew -p extensions test -DincludeTags="AzureStorageIntegrationTest"
-            ./gradlew -p system-tests/azure-tests test -DincludeTags="AzureStorageIntegrationTest"
-
-  Check-Cosmos-Key:
-    runs-on: ubuntu-latest
-    steps:
-      - id: has-cosmos-key
-        env:
-          HAS_COSMOS_KEY: ${{ secrets.COSMOS_KEY }}
-        if: "${{ env.HAS_COSMOS_KEY != '' }}"
-        run: echo "::set-output name=defined::true"
-    outputs:
-      has-cosmos-key: ${{ steps.has-cosmos-key.outputs.defined }}
-
-  Azure-CosmosDB-Integration-Tests:
-    # run only if COSMOS_KEY is present
-    needs: [ Check-Cosmos-Key ]
-    if: needs.Check-Cosmos-Key.outputs.has-cosmos-key == 'true'
-    runs-on: ubuntu-latest
-
-    env:
-      COSMOS_KEY: ${{ secrets.COSMOS_KEY }}
-      COSMOS_URL: ${{ secrets.COSMOS_URL }}
-
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/setup-build
-
-      - name: Azure CosmosDB Tests
-        uses: ./.github/actions/run-tests
-        with:
-          command: ./gradlew -p extensions test -DincludeTags="AzureCosmosDbIntegrationTest"
-
   Postgresql-Integration-Tests:
     runs-on: ubuntu-latest
     if: ${{ false }}
@@ -187,8 +133,6 @@ jobs:
   Upload-Test-Report:
     needs:
       - Unit-Tests
-      - Azure-Storage-Integration-Tests
-      - Azure-CosmosDB-Integration-Tests
       - End-To-End-Tests
       - Postgresql-Integration-Tests
       - Component-Tests
