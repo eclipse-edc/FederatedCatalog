@@ -3,7 +3,7 @@ format.version = "1.1"
 
 [versions]
 awaitility = "4.2.0"
-edc = "0.1.1-SNAPSHOT"
+edc = "0.1.2-SNAPSHOT"
 failsafe = "3.3.1"
 restAssured = "5.3.1"
 
