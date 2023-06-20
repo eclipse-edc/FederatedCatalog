@@ -39,6 +39,7 @@ import org.eclipse.edc.jsonld.transformer.to.JsonObjectToDatasetTransformer;
 import org.eclipse.edc.jsonld.transformer.to.JsonObjectToDistributionTransformer;
 import org.eclipse.edc.jsonld.transformer.to.JsonObjectToPolicyTransformer;
 import org.eclipse.edc.jsonld.util.JacksonJsonLd;
+import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.message.Range;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
@@ -64,6 +65,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ComponentTest
 class BatchedRequestFetcherTest {
 
     private BatchedRequestFetcher fetcher;
