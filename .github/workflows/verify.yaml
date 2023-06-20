@@ -89,7 +89,7 @@ jobs:
       - name: Component Tests
         uses: ./.github/actions/run-tests
         with:
-          command: ./gradlew :system-tests:component-tests:test jacocoTestReport -DincludeTags="ComponentTest"
+          command: ./gradlew test jacocoTestReport -DincludeTags="ComponentTest"
 
   End-To-End-Tests:
     runs-on: ubuntu-latest
