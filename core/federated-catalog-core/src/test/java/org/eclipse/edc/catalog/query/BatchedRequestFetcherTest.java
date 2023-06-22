@@ -44,6 +44,7 @@ import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.message.Range;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.response.StatusResult;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -101,7 +102,7 @@ class BatchedRequestFetcherTest {
         var cat1 = createCatalog(5);
         var cat2 = createCatalog(5);
         var cat3 = createCatalog(3);
-        when(dispatcherRegistryMock.send(eq(byte[].class), any(CatalogRequestMessage.class)))
+        when(dispatcherRegistryMock.dispatch(eq(byte[].class), any(CatalogRequestMessage.class)))
                 .thenReturn(completedFuture(toBytes(cat1)))
                 .thenReturn(completedFuture(toBytes(cat2)))
                 .thenReturn(completedFuture(toBytes(cat3)))
@@ -115,7 +116,7 @@ class BatchedRequestFetcherTest {
 
 
         var captor = forClass(CatalogRequestMessage.class);
-        verify(dispatcherRegistryMock, times(3)).send(eq(byte[].class), captor.capture());
+        verify(dispatcherRegistryMock, times(3)).dispatch(eq(byte[].class), captor.capture());
 
         // verify the sequence of requests
         assertThat(captor.getAllValues())
@@ -124,11 +125,11 @@ class BatchedRequestFetcherTest {
                 .containsExactly(new Range(0, 5), new Range(5, 10), new Range(10, 15));
     }
 
-    private byte[] toBytes(Catalog catalog) throws JsonProcessingException {
+    private StatusResult<byte[]> toBytes(Catalog catalog) throws JsonProcessingException {
         var jo = typeTransformerRegistry.transform(catalog, JsonObject.class).getContent();
         var expanded = jsonLdService.expand(jo).getContent();
         var expandedStr = objectMapper.writeValueAsString(expanded);
-        return expandedStr.getBytes();
+        return StatusResult.success(expandedStr.getBytes());
     }
 
     private CatalogRequestMessage createRequest() {

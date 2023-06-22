@@ -31,6 +31,7 @@ import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.spi.response.StatusResult;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,11 +57,11 @@ public class TestFunctions {
     };
 
 
-    public static CompletableFuture<byte[]> emptyCatalog(Function<Catalog, byte[]> transformationFunction) {
+    public static CompletableFuture<StatusResult<byte[]>> emptyCatalog(Function<Catalog, StatusResult<byte[]>> transformationFunction) {
         return completedFuture(transformationFunction.apply(catalogBuilder().build()));
     }
 
-    public static CompletableFuture<byte[]> emptyCatalog(Function<Catalog, byte[]> transformationFunction, String catalogId) {
+    public static CompletableFuture<StatusResult<byte[]>> emptyCatalog(Function<Catalog, StatusResult<byte[]>> transformationFunction, String catalogId) {
         return completedFuture(transformationFunction.apply(catalogBuilder().id(catalogId).build()));
     }
 
@@ -73,11 +74,11 @@ public class TestFunctions {
                 .contractOffers(Collections.emptyList());
     }
 
-    public static CompletableFuture<byte[]> catalogOf(Function<Catalog, byte[]> transformationFunction, String catId, Dataset... datasets) {
+    public static CompletableFuture<StatusResult<byte[]>> catalogOf(Function<Catalog, StatusResult<byte[]>> transformationFunction, String catId, Dataset... datasets) {
         return completedFuture(transformationFunction.apply(catalogBuilder().id(catId).datasets(asList(datasets)).build()));
     }
 
-    public static CompletableFuture<byte[]> randomCatalog(Function<Catalog, byte[]> transformationFunction, String id, int howMany) {
+    public static CompletableFuture<StatusResult<byte[]>> randomCatalog(Function<Catalog, StatusResult<byte[]>> transformationFunction, String id, int howMany) {
         return completedFuture(transformationFunction.apply(catalogBuilder()
                 .id(id)
                 .datasets(IntStream.range(0, howMany).mapToObj(i -> createDataset("DataSet_" + UUID.randomUUID())).collect(toList()))
