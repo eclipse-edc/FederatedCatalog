@@ -27,6 +27,7 @@ import org.eclipse.edc.spi.message.Range;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.QuerySpec;
+import org.eclipse.edc.spi.response.StatusResult;
 import org.eclipse.edc.spi.result.Failure;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.jetbrains.annotations.NotNull;
@@ -77,7 +78,7 @@ public class BatchedRequestFetcher {
                 .querySpec(QuerySpec.Builder.newInstance().range(range).build())
                 .build();
 
-        return dispatcherRegistry.send(byte[].class, rq)
+        return dispatcherRegistry.dispatch(byte[].class, rq)
                 .thenCompose(this::readCatalogFrom)
                 .thenCompose(catalog -> completedFuture(copyCatalogWithoutNulls(catalog)))
                 .thenCompose(catalog -> {
@@ -102,9 +103,12 @@ public class BatchedRequestFetcher {
                 .build();
     }
 
-    private CompletableFuture<Catalog> readCatalogFrom(byte[] bytes) {
+    private CompletableFuture<Catalog> readCatalogFrom(StatusResult<byte[]> bytes) {
+        if (bytes.failed()) {
+            return CompletableFuture.failedFuture(new EdcException(bytes.getFailureDetail()));
+        }
         try {
-            var json = new String(bytes);
+            var json = new String(bytes.getContent());
             var catalogJsonObject = objectMapper.readValue(json, JsonObject.class);
             return jsonLdService.expand(catalogJsonObject)
                     .compose(expandedJson -> transformerRegistry.transform(expandedJson, Catalog.class))
