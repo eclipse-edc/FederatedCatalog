@@ -7,7 +7,6 @@ on:
         required: true
         type: string
 
-
 env:
   EDC_VERSION: ${{ github.event.inputs.edc_version || inputs.edc_version }}
 
@@ -72,3 +71,4 @@ jobs:
       - uses: ./.github/actions/bump-version
         with:
           target_branch: "main"
+          base_version: ${{ needs.Prepare-Release.outputs.edc-version }}
