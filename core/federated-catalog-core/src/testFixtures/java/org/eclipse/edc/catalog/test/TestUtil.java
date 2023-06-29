@@ -15,6 +15,9 @@
 package org.eclipse.edc.catalog.test;
 
 import org.eclipse.edc.catalog.spi.Catalog;
+import org.eclipse.edc.catalog.spi.DataService;
+import org.eclipse.edc.catalog.spi.Dataset;
+import org.eclipse.edc.catalog.spi.Distribution;
 import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 import org.eclipse.edc.catalog.spi.WorkItem;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
@@ -43,9 +46,12 @@ public class TestUtil {
     }
 
     public static Catalog createCatalog(String id) {
+        var dataService = DataService.Builder.newInstance().build();
         return Catalog.Builder.newInstance()
                 .id(id)
                 .contractOffers(List.of(createOffer("test-offer")))
+                .dataServices(List.of(dataService))
+                .datasets(List.of(Dataset.Builder.newInstance().distributions(List.of(Distribution.Builder.newInstance().dataService(dataService).format("test-format").build())).build()))
                 .properties(new HashMap<>())
                 .build();
     }
