@@ -22,6 +22,7 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.health.HealthCheckResult;
 import org.eclipse.edc.spi.system.health.HealthCheckService;
+import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.web.spi.WebService;
 
 @Extension(value = FederatedCatalogCacheQueryApiExtension.NAME)
@@ -39,6 +40,9 @@ public class FederatedCatalogCacheQueryApiExtension implements ServiceExtension 
 
     @Inject
     private ManagementApiConfiguration config;
+    
+    @Inject
+    private TypeTransformerRegistry transformerRegistry;
 
     @Override
     public String name() {
@@ -47,7 +51,7 @@ public class FederatedCatalogCacheQueryApiExtension implements ServiceExtension 
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var catalogController = new FederatedCatalogApiController(queryEngine);
+        var catalogController = new FederatedCatalogApiController(queryEngine, transformerRegistry);
         webService.registerResource(config.getContextAlias(), catalogController);
 
         // contribute to the liveness probe
