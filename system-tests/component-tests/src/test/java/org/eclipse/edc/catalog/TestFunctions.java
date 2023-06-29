@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
+import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.CatalogConstants;
@@ -30,13 +31,18 @@ import org.eclipse.edc.catalog.spi.FederatedCacheNode;
 import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
+import org.eclipse.edc.jsonld.TitaniumJsonLd;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.response.StatusResult;
+import org.eclipse.edc.spi.result.Result;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -48,13 +54,16 @@ import static java.util.Collections.singletonList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
+import static org.mockito.Mockito.mock;
 
 public class TestFunctions {
     public static final String BASE_PATH = "/api";
     public static final int PORT = getFreePort();
     private static final String PATH = "/federatedcatalog";
-    private static final TypeReference<List<Catalog>> CONTRACT_OFFER_LIST_TYPE = new TypeReference<>() {
+    private static final TypeReference<List<Map<String, Object>>> MAP_TYPE = new TypeReference<>() {
     };
+
+    private static final JsonLd TITANIUM_JSON_LD = new TitaniumJsonLd(mock(Monitor.class));
 
 
     public static CompletableFuture<StatusResult<byte[]>> emptyCatalog(Function<Catalog, StatusResult<byte[]>> transformationFunction) {
@@ -106,7 +115,12 @@ public class TestFunctions {
                 .body();
 
         try {
-            return objectMapper.readValue(body.asString(), CONTRACT_OFFER_LIST_TYPE);
+            var maps = objectMapper.readValue(body.asString(), MAP_TYPE);
+            return maps.stream().map(map -> Json.createObjectBuilder(map).build())
+                    .map(TITANIUM_JSON_LD::expand)
+                    .map(Result::getContent)
+                    .map(transformerFunction)
+                    .toList();
         } catch (JsonProcessingException e) {
             throw new AssertionError(e);
         }
