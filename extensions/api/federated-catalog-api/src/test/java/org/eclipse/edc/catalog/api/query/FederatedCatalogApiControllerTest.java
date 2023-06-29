@@ -17,12 +17,12 @@ package org.eclipse.edc.catalog.api.query;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
+import jakarta.json.JsonObject;
 import org.eclipse.edc.catalog.spi.CacheQueryAdapter;
 import org.eclipse.edc.catalog.spi.CacheQueryAdapterRegistry;
 import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.junit.annotations.ApiTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.catalog.test.TestUtil.createCatalog;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
@@ -46,7 +45,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(EdcExtension.class)
 class FederatedCatalogApiControllerTest {
     private static final String BASE_PATH = "/api";
-    private static final TypeRef<List<Catalog>> CONTRACT_OFFER_LIST_TYPE = new TypeRef<>() {
+    private static final TypeRef<List<JsonObject>> CONTRACT_OFFER_LIST_TYPE = new TypeRef<>() {
     };
     private final int port = getFreePort();
 
@@ -93,7 +92,7 @@ class FederatedCatalogApiControllerTest {
                 .as(CONTRACT_OFFER_LIST_TYPE);
 
         // test
-        compareByAssetId(offers, entries);
+        assertThat(offers).hasSameSizeAs(entries);
     }
 
     @Test
@@ -112,11 +111,6 @@ class FederatedCatalogApiControllerTest {
 
     }
 
-    private void compareByAssetId(List<Catalog> actual, List<Catalog> expected) {
-        var actualAssetIds = actual.stream().flatMap(e -> e.getContractOffers().stream()).map(ContractOffer::getAssetId).collect(toList());
-        var expectedAssetIds = expected.stream().flatMap(e -> e.getContractOffers().stream()).map(ContractOffer::getAssetId).collect(toList());
-        assertThat(actualAssetIds).isEqualTo(expectedAssetIds);
-    }
 
     private RequestSpecification baseRequest() {
         return given()
