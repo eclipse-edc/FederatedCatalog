@@ -20,12 +20,10 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import org.eclipse.edc.spi.types.domain.asset.Asset;
 
-import static org.eclipse.edc.connector.api.management.asset.model.AssetEntryNewDto.EDC_ASSET_ENTRY_DTO_ASSET;
-import static org.eclipse.edc.connector.api.management.asset.model.AssetEntryNewDto.EDC_ASSET_ENTRY_DTO_DATA_ADDRESS;
-import static org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto.CONTRACT_DEFINITION_ACCESSPOLICY_ID;
-import static org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto.CONTRACT_DEFINITION_ASSETS_SELECTOR;
-import static org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto.CONTRACT_DEFINITION_CONTRACTPOLICY_ID;
-import static org.eclipse.edc.connector.api.management.contractdefinition.model.ContractDefinitionRequestDto.CONTRACT_DEFINITION_TYPE;
+import static org.eclipse.edc.connector.contract.spi.types.offer.ContractDefinition.CONTRACT_DEFINITION_ACCESSPOLICY_ID;
+import static org.eclipse.edc.connector.contract.spi.types.offer.ContractDefinition.CONTRACT_DEFINITION_ASSETS_SELECTOR;
+import static org.eclipse.edc.connector.contract.spi.types.offer.ContractDefinition.CONTRACT_DEFINITION_CONTRACTPOLICY_ID;
+import static org.eclipse.edc.connector.contract.spi.types.offer.ContractDefinition.CONTRACT_DEFINITION_TYPE;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
@@ -33,22 +31,25 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileContentAsString;
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.CoreConstants.EDC_PREFIX;
+import static org.eclipse.edc.spi.types.domain.asset.Asset.EDC_ASSET_DATA_ADDRESS;
+import static org.eclipse.edc.spi.types.domain.asset.Asset.EDC_ASSET_PROPERTIES;
 import static org.eclipse.edc.spi.types.domain.asset.Asset.EDC_ASSET_TYPE;
 
 public class TestFunctions {
 
     public static String createPolicy(String policyId, String assetId) {
-        var json = getResourceFileContentAsString("policy.json");
-
-        json = json.replace("http://example.com/policy:1010", policyId)
+        return getResourceFileContentAsString("policy.json")
+                .replace("http://example.com/policy:1010", policyId)
                 .replace("http://example.com/asset:9898.movie", assetId);
-        return json;
     }
 
-    public static JsonObject createAssetEntryDto(String assetId) {
+    public static JsonObject createAssetJson(String assetId) {
         return Json.createObjectBuilder()
-                .add(EDC_ASSET_ENTRY_DTO_ASSET, createAssetJson(assetId))
-                .add(EDC_ASSET_ENTRY_DTO_DATA_ADDRESS, createDataAddressJson())
+                .add(CONTEXT, createContextBuilder().build())
+                .add(TYPE, EDC_ASSET_TYPE)
+                .add(ID, assetId)
+                .add(EDC_ASSET_PROPERTIES, createPropertiesBuilder(assetId).build())
+                .add(EDC_ASSET_DATA_ADDRESS, createDataAddressJson())
                 .build();
     }
 
@@ -70,14 +71,6 @@ public class TestFunctions {
                         .add(EDC_NAMESPACE + "operator", "=")
                         .add(EDC_NAMESPACE + "operandRight", assetId)
                 );
-    }
-
-    private static JsonObjectBuilder createAssetJson(String assetId) {
-        return Json.createObjectBuilder()
-                .add(CONTEXT, createContextBuilder().build())
-                .add(TYPE, EDC_ASSET_TYPE)
-                .add(ID, assetId)
-                .add("properties", createPropertiesBuilder(assetId).build());
     }
 
     private static JsonObjectBuilder createPropertiesBuilder(String id) {
