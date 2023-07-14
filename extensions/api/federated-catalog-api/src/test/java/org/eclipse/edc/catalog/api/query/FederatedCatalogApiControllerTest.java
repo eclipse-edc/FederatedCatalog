@@ -14,13 +14,9 @@
 
 package org.eclipse.edc.catalog.api.query;
 
-import io.restassured.common.mapper.TypeRef;
-import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
-import jakarta.json.JsonObject;
 import org.eclipse.edc.catalog.spi.CacheQueryAdapter;
 import org.eclipse.edc.catalog.spi.CacheQueryAdapterRegistry;
-import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
 import org.eclipse.edc.junit.annotations.ApiTest;
@@ -29,14 +25,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
+import static io.restassured.http.ContentType.JSON;
+import static java.util.stream.IntStream.range;
 import static org.eclipse.edc.catalog.test.TestUtil.createCatalog;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
+import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -45,8 +41,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(EdcExtension.class)
 class FederatedCatalogApiControllerTest {
     private static final String BASE_PATH = "/api";
-    private static final TypeRef<List<JsonObject>> CONTRACT_OFFER_LIST_TYPE = new TypeRef<>() {
-    };
     private final int port = getFreePort();
 
     @BeforeEach
@@ -59,40 +53,28 @@ class FederatedCatalogApiControllerTest {
 
     @Test
     void queryApi_whenEmptyResult() {
-        var response = baseRequest()
-                .contentType(ContentType.JSON)
+        baseRequest()
+                .contentType(JSON)
                 .body(FederatedCatalogCacheQuery.Builder.newInstance().build())
                 .post("/federatedcatalog")
                 .then()
                 .statusCode(200)
-                .extract()
-                .as(CONTRACT_OFFER_LIST_TYPE);
-
-        assertThat(response).isEmpty();
+                .contentType(JSON)
+                .body("size()", is(0));
     }
 
     @Test
     void queryApi_whenResultsReturned(FederatedCacheStore store) {
-        int numberEntries = 3;
+        range(0, 3).mapToObj(i -> createCatalog("some-offer-" + i)).forEach(store::save);
 
-        // generate entries and populate the store
-        List<Catalog> entries = new ArrayList<>();
-        for (int i = 0; i < numberEntries; i++) {
-            entries.add(createCatalog("some-offer-" + i));
-        }
-        entries.forEach(store::save);
-
-        var offers = baseRequest()
-                .contentType(ContentType.JSON)
+        baseRequest()
+                .contentType(JSON)
                 .body(FederatedCatalogCacheQuery.Builder.newInstance().build())
                 .post("/federatedcatalog")
                 .then()
                 .statusCode(200)
-                .extract()
-                .as(CONTRACT_OFFER_LIST_TYPE);
-
-        // test
-        assertThat(offers).hasSameSizeAs(entries);
+                .contentType(JSON)
+                .body("size()", is(3));
     }
 
     @Test
@@ -103,14 +85,12 @@ class FederatedCatalogApiControllerTest {
         adapterRegistry.register(adapter);
 
         baseRequest()
-                .contentType(ContentType.JSON)
+                .contentType(JSON)
                 .body(FederatedCatalogCacheQuery.Builder.newInstance().build())
                 .post("/federatedcatalog")
                 .then()
                 .statusCode(500);
-
     }
-
 
     private RequestSpecification baseRequest() {
         return given()

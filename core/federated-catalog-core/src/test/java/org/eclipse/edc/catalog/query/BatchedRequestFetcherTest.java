@@ -17,7 +17,6 @@ package org.eclipse.edc.catalog.query;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
-import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.catalog.cache.query.BatchedRequestFetcher;
 import org.eclipse.edc.catalog.spi.Catalog;
@@ -26,24 +25,23 @@ import org.eclipse.edc.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.catalog.spi.DataService;
 import org.eclipse.edc.catalog.spi.Dataset;
 import org.eclipse.edc.catalog.spi.Distribution;
-import org.eclipse.edc.connector.core.transform.TypeTransformerRegistryImpl;
+import org.eclipse.edc.core.transform.TypeTransformerRegistryImpl;
+import org.eclipse.edc.core.transform.transformer.from.JsonObjectFromCatalogTransformer;
+import org.eclipse.edc.core.transform.transformer.from.JsonObjectFromDataServiceTransformer;
+import org.eclipse.edc.core.transform.transformer.from.JsonObjectFromDatasetTransformer;
+import org.eclipse.edc.core.transform.transformer.from.JsonObjectFromDistributionTransformer;
+import org.eclipse.edc.core.transform.transformer.from.JsonObjectFromPolicyTransformer;
+import org.eclipse.edc.core.transform.transformer.to.JsonObjectToCatalogTransformer;
+import org.eclipse.edc.core.transform.transformer.to.JsonObjectToDataServiceTransformer;
+import org.eclipse.edc.core.transform.transformer.to.JsonObjectToDatasetTransformer;
+import org.eclipse.edc.core.transform.transformer.to.JsonObjectToDistributionTransformer;
+import org.eclipse.edc.core.transform.transformer.to.JsonObjectToPolicyTransformer;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
-import org.eclipse.edc.jsonld.transformer.from.JsonObjectFromCatalogTransformer;
-import org.eclipse.edc.jsonld.transformer.from.JsonObjectFromDataServiceTransformer;
-import org.eclipse.edc.jsonld.transformer.from.JsonObjectFromDatasetTransformer;
-import org.eclipse.edc.jsonld.transformer.from.JsonObjectFromDistributionTransformer;
-import org.eclipse.edc.jsonld.transformer.from.JsonObjectFromPolicyTransformer;
-import org.eclipse.edc.jsonld.transformer.to.JsonObjectToCatalogTransformer;
-import org.eclipse.edc.jsonld.transformer.to.JsonObjectToDataServiceTransformer;
-import org.eclipse.edc.jsonld.transformer.to.JsonObjectToDatasetTransformer;
-import org.eclipse.edc.jsonld.transformer.to.JsonObjectToDistributionTransformer;
-import org.eclipse.edc.jsonld.transformer.to.JsonObjectToPolicyTransformer;
 import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.message.Range;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.response.StatusResult;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,33 +67,18 @@ import static org.mockito.Mockito.when;
 @ComponentTest
 class BatchedRequestFetcherTest {
 
+    private final RemoteMessageDispatcherRegistry dispatcherRegistryMock = mock();
+    private final ObjectMapper objectMapper = createObjectMapper();
+    private final TitaniumJsonLd jsonLdService = new TitaniumJsonLd(mock());
+    private final TypeTransformerRegistry typeTransformerRegistry = new TypeTransformerRegistryImpl();
     private BatchedRequestFetcher fetcher;
-    private RemoteMessageDispatcherRegistry dispatcherRegistryMock;
-    private ObjectMapper objectMapper;
-    private TitaniumJsonLd jsonLdService;
-    private TypeTransformerRegistry typeTransformerRegistry;
-
-    public static Dataset createDataset(String id) {
-        return Dataset.Builder.newInstance()
-                .offer("test-offer", Policy.Builder.newInstance().build())
-                .distribution(Distribution.Builder.newInstance().format("test-format").dataService(DataService.Builder.newInstance().build()).build())
-                .id(id)
-                .build();
-    }
 
     @BeforeEach
     void setup() {
-        dispatcherRegistryMock = mock(RemoteMessageDispatcherRegistry.class);
-        objectMapper = createObjectMapper();
-        jsonLdService = new TitaniumJsonLd(mock(Monitor.class));
-        typeTransformerRegistry = new TypeTransformerRegistryImpl();
-        var factory = Json.createBuilderFactory(Map.of());
-        var mapper = JacksonJsonLd.createObjectMapper();
-        registerTransformers(factory, mapper);
+        registerTransformers();
 
-        fetcher = new BatchedRequestFetcher(dispatcherRegistryMock, mock(Monitor.class), objectMapper, typeTransformerRegistry, jsonLdService);
+        fetcher = new BatchedRequestFetcher(dispatcherRegistryMock, mock(), objectMapper, typeTransformerRegistry, jsonLdService);
     }
-
 
     @Test
     void fetchAll() throws JsonProcessingException {
@@ -153,7 +136,9 @@ class BatchedRequestFetcherTest {
     }
 
     // registers all the necessary transformers to avoid duplicating their behaviour in mocks
-    private void registerTransformers(JsonBuilderFactory factory, ObjectMapper mapper) {
+    private void registerTransformers() {
+        var factory = Json.createBuilderFactory(Map.of());
+        var mapper = JacksonJsonLd.createObjectMapper();
         typeTransformerRegistry.register(new JsonObjectFromCatalogTransformer(factory, mapper));
         typeTransformerRegistry.register(new JsonObjectFromDatasetTransformer(factory, mapper));
         typeTransformerRegistry.register(new JsonObjectFromDataServiceTransformer(factory));
@@ -165,4 +150,13 @@ class BatchedRequestFetcherTest {
         typeTransformerRegistry.register(new JsonObjectToPolicyTransformer());
         typeTransformerRegistry.register(new JsonObjectToDistributionTransformer());
     }
+
+    public Dataset createDataset(String id) {
+        return Dataset.Builder.newInstance()
+                .offer("test-offer", Policy.Builder.newInstance().build())
+                .distribution(Distribution.Builder.newInstance().format("test-format").dataService(DataService.Builder.newInstance().build()).build())
+                .id(id)
+                .build();
+    }
+
 }
