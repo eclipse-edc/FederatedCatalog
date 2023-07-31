@@ -20,7 +20,6 @@ import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.store.InMemoryFederatedCacheStore;
 import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.spi.query.CriterionConverter;
 import org.eclipse.edc.spi.types.domain.asset.Asset;
 import org.eclipse.edc.util.concurrency.LockManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +29,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.function.Predicate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,30 +36,9 @@ class InMemoryFederatedCacheStoreTest {
 
     private InMemoryFederatedCacheStore store;
 
-    private static Asset createAsset(String id) {
-        return Asset.Builder.newInstance()
-                .id(id)
-                .build();
-    }
-
-    private static ContractOffer createContractOffer(String id, Asset asset) {
-        return ContractOffer.Builder.newInstance()
-                .id(id)
-                .assetId(asset.getId())
-                .policy(Policy.Builder.newInstance().build())
-                .build();
-    }
-
-    private static Catalog createEntry(String id, Asset asset) {
-        var offer = createContractOffer("offer-" + id, asset);
-        return Catalog.Builder.newInstance().contractOffers(List.of(offer)).id(id)
-                .property(CatalogConstants.PROPERTY_ORIGINATOR, "http://test.source/" + id).build();
-    }
-
     @BeforeEach
     public void setUp() {
-        CriterionConverter<Predicate<Catalog>> converter = criterion -> entry -> true;
-        store = new InMemoryFederatedCacheStore(converter, new LockManager(new ReentrantReadWriteLock()));
+        store = new InMemoryFederatedCacheStore(new LockManager(new ReentrantReadWriteLock()));
     }
 
     @Test
@@ -159,4 +136,25 @@ class InMemoryFederatedCacheStoreTest {
                 .doesNotContain(entry1, entry2);
 
     }
+
+    private Asset createAsset(String id) {
+        return Asset.Builder.newInstance()
+                .id(id)
+                .build();
+    }
+
+    private ContractOffer createContractOffer(String id, Asset asset) {
+        return ContractOffer.Builder.newInstance()
+                .id(id)
+                .assetId(asset.getId())
+                .policy(Policy.Builder.newInstance().build())
+                .build();
+    }
+
+    private Catalog createEntry(String id, Asset asset) {
+        var offer = createContractOffer("offer-" + id, asset);
+        return Catalog.Builder.newInstance().contractOffers(List.of(offer)).id(id)
+                .property(CatalogConstants.PROPERTY_ORIGINATOR, "http://test.source/" + id).build();
+    }
+
 }

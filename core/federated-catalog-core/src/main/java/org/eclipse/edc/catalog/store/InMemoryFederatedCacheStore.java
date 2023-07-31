@@ -18,7 +18,7 @@ import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.spi.query.Criterion;
-import org.eclipse.edc.spi.query.CriterionConverter;
+import org.eclipse.edc.spi.query.CriterionToPredicateConverter;
 import org.eclipse.edc.util.concurrency.LockManager;
 
 import java.util.Collection;
@@ -36,11 +36,11 @@ import static java.util.Optional.ofNullable;
 public class InMemoryFederatedCacheStore implements FederatedCacheStore {
 
     private final Map<String, MarkableEntry<Catalog>> cache = new ConcurrentHashMap<>();
-    private final CriterionConverter<Predicate<Catalog>> converter;
+    private final CriterionToPredicateConverter converter;
     private final LockManager lockManager;
 
-    public InMemoryFederatedCacheStore(CriterionConverter<Predicate<Catalog>> converter, LockManager lockManager) {
-        this.converter = converter;
+    public InMemoryFederatedCacheStore(LockManager lockManager) {
+        this.converter = new AlwaysTruePredicateConverter();
         this.lockManager = lockManager;
     }
 
@@ -83,7 +83,6 @@ public class InMemoryFederatedCacheStore implements FederatedCacheStore {
             mark = isMarked;
         }
 
-
         public boolean isMarked() {
             return mark;
         }
@@ -92,5 +91,12 @@ public class InMemoryFederatedCacheStore implements FederatedCacheStore {
             return entry;
         }
 
+    }
+
+    private static class AlwaysTruePredicateConverter implements CriterionToPredicateConverter {
+        @Override
+        public <T> Predicate<T> convert(Criterion criterion) {
+            return i -> true;
+        }
     }
 }

@@ -50,7 +50,7 @@ public class FederatedCatalogDefaultServicesExtension implements ServiceExtensio
     @Provider(isDefault = true)
     public FederatedCacheStore defaultCacheStore() {
         //todo: converts every criterion into a predicate that is always true. must be changed later!
-        return new InMemoryFederatedCacheStore(criterion -> offer -> true, new LockManager(new ReentrantReadWriteLock()));
+        return new InMemoryFederatedCacheStore(new LockManager(new ReentrantReadWriteLock()));
     }
 
     @Provider(isDefault = true)
