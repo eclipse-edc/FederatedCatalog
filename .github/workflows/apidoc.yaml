@@ -24,7 +24,7 @@ jobs:
     env:
       rootDir: resources/openapi/yaml/${{ matrix.apiGroup }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-build
 
       - name: Save previous OpenAPI definition
@@ -69,7 +69,7 @@ jobs:
       SWAGGERHUB_API_KEY: ${{ secrets.SWAGGERHUB_TOKEN }}
       SWAGGERHUB_USER: ${{ secrets.SWAGGERHUB_USER }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-build
       - uses: actions/setup-node@v3
 

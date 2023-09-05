@@ -23,7 +23,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-build
 
       - name: Run Checkstyle
@@ -34,7 +34,7 @@ jobs:
     env:
       JACOCO: true
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-build
 
       - name: Run unit tests
@@ -54,7 +54,7 @@ jobs:
           POSTGRES_PASSWORD: password
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-build
 
       - name: Postgresql Tests
@@ -67,7 +67,7 @@ jobs:
       JACOCO: true
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-build
 
       - name: Component Tests
@@ -78,7 +78,7 @@ jobs:
   End-To-End-Tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-build
 
       - name: 'Build Launchers'
@@ -106,7 +106,7 @@ jobs:
       JACOCO: true
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-build
 
       - name: Component Tests
@@ -147,7 +147,7 @@ jobs:
     if: always()
     steps:
       # Sources are needed for Codecov report
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
