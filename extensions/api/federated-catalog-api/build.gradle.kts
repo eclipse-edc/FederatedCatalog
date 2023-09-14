@@ -33,6 +33,7 @@ dependencies {
     testImplementation(libs.edc.ext.http)
     testImplementation(libs.edc.dsp.api.configuration)
     testImplementation(libs.restAssured)
+    testImplementation(libs.edc.iam.mock)
 }
 
 edcBuild {
