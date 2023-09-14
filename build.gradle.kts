@@ -50,7 +50,7 @@ allprojects {
         swagger {
             title.set((project.findProperty("apiTitle") ?: "EDC REST API") as String)
             description =
-                (project.findProperty("apiDescription") ?: "EDC REST APIs - merged by OpenApiMerger") as String
+                    (project.findProperty("apiDescription") ?: "EDC REST APIs - merged by OpenApiMerger") as String
             outputFilename.set(project.name)
             outputDirectory.set(file("${rootProject.projectDir.path}/resources/openapi/yaml"))
         }

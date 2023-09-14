@@ -21,7 +21,6 @@ edc-core-catalog = { module = "org.eclipse.edc:catalog-core", version.ref = "edc
 edc-core-jersey = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
 edc-core-jetty = { module = "org.eclipse.edc:jetty-core", version.ref = "edc" }
 edc-core-transform = { module = "org.eclipse.edc:transform-core", version.ref = "edc" }
-edc-dpf-framework = { module = "org.eclipse.edc:data-plane-framework", version.ref = "edc" }
 edc-dpf-selector-client = { module = "org.eclipse.edc:data-plane-selector-client", version.ref = "edc" }
 edc-dpf-selector-core = { module = "org.eclipse.edc:data-plane-selector-core", version.ref = "edc" }
 edc-dpf-selector-spi = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
@@ -44,7 +43,7 @@ edc-dsp-all = { module = "org.eclipse.edc:dsp", version.ref = "edc" }
 
 [bundles]
 edc-connector = ["edc-boot", "edc-core-connector", "edc-core-jersey", "edc-api-observability"]
-edc-dpf = ["edc-dpf-selector-client", "edc-dpf-selector-spi", "edc-dpf-selector-core", "edc-dpf-framework"]
+edc-dpf = ["edc-dpf-selector-client", "edc-dpf-selector-spi", "edc-dpf-selector-core"]
 
 [plugins]
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
