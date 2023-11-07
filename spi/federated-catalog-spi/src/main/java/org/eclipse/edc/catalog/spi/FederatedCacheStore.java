@@ -14,9 +14,9 @@
 
 package org.eclipse.edc.catalog.spi;
 
-import org.eclipse.edc.connector.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 import org.eclipse.edc.spi.query.Criterion;
+import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
 
 import java.util.Collection;
 import java.util.List;
