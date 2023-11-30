@@ -43,7 +43,7 @@ edc-dsp-all = { module = "org.eclipse.edc:dsp", version.ref = "edc" }
 
 [bundles]
 edc-connector = ["edc-boot", "edc-core-connector", "edc-core-jersey", "edc-api-observability"]
-edc-dpf = ["edc-dpf-selector-client", "edc-dpf-selector-spi", "edc-dpf-selector-core"]
+edc-dpf = ["edc-dpf-selector-spi", "edc-dpf-selector-core"]
 
 [plugins]
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
