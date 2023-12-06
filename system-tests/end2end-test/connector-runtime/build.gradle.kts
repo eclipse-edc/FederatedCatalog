@@ -25,6 +25,7 @@ dependencies {
     runtimeOnly(libs.edc.api.observability)
     runtimeOnly(libs.edc.api.management)
     runtimeOnly(libs.edc.config.filesystem)
+    runtimeOnly(libs.edc.dpf.transfer)
     implementation(libs.edc.ext.http)
     implementation(libs.edc.spi.jsonld)
 
