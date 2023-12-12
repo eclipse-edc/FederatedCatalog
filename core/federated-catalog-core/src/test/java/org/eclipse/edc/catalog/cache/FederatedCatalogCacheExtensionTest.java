@@ -43,23 +43,20 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(DependencyInjectionExtension.class)
 class FederatedCatalogCacheExtensionTest {
-    private final FederatedCacheStore storeMock = mock(FederatedCacheStore.class);
-    private final FederatedCacheNodeDirectory nodeDirectoryMock = mock(FederatedCacheNodeDirectory.class);
+    private final FederatedCacheStore storeMock = mock();
+    private final FederatedCacheNodeDirectory nodeDirectoryMock = mock();
     private FederatedCatalogCacheExtension extension;
-    private ServiceExtensionContext context;
 
     @BeforeEach
     void setUp(ServiceExtensionContext context, ObjectFactory factory) {
-        this.context = spy(context);
-        this.context.registerService(FederatedCacheNodeDirectory.class, nodeDirectoryMock);
-        this.context.registerService(FederatedCacheStore.class, storeMock);
-        this.context.registerService(FederatedCacheNodeFilter.class, null);
+        context.registerService(FederatedCacheNodeDirectory.class, nodeDirectoryMock);
+        context.registerService(FederatedCacheStore.class, storeMock);
+        context.registerService(FederatedCacheNodeFilter.class, null);
         extension = factory.constructInstance(FederatedCatalogCacheExtension.class);
     }
 
@@ -69,7 +66,7 @@ class FederatedCatalogCacheExtensionTest {
     }
 
     @Test
-    void initialize() {
+    void initialize(ServiceExtensionContext context) {
         extension.initialize(context);
 
         verify(context, atLeastOnce()).getMonitor();
@@ -77,7 +74,7 @@ class FederatedCatalogCacheExtensionTest {
     }
 
     @Test
-    void initialize_withHealthCheck(ObjectFactory factory) {
+    void initialize_withHealthCheck(ServiceExtensionContext context, ObjectFactory factory) {
         var healthCheckServiceMock = mock(HealthCheckService.class);
         context.registerService(HealthCheckService.class, healthCheckServiceMock);
         extension = factory.constructInstance(FederatedCatalogCacheExtension.class); //reconstruct to honor health service
@@ -88,7 +85,7 @@ class FederatedCatalogCacheExtensionTest {
     }
 
     @Test
-    void verify_successHandler_persistIsCalled() {
+    void verify_successHandler_persistIsCalled(ServiceExtensionContext context) {
         when(context.getSetting(eq("edc.catalog.cache.partition.num.crawlers"), anyString())).thenReturn("1");
         when(context.getSetting(eq("edc.catalog.cache.execution.delay.seconds"), any())).thenReturn("0");
         when(nodeDirectoryMock.getAll()).thenReturn(List.of(createNode()));
@@ -111,7 +108,7 @@ class FederatedCatalogCacheExtensionTest {
     }
 
     @Test
-    void verifyProvider_cacheNodeAdapterRegistry() {
+    void verifyProvider_cacheNodeAdapterRegistry(ServiceExtensionContext context) {
         var n = extension.createNodeQueryAdapterRegistry(context);
         assertThat(extension.createNodeQueryAdapterRegistry(context)).isSameAs(n);
         assertThat(n.findForProtocol(CatalogConstants.DATASPACE_PROTOCOL)).hasSize(1)
