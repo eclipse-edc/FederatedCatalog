@@ -5,7 +5,7 @@ format.version = "1.1"
 awaitility = "4.2.0"
 edc = "0.4.2-SNAPSHOT"
 failsafe = "3.3.2"
-restAssured = "5.3.2"
+restAssured = "5.4.0"
 
 [libraries]
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
