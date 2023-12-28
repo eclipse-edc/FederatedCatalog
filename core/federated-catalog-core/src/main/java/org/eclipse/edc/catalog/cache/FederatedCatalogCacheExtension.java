@@ -14,22 +14,23 @@
 
 package org.eclipse.edc.catalog.cache;
 
-import org.eclipse.edc.catalog.cache.crawler.NodeQueryAdapterRegistryImpl;
-import org.eclipse.edc.catalog.cache.query.DspNodeQueryAdapter;
-import org.eclipse.edc.catalog.spi.CacheConfiguration;
+import org.eclipse.edc.catalog.cache.crawler.CrawlerActionRegistryImpl;
+import org.eclipse.edc.catalog.cache.query.DspCatalogRequestAction;
 import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.CatalogConstants;
-import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
-import org.eclipse.edc.catalog.spi.FederatedCacheNodeFilter;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
-import org.eclipse.edc.catalog.spi.NodeQueryAdapterRegistry;
-import org.eclipse.edc.catalog.spi.model.ExecutionPlan;
-import org.eclipse.edc.catalog.spi.model.UpdateResponse;
+import org.eclipse.edc.catalog.spi.model.CatalogUpdateResponse;
+import org.eclipse.edc.crawler.spi.CrawlerActionRegistry;
+import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
+import org.eclipse.edc.crawler.spi.TargetNodeFilter;
+import org.eclipse.edc.crawler.spi.model.ExecutionPlan;
+import org.eclipse.edc.crawler.spi.model.UpdateResponse;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.health.HealthCheckResult;
@@ -38,6 +39,8 @@ import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 
 import static java.util.Optional.ofNullable;
+import static org.eclipse.edc.catalog.spi.CacheSettings.DEFAULT_NUMBER_OF_CRAWLERS;
+import static org.eclipse.edc.catalog.spi.CacheSettings.NUM_CRAWLER_SETTING;
 import static org.eclipse.edc.catalog.spi.CatalogConstants.DATASPACE_PROTOCOL;
 import static org.eclipse.edc.spi.CoreConstants.JSON_LD;
 
@@ -54,13 +57,14 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
     private RemoteMessageDispatcherRegistry dispatcherRegistry;
     // get all known nodes from node directory - must be supplied by another extension
     @Inject
-    private FederatedCacheNodeDirectory directory;
+    private TargetNodeDirectory directory;
     // optional filter function to select FC nodes eligible for crawling.
     @Inject(required = false)
-    private FederatedCacheNodeFilter nodeFilter;
+    private TargetNodeFilter nodeFilter;
 
+    @Inject(required = false)
     private ExecutionPlan executionPlan;
-    private NodeQueryAdapterRegistryImpl nodeQueryAdapterRegistry;
+    private CrawlerActionRegistryImpl nodeQueryAdapterRegistry;
     private ExecutionManager executionManager;
     @Inject
     private TypeManager typeManager;
@@ -69,6 +73,9 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
     private TypeTransformerRegistry registry;
     @Inject
     private JsonLd jsonLdService;
+
+    @Inject
+    private Monitor monitor;
 
     @Override
     public String name() {
@@ -80,19 +87,15 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
         // CRAWLER SUBSYSTEM
         // contribute to the liveness probe
         if (healthCheckService != null) {
-            healthCheckService.addReadinessProvider(() -> HealthCheckResult.Builder.newInstance().component("FCC Crawler Subsystem").build());
+            healthCheckService.addReadinessProvider(() -> HealthCheckResult.Builder.newInstance().component("Crawler Subsystem").build());
         }
-        var cacheConfiguration = new CacheConfiguration(context);
-        int numCrawlers = cacheConfiguration.getNumCrawlers();
-        // and a loader manager
-
-        executionPlan = cacheConfiguration.getExecutionPlan();
+        int numCrawlers = context.getSetting(NUM_CRAWLER_SETTING, DEFAULT_NUMBER_OF_CRAWLERS);
 
         // by default only uses FC nodes that are not "self"
-        nodeFilter = ofNullable(nodeFilter).orElse(node -> !node.getName().equals(context.getConnectorId()));
+        nodeFilter = ofNullable(nodeFilter).orElse(node -> !node.name().equals(context.getConnectorId()));
 
         executionManager = ExecutionManager.Builder.newInstance()
-                .monitor(context.getMonitor())
+                .monitor(context.getMonitor().withPrefix("ExecutionManager"))
                 .preExecutionTask(() -> {
                     store.deleteExpired();
                     store.expireAll();
@@ -111,12 +114,12 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
     }
 
     @Provider
-    public NodeQueryAdapterRegistry createNodeQueryAdapterRegistry(ServiceExtensionContext context) {
+    public CrawlerActionRegistry createNodeQueryAdapterRegistry(ServiceExtensionContext context) {
         if (nodeQueryAdapterRegistry == null) {
-            nodeQueryAdapterRegistry = new NodeQueryAdapterRegistryImpl();
+            nodeQueryAdapterRegistry = new CrawlerActionRegistryImpl();
             // catalog queries via IDS multipart and DSP are supported by default
             var mapper = typeManager.getMapper(JSON_LD);
-            nodeQueryAdapterRegistry.register(DATASPACE_PROTOCOL, new DspNodeQueryAdapter(dispatcherRegistry, context.getMonitor(), mapper, registry, jsonLdService));
+            nodeQueryAdapterRegistry.register(DATASPACE_PROTOCOL, new DspCatalogRequestAction(dispatcherRegistry, context.getMonitor(), mapper, registry, jsonLdService));
         }
         return nodeQueryAdapterRegistry;
     }
@@ -127,8 +130,14 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
      * @param updateResponse The response that contains the catalog
      */
     private void persist(UpdateResponse updateResponse) {
-        var catalog = updateResponse.getCatalog();
-        catalog.getProperties().put(CatalogConstants.PROPERTY_ORIGINATOR, updateResponse.getSource());
-        store.save(catalog);
+        if (updateResponse instanceof CatalogUpdateResponse catalogUpdateResponse) {
+            var catalog = catalogUpdateResponse.getCatalog();
+            catalog.getProperties().put(CatalogConstants.PROPERTY_ORIGINATOR, updateResponse.getSource());
+            store.save(catalog);
+        } else {
+            monitor.warning("Expected a response of type %s but got %s. Will discard".formatted(CatalogUpdateResponse.class, updateResponse.getClass()));
+        }
     }
+
+
 }

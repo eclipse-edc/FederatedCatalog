@@ -37,35 +37,35 @@ import java.util.Map;
 import static java.lang.String.format;
 
 class ManagementApiClient {
-    private static final String MANAGEMENT_BASE_URL = "http://localhost:9192/management";
-    private static final String CATALOG_BASE_URL = "http://localhost:8181/api";
     private static final TypeReference<List<Map<String, Object>>> LIST_TYPE_REFERENCE = new TypeReference<>() {
     };
     private static final MediaType JSON = MediaType.parse("application/json");
+    private final String managementBaseUrl;
+    private final String catalogBaseUrl;
     private final ObjectMapper mapper;
     private final JsonLd jsonLdService;
     private final TypeTransformerRegistry typeTransformerRegistry;
 
-    ManagementApiClient(ObjectMapper mapper, JsonLd jsonLdService, TypeTransformerRegistry typeTransformerRegistry) {
+    ManagementApiClient(Endpoint catalogManagement, Endpoint connectorManagement,
+                        ObjectMapper mapper, JsonLd jsonLdService,
+                        TypeTransformerRegistry typeTransformerRegistry) {
         this.mapper = mapper;
         this.jsonLdService = jsonLdService;
         this.typeTransformerRegistry = typeTransformerRegistry;
-    }
-
-    private static String catalog(String path) {
-        return CATALOG_BASE_URL + path;
+        managementBaseUrl = "http://localhost:%s%s".formatted(connectorManagement.port(), connectorManagement.path());
+        catalogBaseUrl = "http://localhost:%s%s".formatted(catalogManagement.port(), catalogManagement.path());
     }
 
     Result<String> postAsset(JsonObject entry) {
-        return postObjectWithId(createPostRequest(entry, MANAGEMENT_BASE_URL + "/v3/assets"));
+        return postObjectWithId(createPostRequest(entry, managementBaseUrl + "/v3/assets"));
     }
 
     Result<String> postPolicy(String policyJsonLd) {
-        return postObjectWithId(createPostRequest(policyJsonLd, MANAGEMENT_BASE_URL + "/v2/policydefinitions"));
+        return postObjectWithId(createPostRequest(policyJsonLd, managementBaseUrl + "/v2/policydefinitions"));
     }
 
     Result<String> postContractDefinition(JsonObject definition) {
-        return postObjectWithId(createPostRequest(definition, MANAGEMENT_BASE_URL + "/v2/contractdefinitions"));
+        return postObjectWithId(createPostRequest(definition, managementBaseUrl + "/v2/contractdefinitions"));
     }
 
     List<Catalog> getContractOffers() {
@@ -86,6 +86,10 @@ class ManagementApiClient {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String catalog(String path) {
+        return catalogBaseUrl + path;
     }
 
     @NotNull

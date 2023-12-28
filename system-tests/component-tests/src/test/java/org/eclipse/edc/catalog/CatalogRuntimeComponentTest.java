@@ -20,8 +20,8 @@ import jakarta.json.JsonObject;
 import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.catalog.spi.Dataset;
-import org.eclipse.edc.catalog.spi.FederatedCacheNode;
-import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
+import org.eclipse.edc.crawler.spi.TargetNode;
+import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.ComponentTest;
@@ -97,7 +97,7 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single target, yields no results")
-    void crawlSingle_noResults(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, FederatedCacheNodeDirectory directory) {
+    void crawlSingle_noResults(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
         // prepare node directory
         insertSingle(directory);
         // intercept request egress
@@ -116,7 +116,7 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single target, yields some results")
-    void crawlSingle_withResults(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, FederatedCacheNodeDirectory directory) {
+    void crawlSingle_withResults(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
         // prepare node directory
         insertSingle(directory);
         // intercept request egress
@@ -135,7 +135,7 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single targets, > 100 results, needs paging")
-    void crawlSingle_withPagedResults(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, FederatedCacheNodeDirectory directory) {
+    void crawlSingle_withPagedResults(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
         // prepare node directory
         insertSingle(directory);
 
@@ -159,7 +159,7 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single target twice, emulate deletion of assets")
-    void crawlSingle_withDeletions_shouldRemove(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, FederatedCacheNodeDirectory directory) {
+    void crawlSingle_withDeletions_shouldRemove(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
         // prepare node directory
         insertSingle(directory);
 
@@ -188,7 +188,7 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single target twice, emulate deleting and re-adding of assets with same ID")
-    void crawlSingle_withUpdates_shouldReplace(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, FederatedCacheNodeDirectory directory) {
+    void crawlSingle_withUpdates_shouldReplace(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
         // prepare node directory
         insertSingle(directory);
 
@@ -216,7 +216,7 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single target twice, emulate addition of assets")
-    void crawlSingle_withAdditions_shouldAdd(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, FederatedCacheNodeDirectory directory) {
+    void crawlSingle_withAdditions_shouldAdd(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
         // prepare node directory
         insertSingle(directory);
 
@@ -245,7 +245,7 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single target, verify that the originator information is properly inserted")
-    void crawlSingle_verifyCorrectOriginator(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, FederatedCacheNodeDirectory directory) {
+    void crawlSingle_verifyCorrectOriginator(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
         // prepare node directory
         insertSingle(directory);
         // intercept request egress
@@ -266,7 +266,7 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl 1000 targets, verify that all offers are collected")
-    void crawlMany_shouldCollectAll(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, FederatedCacheNodeDirectory directory) {
+    void crawlMany_shouldCollectAll(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
 
         var numTotalAssets = new AtomicInteger();
         var rnd = new SecureRandom();
@@ -277,7 +277,7 @@ public class CatalogRuntimeComponentTest {
         range(0, numTargets)
                 .forEach(i -> {
                     var nodeUrl = format("http://test-node%s.com", i);
-                    var node = new FederatedCacheNode("test-node-" + i, nodeUrl, singletonList(DATASPACE_PROTOCOL));
+                    var node = new TargetNode("test-node-" + i, nodeUrl, singletonList(DATASPACE_PROTOCOL));
                     directory.insert(node);
 
                     var numAssets = 1 + rnd.nextInt(10);
@@ -298,20 +298,20 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl multiple targets with conflicting asset IDs")
-    void crawlMultiple_whenConflictingAssetIds_shouldOverwrite(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, FederatedCacheNodeDirectory directory) {
-        var node1 = new FederatedCacheNode("test-node1", "http://test-node1.com", singletonList(DATASPACE_PROTOCOL));
-        var node2 = new FederatedCacheNode("test-node2", "http://test-node2.com", singletonList(DATASPACE_PROTOCOL));
+    void crawlMultiple_whenConflictingAssetIds_shouldOverwrite(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
+        var node1 = new TargetNode("test-node1", "http://test-node1.com", singletonList(DATASPACE_PROTOCOL));
+        var node2 = new TargetNode("test-node2", "http://test-node2.com", singletonList(DATASPACE_PROTOCOL));
 
         directory.insert(node1);
         directory.insert(node2);
         reg.register(dispatcher);
 
         when(dispatcher.dispatch(eq(byte[].class), argThat(sentTo("http://test-node1.com"))))
-                .thenReturn(catalogOf(catalog -> toBytes(ttr, catalog), "catalog-" + node1.getTargetUrl(), createDataset("offer1"), createDataset("offer2"), createDataset("offer3")))
+                .thenReturn(catalogOf(catalog -> toBytes(ttr, catalog), "catalog-" + node1.targetUrl(), createDataset("offer1"), createDataset("offer2"), createDataset("offer3")))
                 .thenReturn(emptyCatalog(catalog -> toBytes(ttr, catalog)));
 
         when(dispatcher.dispatch(eq(byte[].class), argThat(sentTo("http://test-node2.com"))))
-                .thenReturn(catalogOf(catalog -> toBytes(ttr, catalog), "catalog-" + node2.getTargetUrl(), createDataset("offer14"), createDataset("offer32"), /*this one is conflicting:*/createDataset("offer3")))
+                .thenReturn(catalogOf(catalog -> toBytes(ttr, catalog), "catalog-" + node2.targetUrl(), createDataset("offer14"), createDataset("offer32"), /*this one is conflicting:*/createDataset("offer3")))
                 .thenReturn(emptyCatalog(catalog -> toBytes(ttr, catalog)));
 
         await().pollDelay(ofSeconds(1))

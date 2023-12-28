@@ -40,7 +40,7 @@ public class FederatedCatalogCacheQueryApiExtension implements ServiceExtension 
 
     @Inject
     private ManagementApiConfiguration config;
-    
+
     @Inject
     private TypeTransformerRegistry transformerRegistry;
 
