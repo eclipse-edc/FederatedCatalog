@@ -19,16 +19,29 @@ import org.eclipse.edc.catalog.cache.query.CacheQueryAdapterRegistryImpl;
 import org.eclipse.edc.catalog.cache.query.QueryEngineImpl;
 import org.eclipse.edc.catalog.directory.InMemoryNodeDirectory;
 import org.eclipse.edc.catalog.spi.CacheQueryAdapterRegistry;
-import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.catalog.spi.QueryEngine;
 import org.eclipse.edc.catalog.store.InMemoryFederatedCacheStore;
+import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
+import org.eclipse.edc.crawler.spi.model.ExecutionPlan;
+import org.eclipse.edc.crawler.spi.model.RecurringExecutionPlan;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.util.concurrency.LockManager;
 
+import java.time.Duration;
+import java.util.Random;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import static java.lang.String.format;
+import static org.eclipse.edc.catalog.spi.CacheSettings.DEFAULT_EXECUTION_PERIOD_SECONDS;
+import static org.eclipse.edc.catalog.spi.CacheSettings.DEFAULT_NUMBER_OF_CRAWLERS;
+import static org.eclipse.edc.catalog.spi.CacheSettings.EXECUTION_PLAN_DELAY_SECONDS;
+import static org.eclipse.edc.catalog.spi.CacheSettings.EXECUTION_PLAN_PERIOD_SECONDS;
+import static org.eclipse.edc.catalog.spi.CacheSettings.LOW_EXECUTION_PERIOD_SECONDS_THRESHOLD;
+import static org.eclipse.edc.catalog.spi.CacheSettings.NUM_CRAWLER_SETTING;
 
 /**
  * Provides default service implementations for fallback
@@ -54,7 +67,7 @@ public class FederatedCatalogDefaultServicesExtension implements ServiceExtensio
     }
 
     @Provider(isDefault = true)
-    public FederatedCacheNodeDirectory defaultNodeDirectory() {
+    public TargetNodeDirectory defaultNodeDirectory() {
         return new InMemoryNodeDirectory();
     }
 
@@ -72,4 +85,31 @@ public class FederatedCatalogDefaultServicesExtension implements ServiceExtensio
         return registry;
     }
 
+    @Provider
+    public ExecutionPlan createRecurringExecutionPlan(ServiceExtensionContext context) {
+        var periodSeconds = context.getSetting(EXECUTION_PLAN_PERIOD_SECONDS, DEFAULT_EXECUTION_PERIOD_SECONDS);
+        var setting = context.getSetting(EXECUTION_PLAN_DELAY_SECONDS, null);
+        int initialDelaySeconds;
+        if ("random".equals(setting) || setting == null) {
+            initialDelaySeconds = randomSeconds();
+        } else {
+            try {
+                initialDelaySeconds = Integer.parseInt(setting);
+            } catch (NumberFormatException ex) {
+                initialDelaySeconds = 0;
+            }
+        }
+        var monitor = context.getMonitor();
+        if (periodSeconds < LOW_EXECUTION_PERIOD_SECONDS_THRESHOLD) {
+            var crawlers = context.getSetting(NUM_CRAWLER_SETTING, DEFAULT_NUMBER_OF_CRAWLERS);
+            monitor.warning(format("An execution period of %d seconds is very low (threshold = %d). This might result in the work queue to be ever growing." +
+                    " A longer execution period or more crawler threads (currently using %d) should be considered.", periodSeconds, LOW_EXECUTION_PERIOD_SECONDS_THRESHOLD, crawlers));
+        }
+        return new RecurringExecutionPlan(Duration.ofSeconds(periodSeconds), Duration.ofSeconds(initialDelaySeconds), monitor);
+    }
+
+    private int randomSeconds() {
+        var rnd = new Random();
+        return 10 + rnd.nextInt(90);
+    }
 }

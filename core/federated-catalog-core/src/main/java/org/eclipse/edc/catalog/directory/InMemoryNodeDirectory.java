@@ -14,22 +14,22 @@
 
 package org.eclipse.edc.catalog.directory;
 
-import org.eclipse.edc.catalog.spi.FederatedCacheNode;
-import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
+import org.eclipse.edc.crawler.spi.TargetNode;
+import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class InMemoryNodeDirectory implements FederatedCacheNodeDirectory {
-    private final List<FederatedCacheNode> cache = new CopyOnWriteArrayList<>();
+public class InMemoryNodeDirectory implements TargetNodeDirectory {
+    private final List<TargetNode> cache = new CopyOnWriteArrayList<>();
 
     @Override
-    public List<FederatedCacheNode> getAll() {
+    public List<TargetNode> getAll() {
         return List.copyOf(cache); //never return the internal copy
     }
 
     @Override
-    public void insert(FederatedCacheNode node) {
+    public void insert(TargetNode node) {
         cache.add(node);
     }
 }

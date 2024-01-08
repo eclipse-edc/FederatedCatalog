@@ -20,6 +20,7 @@ plugins {
 dependencies {
     api(libs.edc.spi.core)
     api(libs.edc.spi.web)
+    api(project(":core:crawler-core"))
     api(project(":spi:federated-catalog-spi"))
 
     implementation(libs.edc.util)

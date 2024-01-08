@@ -73,7 +73,7 @@ jobs:
       - name: Component Tests
         uses: ./.github/actions/run-tests
         with:
-          command: ./gradlew test jacocoTestReport -DincludeTags="ComponentTest"
+          command: ./gradlew test jacocoTestReport -DincludeTags="ComponentTest" -PverboseTest=true
 
   End-To-End-Tests:
     runs-on: ubuntu-latest
@@ -83,23 +83,12 @@ jobs:
 
       - name: 'Build Launchers'
         run: |
-          ./gradlew -p system-tests/end2end-test clean shadowJar 
-
-      - name: 'Install docker compose plugin'
-        run: |
-          DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
-          mkdir -p $DOCKER_CONFIG/cli-plugins
-          curl -SL https://github.com/docker/compose/releases/download/v2.17.3/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
-          chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
-
-      - name: 'Start FCC Runtime in Docker'
-        run: docker compose -f system-tests/end2end-test/docker-compose.yml up --build --wait
-        timeout-minutes: 10
+          ./gradlew compileJava compileTestJava
 
       - name: 'End to End Integration Tests'
         uses: ./.github/actions/run-tests
         with:
-          command: ./gradlew system-tests:end2end-test:e2e-junit:test -DincludeTags="EndToEndTest"
+          command: ./gradlew test jacocoTestReport -DincludeTags="EndToEndTest" -PverboseTest=true
 
   API-Tests:
     env:

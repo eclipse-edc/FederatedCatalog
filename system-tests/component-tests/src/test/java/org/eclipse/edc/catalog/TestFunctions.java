@@ -27,9 +27,9 @@ import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.spi.DataService;
 import org.eclipse.edc.catalog.spi.Dataset;
 import org.eclipse.edc.catalog.spi.Distribution;
-import org.eclipse.edc.catalog.spi.FederatedCacheNode;
-import org.eclipse.edc.catalog.spi.FederatedCacheNodeDirectory;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
+import org.eclipse.edc.crawler.spi.TargetNode;
+import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.policy.model.Policy;
@@ -65,6 +65,13 @@ public class TestFunctions {
 
     private static final JsonLd TITANIUM_JSON_LD = new TitaniumJsonLd(mock(Monitor.class));
 
+    private static RequestSpecification baseRequest() {
+        return given()
+                .baseUri("http://localhost:" + PORT)
+                .basePath(BASE_PATH)
+                .contentType(ContentType.JSON)
+                .when();
+    }
 
     public static CompletableFuture<StatusResult<byte[]>> emptyCatalog(Function<Catalog, StatusResult<byte[]>> transformationFunction) {
         return completedFuture(transformationFunction.apply(catalogBuilder().build()));
@@ -102,8 +109,8 @@ public class TestFunctions {
                 .build();
     }
 
-    public static void insertSingle(FederatedCacheNodeDirectory directory) {
-        directory.insert(new FederatedCacheNode("test-node", "http://test-node.com", singletonList(CatalogConstants.DATASPACE_PROTOCOL)));
+    public static void insertSingle(TargetNodeDirectory directory) {
+        directory.insert(new TargetNode("test-node", "http://test-node.com", singletonList(CatalogConstants.DATASPACE_PROTOCOL)));
     }
 
     public static List<Catalog> queryCatalogApi(Function<JsonObject, Catalog> transformerFunction) {
@@ -124,14 +131,6 @@ public class TestFunctions {
         } catch (JsonProcessingException e) {
             throw new AssertionError(e);
         }
-    }
-
-    private static RequestSpecification baseRequest() {
-        return given()
-                .baseUri("http://localhost:" + PORT)
-                .basePath(BASE_PATH)
-                .contentType(ContentType.JSON)
-                .when();
     }
 
     public static Dataset createDataset(String dataset1) {

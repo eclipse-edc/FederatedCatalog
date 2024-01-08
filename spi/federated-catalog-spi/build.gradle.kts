@@ -17,6 +17,7 @@ plugins {
 }
 
 dependencies {
+    api(project(":spi:crawler-spi"))
     api(libs.edc.spi.catalog)
     api(libs.edc.spi.core)
 }

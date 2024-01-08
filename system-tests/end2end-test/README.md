@@ -7,7 +7,7 @@ it is possible to run them in local dev environments, be aware of the more invol
 
 ## Directory structure
 
-- `catalog-runtime`: contains some glue code, such as a file-based `FederatedCacheNodeDirectory` implementation for
+- `catalog-runtime`: contains some glue code, such as a file-based `TargetNodeDirectory` implementation for
   testing, a build file and a `Dockerfile`
 - `connector-runtime`: contains a build file and `Dockerfile` for a very basic EDC connector runtime
 - `e2e-junit-runner`: contains the actual JUnit test cases
