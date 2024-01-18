@@ -25,7 +25,7 @@ jobs:
       rootDir: resources/openapi/yaml/${{ matrix.apiGroup }}
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-build
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
 
       - name: Save previous OpenAPI definition
         run: |
@@ -70,7 +70,7 @@ jobs:
       SWAGGERHUB_USER: ${{ secrets.SWAGGERHUB_USER }}
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-build
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - uses: actions/setup-node@v3
 
       # merge together all api groups
