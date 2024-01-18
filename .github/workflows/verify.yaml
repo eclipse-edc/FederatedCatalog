@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-build
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
 
       - name: Run Checkstyle
         run: ./gradlew checkstyleMain checkstyleTest checkstyleTestFixtures
@@ -35,10 +35,10 @@ jobs:
       JACOCO: true
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-build
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
 
       - name: Run unit tests
-        uses: ./.github/actions/run-tests
+        uses: eclipse-edc/.github/.github/actions/run-tests@main
         with:
           command: ./gradlew test jacocoTestReport
 
@@ -55,10 +55,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-build
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
 
       - name: Postgresql Tests
-        uses: ./.github/actions/run-tests
+        uses: eclipse-edc/.github/.github/actions/run-tests@main
         with:
           command: ./gradlew test -DincludeTags="PostgresqlIntegrationTest"
 
@@ -68,10 +68,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-build
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
 
       - name: Component Tests
-        uses: ./.github/actions/run-tests
+        uses: eclipse-edc/.github/.github/actions/run-tests@main
         with:
           command: ./gradlew test jacocoTestReport -DincludeTags="ComponentTest" -PverboseTest=true
 
@@ -79,14 +79,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-build
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
 
       - name: 'Build Launchers'
         run: |
           ./gradlew compileJava compileTestJava
 
       - name: 'End to End Integration Tests'
-        uses: ./.github/actions/run-tests
+        uses: eclipse-edc/.github/.github/actions/run-tests@main
         with:
           command: ./gradlew test jacocoTestReport -DincludeTags="EndToEndTest" -PverboseTest=true
 
@@ -96,10 +96,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-build
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
 
       - name: Component Tests
-        uses: ./.github/actions/run-tests
+        uses: eclipse-edc/.github/.github/actions/run-tests@main
         with:
           command: ./gradlew test jacocoTestReport -DincludeTags="ApiTest"
 
