@@ -19,6 +19,7 @@ plugins {
 
 dependencies {
     api(libs.edc.spi.core)
+    implementation(libs.edc.spi.transform)
     implementation(libs.edc.spi.web)
     api(project(":spi:federated-catalog-spi"))
 
