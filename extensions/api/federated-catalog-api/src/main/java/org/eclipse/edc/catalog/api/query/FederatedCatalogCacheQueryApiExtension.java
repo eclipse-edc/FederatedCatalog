@@ -15,7 +15,7 @@
 package org.eclipse.edc.catalog.api.query;
 
 import org.eclipse.edc.catalog.spi.QueryEngine;
-import org.eclipse.edc.identityhub.api.configuration.ManagementApiConfiguration;
+import org.eclipse.edc.connector.api.management.configuration.ManagementApiConfiguration;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
