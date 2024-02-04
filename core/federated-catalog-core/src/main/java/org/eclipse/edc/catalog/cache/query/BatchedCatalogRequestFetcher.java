@@ -122,7 +122,8 @@ public class BatchedCatalogRequestFetcher {
 
     private CatalogRequestMessage.Builder toBuilder(CatalogRequestMessage catalogRequest) {
         return CatalogRequestMessage.Builder.newInstance()
-                .counterPartyAddress(catalogRequest.getCounterPartyAddress());
+                .counterPartyAddress(catalogRequest.getCounterPartyAddress())
+                .counterPartyId(catalogRequest.getCounterPartyId());
     }
 
 

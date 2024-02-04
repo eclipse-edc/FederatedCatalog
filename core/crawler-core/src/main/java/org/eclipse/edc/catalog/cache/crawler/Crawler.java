@@ -65,7 +65,7 @@ public class Crawler {
     public CompletableFuture<? extends UpdateResponse> run(WorkItem target, @NotNull CrawlerAction adapter) {
         try {
             monitor.debug(format("%s: WorkItem acquired", crawlerId));
-            var updateFuture = adapter.apply(new UpdateRequest(target.getUrl()));
+            var updateFuture = adapter.apply(new UpdateRequest(target.getId(), target.getUrl()));
             return updateFuture.whenComplete((response, throwable) -> {
                 if (throwable != null) {
                     handleError(target, throwable.getMessage());

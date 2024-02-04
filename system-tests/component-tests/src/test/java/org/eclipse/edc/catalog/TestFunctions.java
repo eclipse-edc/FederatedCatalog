@@ -110,7 +110,7 @@ public class TestFunctions {
     }
 
     public static void insertSingle(TargetNodeDirectory directory) {
-        directory.insert(new TargetNode("test-node", "http://test-node.com", singletonList(CatalogConstants.DATASPACE_PROTOCOL)));
+        directory.insert(new TargetNode("test-node", "did:web:" + UUID.randomUUID(), "http://test-node.com", singletonList(CatalogConstants.DATASPACE_PROTOCOL)));
     }
 
     public static List<Catalog> queryCatalogApi(Function<JsonObject, Catalog> transformerFunction) {

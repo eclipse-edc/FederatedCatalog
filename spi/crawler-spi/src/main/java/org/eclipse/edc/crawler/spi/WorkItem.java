@@ -23,11 +23,13 @@ import java.util.List;
  * The {@code Crawler} takes the {@link WorkItem} and executes the {@link CrawlerAction} against it.
  */
 public class WorkItem {
+    private final String id;
     private final String url;
     private final String protocolName;
     private final List<String> errors;
 
-    public WorkItem(String url, String protocolName) {
+    public WorkItem(String id, String url, String protocolName) {
+        this.id = id;
         this.url = url;
         this.protocolName = protocolName;
         errors = new ArrayList<>();
@@ -41,6 +43,10 @@ public class WorkItem {
         return url;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public void error(String message) {
         errors.add(message);
     }
@@ -52,7 +58,8 @@ public class WorkItem {
     @Override
     public String toString() {
         return "WorkItem{" +
-                "url='" + url + '\'' +
+                "id='" + id + '\'' +
+                ", url='" + url + '\'' +
                 ", protocolName='" + protocolName + '\'' +
                 ", errors=" + errors +
                 '}';

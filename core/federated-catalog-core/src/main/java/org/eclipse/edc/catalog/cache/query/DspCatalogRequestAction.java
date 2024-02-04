@@ -39,14 +39,13 @@ public class DspCatalogRequestAction implements CrawlerAction {
 
     @Override
     public CompletableFuture<UpdateResponse> apply(UpdateRequest request) {
-
-        var dspUrl = request.nodeUrl();
         var catalogRequest = CatalogRequestMessage.Builder.newInstance()
                 .protocol(CatalogConstants.DATASPACE_PROTOCOL)
-                .counterPartyAddress(dspUrl)
+                .counterPartyAddress(request.nodeUrl())
+                .counterPartyId(request.nodeId())
                 .build();
         var catalogFuture = fetcher.fetch(catalogRequest, INITIAL_OFFSET, BATCH_SIZE);
 
-        return catalogFuture.thenApply(catalog -> new CatalogUpdateResponse(dspUrl, catalog));
+        return catalogFuture.thenApply(catalog -> new CatalogUpdateResponse(request.nodeUrl(), catalog));
     }
 }
