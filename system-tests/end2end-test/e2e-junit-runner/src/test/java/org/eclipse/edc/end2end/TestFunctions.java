@@ -88,7 +88,7 @@ public class TestFunctions {
     private static JsonObject createDataAddressJson() {
         return Json.createObjectBuilder()
                 .add(TYPE, EDC_NAMESPACE + "DataAddress")
-                .add(EDC_NAMESPACE + "type", "test-type")
+                .add(EDC_NAMESPACE + "type", "test-src-type")
                 .build();
     }
 }
