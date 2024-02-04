@@ -121,7 +121,7 @@ class FederatedCatalogTest {
         typeTransformerRegistry.register(new JsonValueToGenericTypeTransformer(mapper));
 
         var directory = new InMemoryNodeDirectory();
-        directory.insert(new TargetNode("connector", "http://localhost:%s%s".formatted(CONNECTOR_PROTOCOL.port(), CONNECTOR_PROTOCOL.path()), List.of(CatalogConstants.DATASPACE_PROTOCOL)));
+        directory.insert(new TargetNode("connector", "did:web:" + UUID.randomUUID(), "http://localhost:%s%s".formatted(CONNECTOR_PROTOCOL.port(), CONNECTOR_PROTOCOL.path()), List.of(CatalogConstants.DATASPACE_PROTOCOL)));
         catalog.registerServiceMock(TargetNodeDirectory.class, directory);
     }
 

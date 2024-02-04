@@ -19,11 +19,12 @@ import org.mockito.ArgumentMatcher;
 
 public abstract class CatalogRequestMatcher implements ArgumentMatcher<CatalogRequestMessage> {
 
-    public static CatalogRequestMatcher sentTo(String recipientUrl) {
+    public static CatalogRequestMatcher sentTo(String recipientId, String recipientUrl) {
         return new CatalogRequestMatcher() {
             @Override
             public boolean matches(CatalogRequestMessage argument) {
-                return argument.getCounterPartyAddress().equals(recipientUrl);
+                return argument.getCounterPartyId().equals(recipientId) &&
+                        argument.getCounterPartyAddress().equals(recipientUrl);
             }
         };
     }

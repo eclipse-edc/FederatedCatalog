@@ -54,6 +54,6 @@ public class TestUtil {
 
     @NotNull
     public static TargetNode createNode() {
-        return new TargetNode("testnode" + UUID.randomUUID(), "http://test.com", List.of(TEST_PROTOCOL));
+        return new TargetNode("testnode" + UUID.randomUUID(), "did:web:" + UUID.randomUUID(), "http://test.com", List.of(TEST_PROTOCOL));
     }
 }

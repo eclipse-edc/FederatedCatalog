@@ -169,7 +169,7 @@ public class ExecutionManager {
         // use all nodes EXCEPT self
         return directory.getAll().stream()
                 .filter(nodeFilter)
-                .map(n -> new WorkItem(n.targetUrl(), selectProtocol(n.supportedProtocols())))
+                .map(n -> new WorkItem(n.id(), n.targetUrl(), selectProtocol(n.supportedProtocols())))
                 .collect(Collectors.toList());
     }
 

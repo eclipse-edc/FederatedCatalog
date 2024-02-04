@@ -41,6 +41,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
@@ -276,12 +277,13 @@ public class CatalogRuntimeComponentTest {
         var numTargets = 50;
         range(0, numTargets)
                 .forEach(i -> {
+                    var nodeId = "did:web:" + UUID.randomUUID();
                     var nodeUrl = format("http://test-node%s.com", i);
-                    var node = new TargetNode("test-node-" + i, nodeUrl, singletonList(DATASPACE_PROTOCOL));
+                    var node = new TargetNode("test-node-" + i, nodeId, nodeUrl, singletonList(DATASPACE_PROTOCOL));
                     directory.insert(node);
 
                     var numAssets = 1 + rnd.nextInt(10);
-                    when(dispatcher.dispatch(eq(byte[].class), argThat(sentTo(nodeUrl))))
+                    when(dispatcher.dispatch(eq(byte[].class), argThat(sentTo(nodeId, nodeUrl))))
                             .thenReturn(randomCatalog(catalog -> toBytes(ttr, catalog), "catalog-" + nodeUrl, numAssets));
                     numTotalAssets.addAndGet(numAssets);
                 });
@@ -299,18 +301,18 @@ public class CatalogRuntimeComponentTest {
     @Test
     @DisplayName("Crawl multiple targets with conflicting asset IDs")
     void crawlMultiple_whenConflictingAssetIds_shouldOverwrite(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
-        var node1 = new TargetNode("test-node1", "http://test-node1.com", singletonList(DATASPACE_PROTOCOL));
-        var node2 = new TargetNode("test-node2", "http://test-node2.com", singletonList(DATASPACE_PROTOCOL));
+        var node1 = new TargetNode("test-node1", "did:web:" + UUID.randomUUID(), "http://test-node1.com", singletonList(DATASPACE_PROTOCOL));
+        var node2 = new TargetNode("test-node2", "did:web:" + UUID.randomUUID(), "http://test-node2.com", singletonList(DATASPACE_PROTOCOL));
 
         directory.insert(node1);
         directory.insert(node2);
         reg.register(dispatcher);
 
-        when(dispatcher.dispatch(eq(byte[].class), argThat(sentTo("http://test-node1.com"))))
+        when(dispatcher.dispatch(eq(byte[].class), argThat(sentTo(node1.id(), node1.targetUrl()))))
                 .thenReturn(catalogOf(catalog -> toBytes(ttr, catalog), "catalog-" + node1.targetUrl(), createDataset("offer1"), createDataset("offer2"), createDataset("offer3")))
                 .thenReturn(emptyCatalog(catalog -> toBytes(ttr, catalog)));
 
-        when(dispatcher.dispatch(eq(byte[].class), argThat(sentTo("http://test-node2.com"))))
+        when(dispatcher.dispatch(eq(byte[].class), argThat(sentTo(node2.id(), node2.targetUrl()))))
                 .thenReturn(catalogOf(catalog -> toBytes(ttr, catalog), "catalog-" + node2.targetUrl(), createDataset("offer14"), createDataset("offer32"), /*this one is conflicting:*/createDataset("offer3")))
                 .thenReturn(emptyCatalog(catalog -> toBytes(ttr, catalog)));
 

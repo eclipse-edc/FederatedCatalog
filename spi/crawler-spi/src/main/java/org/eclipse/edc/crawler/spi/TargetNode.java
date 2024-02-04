@@ -24,6 +24,7 @@ import java.util.List;
  * All {@link TargetNode} entries are maintained in a {@link TargetNodeDirectory}.
  */
 public record TargetNode(@JsonProperty("name") String name,
+                         @JsonProperty("id") String id,
                          @JsonProperty("url") String targetUrl,
                          @JsonProperty("supportedProtocols") List<String> supportedProtocols) {
     @JsonCreator

@@ -97,6 +97,6 @@ class CrawlerTest {
 
     @NotNull
     private WorkItem createWorkItem() {
-        return new WorkItem("test-url", "test-protocol");
+        return new WorkItem("test-id", "test-url", "test-protocol");
     }
 }

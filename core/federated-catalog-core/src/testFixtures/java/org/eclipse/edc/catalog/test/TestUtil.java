@@ -33,7 +33,7 @@ public class TestUtil {
     public static final String TEST_PROTOCOL = "test-protocol";
 
     public static WorkItem createWorkItem() {
-        return new WorkItem("test-url", "test-protocol");
+        return new WorkItem("id", "test-url", "test-protocol");
     }
 
     @NotNull
@@ -58,6 +58,6 @@ public class TestUtil {
 
     @NotNull
     public static TargetNode createNode() {
-        return new TargetNode("testnode" + UUID.randomUUID(), "http://test.com", List.of(TEST_PROTOCOL));
+        return new TargetNode("testnode" + UUID.randomUUID(), "did:web:" + UUID.randomUUID(), "http://test.com", List.of(TEST_PROTOCOL));
     }
 }
