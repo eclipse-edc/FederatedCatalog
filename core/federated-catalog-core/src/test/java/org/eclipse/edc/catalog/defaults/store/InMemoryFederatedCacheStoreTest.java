@@ -18,11 +18,11 @@ package org.eclipse.edc.catalog.defaults.store;
 import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.store.InMemoryFederatedCacheStore;
+import org.eclipse.edc.connector.core.store.CriterionOperatorRegistryImpl;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.types.domain.asset.Asset;
 import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
 import org.eclipse.edc.util.concurrency.LockManager;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -34,12 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class InMemoryFederatedCacheStoreTest {
 
-    private InMemoryFederatedCacheStore store;
-
-    @BeforeEach
-    public void setUp() {
-        store = new InMemoryFederatedCacheStore(new LockManager(new ReentrantReadWriteLock()));
-    }
+    private final InMemoryFederatedCacheStore store = new InMemoryFederatedCacheStore(new LockManager(new ReentrantReadWriteLock()), CriterionOperatorRegistryImpl.ofDefaults());
 
     @Test
     void queryCacheContainingOneElementWithNoCriterion_shouldReturnUniqueElement() {
