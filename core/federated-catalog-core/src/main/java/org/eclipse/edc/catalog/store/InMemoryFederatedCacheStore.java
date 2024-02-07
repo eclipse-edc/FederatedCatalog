@@ -18,7 +18,7 @@ import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.spi.query.Criterion;
-import org.eclipse.edc.spi.query.CriterionToPredicateConverter;
+import org.eclipse.edc.spi.query.CriterionOperatorRegistry;
 import org.eclipse.edc.util.concurrency.LockManager;
 
 import java.util.Collection;
@@ -36,11 +36,11 @@ import static java.util.Optional.ofNullable;
 public class InMemoryFederatedCacheStore implements FederatedCacheStore {
 
     private final Map<String, MarkableEntry<Catalog>> cache = new ConcurrentHashMap<>();
-    private final CriterionToPredicateConverter converter;
+    private final CriterionOperatorRegistry criterionOperatorRegistry;
     private final LockManager lockManager;
 
-    public InMemoryFederatedCacheStore(LockManager lockManager) {
-        this.converter = new AlwaysTruePredicateConverter();
+    public InMemoryFederatedCacheStore(LockManager lockManager, CriterionOperatorRegistry criterionOperatorRegistry) {
+        this.criterionOperatorRegistry = criterionOperatorRegistry;
         this.lockManager = lockManager;
     }
 
@@ -57,7 +57,9 @@ public class InMemoryFederatedCacheStore implements FederatedCacheStore {
     @Override
     public Collection<Catalog> query(List<Criterion> query) {
         //AND all predicates
-        var rootPredicate = query.stream().map(converter::convert).reduce(x -> true, Predicate::and);
+        var rootPredicate = query.stream()
+                .map(criterionOperatorRegistry::toPredicate)
+                .reduce(x -> true, Predicate::and);
         return lockManager.readLock(() -> cache.values().stream().map(MarkableEntry::getEntry).filter(rootPredicate).collect(Collectors.toList()));
     }
 
@@ -91,12 +93,5 @@ public class InMemoryFederatedCacheStore implements FederatedCacheStore {
             return entry;
         }
 
-    }
-
-    private static class AlwaysTruePredicateConverter implements CriterionToPredicateConverter {
-        @Override
-        public <T> Predicate<T> convert(Criterion criterion) {
-            return i -> true;
-        }
     }
 }

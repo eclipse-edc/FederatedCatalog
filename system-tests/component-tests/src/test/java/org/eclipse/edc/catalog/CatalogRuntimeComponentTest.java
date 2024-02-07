@@ -341,6 +341,4 @@ public class CatalogRuntimeComponentTest {
             throw new AssertionError(ex);
         }
     }
-
-
 }
