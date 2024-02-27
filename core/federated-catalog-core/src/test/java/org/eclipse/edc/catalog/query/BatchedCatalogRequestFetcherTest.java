@@ -25,21 +25,21 @@ import org.eclipse.edc.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.catalog.spi.DataService;
 import org.eclipse.edc.catalog.spi.Dataset;
 import org.eclipse.edc.catalog.spi.Distribution;
+import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
+import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
+import org.eclipse.edc.catalog.transform.JsonObjectToDatasetTransformer;
+import org.eclipse.edc.catalog.transform.JsonObjectToDistributionTransformer;
 import org.eclipse.edc.core.transform.TypeTransformerRegistryImpl;
-import org.eclipse.edc.core.transform.transformer.from.JsonObjectFromCatalogTransformer;
-import org.eclipse.edc.core.transform.transformer.from.JsonObjectFromDataServiceTransformer;
-import org.eclipse.edc.core.transform.transformer.from.JsonObjectFromDatasetTransformer;
-import org.eclipse.edc.core.transform.transformer.from.JsonObjectFromDistributionTransformer;
 import org.eclipse.edc.core.transform.transformer.from.JsonObjectFromPolicyTransformer;
-import org.eclipse.edc.core.transform.transformer.to.JsonObjectToCatalogTransformer;
-import org.eclipse.edc.core.transform.transformer.to.JsonObjectToDataServiceTransformer;
-import org.eclipse.edc.core.transform.transformer.to.JsonObjectToDatasetTransformer;
-import org.eclipse.edc.core.transform.transformer.to.JsonObjectToDistributionTransformer;
 import org.eclipse.edc.core.transform.transformer.to.JsonObjectToPolicyTransformer;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromCatalogTransformer;
+import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDataServiceTransformer;
+import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDatasetTransformer;
+import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDistributionTransformer;
 import org.eclipse.edc.spi.message.Range;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.response.StatusResult;
@@ -131,7 +131,7 @@ class BatchedCatalogRequestFetcherTest {
     }
 
     private Catalog emptyCatalog() {
-        return Catalog.Builder.newInstance().id("id").datasets(emptyList()).dataServices(emptyList()).build();
+        return Catalog.Builder.newInstance().id("id").participantId("test-participant").datasets(emptyList()).dataServices(emptyList()).build();
     }
 
     private Catalog createCatalog(int howManyOffers) {
@@ -140,7 +140,7 @@ class BatchedCatalogRequestFetcherTest {
                 .collect(Collectors.toList());
 
         var build = List.of(DataService.Builder.newInstance().build());
-        return Catalog.Builder.newInstance().id("catalog").datasets(datasets).dataServices(build).build();
+        return Catalog.Builder.newInstance().participantId("test-participant").id("catalog").datasets(datasets).dataServices(build).build();
     }
 
     // registers all the necessary transformers to avoid duplicating their behaviour in mocks

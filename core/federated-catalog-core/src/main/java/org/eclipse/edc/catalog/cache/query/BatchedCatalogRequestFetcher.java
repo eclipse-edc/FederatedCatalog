@@ -96,7 +96,7 @@ public class BatchedCatalogRequestFetcher {
 
     private Catalog copyCatalogWithoutNulls(Catalog catalog) {
         return Catalog.Builder.newInstance().id(catalog.getId())
-                .contractOffers(ofNullable(catalog.getContractOffers()).orElseGet(ArrayList::new))
+                .participantId(catalog.getParticipantId())
                 .properties(ofNullable(catalog.getProperties()).orElseGet(HashMap::new))
                 .dataServices(ofNullable(catalog.getDataServices()).orElseGet(ArrayList::new))
                 .datasets(ofNullable(catalog.getDatasets()).orElseGet(ArrayList::new))
@@ -128,7 +128,6 @@ public class BatchedCatalogRequestFetcher {
 
 
     private Catalog concat(Catalog target, Catalog source) {
-        target.getContractOffers().addAll(source.getContractOffers());
         target.getDatasets().addAll(source.getDatasets());
         target.getDataServices().addAll(source.getDataServices());
         target.getProperties().putAll(source.getProperties());

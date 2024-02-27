@@ -35,6 +35,9 @@ dependencies {
     testImplementation(libs.edc.dsp.api.configuration)
     testImplementation(libs.restAssured)
     testImplementation(libs.edc.iam.mock)
+    testImplementation(libs.edc.jsonld)
+    testImplementation(libs.edc.dsp.transform.catalog)
+
 }
 
 edcBuild {

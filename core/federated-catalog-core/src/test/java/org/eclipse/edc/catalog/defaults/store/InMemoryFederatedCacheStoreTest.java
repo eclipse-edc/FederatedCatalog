@@ -17,11 +17,12 @@ package org.eclipse.edc.catalog.defaults.store;
 
 import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.CatalogConstants;
+import org.eclipse.edc.catalog.spi.DataService;
+import org.eclipse.edc.catalog.spi.Dataset;
+import org.eclipse.edc.catalog.spi.Distribution;
 import org.eclipse.edc.catalog.store.InMemoryFederatedCacheStore;
 import org.eclipse.edc.connector.core.store.CriterionOperatorRegistryImpl;
-import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.types.domain.asset.Asset;
-import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
 import org.eclipse.edc.util.concurrency.LockManager;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +41,7 @@ class InMemoryFederatedCacheStoreTest {
     void queryCacheContainingOneElementWithNoCriterion_shouldReturnUniqueElement() {
         var contractOfferId = UUID.randomUUID().toString();
         var assetId = UUID.randomUUID().toString();
-        var catalogEntry = createEntry(contractOfferId, createAsset(assetId));
+        var catalogEntry = createCatalog(contractOfferId, createAsset(assetId));
 
         store.save(catalogEntry);
 
@@ -48,15 +49,15 @@ class InMemoryFederatedCacheStoreTest {
 
         assertThat(result)
                 .hasSize(1)
-                .allSatisfy(co -> assertThat(co.getContractOffers().get(0).getAssetId()).isEqualTo(assetId));
+                .allSatisfy(co -> assertThat(co.getDatasets().get(0).getId()).isEqualTo(assetId));
     }
 
     @Test
     void queryCacheAfterInsertingSameAssetTwice_shouldReturnLastInsertedContractOfferOnly() {
         var contractOfferId1 = UUID.randomUUID().toString();
         var assetId = UUID.randomUUID().toString();
-        var entry1 = createEntry(contractOfferId1, createAsset(assetId));
-        var entry2 = createEntry(contractOfferId1, createAsset(assetId));
+        var entry1 = createCatalog(contractOfferId1, createAsset(assetId));
+        var entry2 = createCatalog(contractOfferId1, createAsset(assetId));
 
         store.save(entry1);
         store.save(entry2);
@@ -67,8 +68,9 @@ class InMemoryFederatedCacheStoreTest {
                 .hasSize(1)
                 .allSatisfy(co -> {
                     assertThat(co.getId()).isEqualTo(contractOfferId1);
-                    assertThat(co.getContractOffers().get(0).getAssetId()).isEqualTo(assetId);
+                    assertThat(co.getDatasets().get(0).getId()).isEqualTo(assetId);
                 });
+
     }
 
     @Test
@@ -77,8 +79,8 @@ class InMemoryFederatedCacheStoreTest {
         var contractOfferId2 = UUID.randomUUID().toString();
         var assetId1 = UUID.randomUUID().toString();
         var assetId2 = UUID.randomUUID().toString();
-        var entry1 = createEntry(contractOfferId1, createAsset(assetId1));
-        var entry2 = createEntry(contractOfferId2, createAsset(assetId2));
+        var entry1 = createCatalog(contractOfferId1, createAsset(assetId1));
+        var entry2 = createCatalog(contractOfferId2, createAsset(assetId2));
 
         store.save(entry1);
         store.save(entry2);
@@ -87,8 +89,8 @@ class InMemoryFederatedCacheStoreTest {
 
         assertThat(result)
                 .hasSize(2)
-                .anySatisfy(co -> assertThat(co.getContractOffers().get(0).getAssetId()).isEqualTo(assetId1))
-                .anySatisfy(co -> assertThat(co.getContractOffers().get(0).getAssetId()).isEqualTo(assetId2));
+                .anySatisfy(co -> assertThat(co.getDatasets().get(0).getId()).isEqualTo(assetId1))
+                .anySatisfy(co -> assertThat(co.getDatasets().get(0).getId()).isEqualTo(assetId2));
     }
 
     @Test
@@ -97,8 +99,8 @@ class InMemoryFederatedCacheStoreTest {
         var contractOfferId2 = UUID.randomUUID().toString();
         var assetId1 = UUID.randomUUID().toString();
         var assetId2 = UUID.randomUUID().toString();
-        var entry1 = createEntry(contractOfferId1, createAsset(assetId1));
-        var entry2 = createEntry(contractOfferId2, createAsset(assetId2));
+        var entry1 = createCatalog(contractOfferId1, createAsset(assetId1));
+        var entry2 = createCatalog(contractOfferId2, createAsset(assetId2));
 
         store.save(entry1);
         store.save(entry2);
@@ -116,8 +118,8 @@ class InMemoryFederatedCacheStoreTest {
         var contractOfferId2 = UUID.randomUUID().toString();
         var assetId1 = UUID.randomUUID().toString();
         var assetId2 = UUID.randomUUID().toString();
-        var entry1 = createEntry(contractOfferId1, createAsset(assetId1));
-        var entry2 = createEntry(contractOfferId2, createAsset(assetId2));
+        var entry1 = createCatalog(contractOfferId1, createAsset(assetId1));
+        var entry2 = createCatalog(contractOfferId2, createAsset(assetId2));
 
         store.save(entry1);
         store.save(entry2);
@@ -125,11 +127,21 @@ class InMemoryFederatedCacheStoreTest {
         assertThat(store.query(List.of())).hasSize(2);
 
         store.expireAll(); // two items marked
-        store.save(createEntry(UUID.randomUUID().toString(), createAsset(UUID.randomUUID().toString())));
+        store.save(createCatalog(UUID.randomUUID().toString(), createAsset(UUID.randomUUID().toString())));
         store.deleteExpired(); // should delete only marked items
         assertThat(store.query(List.of())).hasSize(1)
                 .doesNotContain(entry1, entry2);
 
+    }
+
+    private Catalog createCatalog(String id, Asset asset) {
+        var dataService = DataService.Builder.newInstance().build();
+        return Catalog.Builder.newInstance()
+                .id(id)
+                .dataServices(List.of(dataService))
+                .datasets(List.of(Dataset.Builder.newInstance().id(asset.getId()).distributions(List.of(Distribution.Builder.newInstance().dataService(dataService).format("test-format").build())).build()))
+                .property(CatalogConstants.PROPERTY_ORIGINATOR, "https://test.source/" + id)
+                .build();
     }
 
     private Asset createAsset(String id) {
@@ -137,19 +149,4 @@ class InMemoryFederatedCacheStoreTest {
                 .id(id)
                 .build();
     }
-
-    private ContractOffer createContractOffer(String id, Asset asset) {
-        return ContractOffer.Builder.newInstance()
-                .id(id)
-                .assetId(asset.getId())
-                .policy(Policy.Builder.newInstance().build())
-                .build();
-    }
-
-    private Catalog createEntry(String id, Asset asset) {
-        var offer = createContractOffer("offer-" + id, asset);
-        return Catalog.Builder.newInstance().contractOffers(List.of(offer)).id(id)
-                .property(CatalogConstants.PROPERTY_ORIGINATOR, "http://test.source/" + id).build();
-    }
-
 }

@@ -14,16 +14,11 @@
 
 package org.eclipse.edc.catalog.test;
 
-import org.eclipse.edc.catalog.spi.Catalog;
-import org.eclipse.edc.catalog.spi.DataService;
-import org.eclipse.edc.catalog.spi.Dataset;
-import org.eclipse.edc.catalog.spi.Distribution;
 import org.eclipse.edc.crawler.spi.TargetNode;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,16 +36,6 @@ public class TestUtil {
                 .build();
     }
 
-    public static Catalog createCatalog(String id) {
-        var dataService = DataService.Builder.newInstance().build();
-        return Catalog.Builder.newInstance()
-                .id(id)
-                .contractOffers(List.of(createOffer("test-offer")))
-                .dataServices(List.of(dataService))
-                .datasets(List.of(Dataset.Builder.newInstance().distributions(List.of(Distribution.Builder.newInstance().dataService(dataService).format("test-format").build())).build()))
-                .properties(new HashMap<>())
-                .build();
-    }
 
     @NotNull
     public static TargetNode createNode() {

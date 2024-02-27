@@ -39,7 +39,6 @@ import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,11 +82,11 @@ public class TestFunctions {
 
     public static Catalog.Builder catalogBuilder() {
         return Catalog.Builder.newInstance()
+                .participantId("test-participant")
                 .id(UUID.randomUUID().toString())
                 .properties(new HashMap<>())
                 .dataServices(new ArrayList<>())
-                .datasets(new ArrayList<>())
-                .contractOffers(Collections.emptyList());
+                .datasets(new ArrayList<>());
     }
 
     public static CompletableFuture<StatusResult<byte[]>> catalogOf(Function<Catalog, StatusResult<byte[]>> transformationFunction, String catId, Dataset... datasets) {

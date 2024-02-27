@@ -20,16 +20,12 @@ import jakarta.json.Json;
 import jakarta.json.JsonBuilderFactory;
 import org.eclipse.edc.catalog.directory.InMemoryNodeDirectory;
 import org.eclipse.edc.catalog.spi.CatalogConstants;
+import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
+import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
+import org.eclipse.edc.catalog.transform.JsonObjectToDatasetTransformer;
+import org.eclipse.edc.catalog.transform.JsonObjectToDistributionTransformer;
 import org.eclipse.edc.core.transform.TypeTransformerRegistryImpl;
-import org.eclipse.edc.core.transform.transformer.from.JsonObjectFromCatalogTransformer;
-import org.eclipse.edc.core.transform.transformer.from.JsonObjectFromDataServiceTransformer;
-import org.eclipse.edc.core.transform.transformer.from.JsonObjectFromDatasetTransformer;
-import org.eclipse.edc.core.transform.transformer.from.JsonObjectFromDistributionTransformer;
 import org.eclipse.edc.core.transform.transformer.from.JsonObjectFromPolicyTransformer;
-import org.eclipse.edc.core.transform.transformer.to.JsonObjectToCatalogTransformer;
-import org.eclipse.edc.core.transform.transformer.to.JsonObjectToDataServiceTransformer;
-import org.eclipse.edc.core.transform.transformer.to.JsonObjectToDatasetTransformer;
-import org.eclipse.edc.core.transform.transformer.to.JsonObjectToDistributionTransformer;
 import org.eclipse.edc.core.transform.transformer.to.JsonValueToGenericTypeTransformer;
 import org.eclipse.edc.crawler.spi.TargetNode;
 import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
@@ -37,6 +33,10 @@ import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
+import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromCatalogTransformer;
+import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDataServiceTransformer;
+import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDatasetTransformer;
+import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDistributionTransformer;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
@@ -82,6 +82,7 @@ class FederatedCatalogTest {
                     "web.http.protocol.port", CONNECTOR_PROTOCOL.port(),
                     "web.http.protocol.path", CONNECTOR_PROTOCOL.path(),
                     "web.http.management.port", CONNECTOR_MANAGEMENT.port(),
+                    "edc.participant.id", "test-connector",
                     "web.http.management.path", CONNECTOR_MANAGEMENT.path(),
                     "edc.web.rest.cors.headers", "origin,content-type,accept,authorization,x-api-key",
                     "edc.dsp.callback.address", "http://localhost:%s%s".formatted(CONNECTOR_PROTOCOL.port(), CONNECTOR_PROTOCOL.path())));
@@ -92,6 +93,7 @@ class FederatedCatalogTest {
                     "edc.catalog.cache.execution.period.seconds", "2",
                     "edc.catalog.cache.partition.num.crawlers", "5",
                     "edc.web.rest.cors.enabled", "true",
+                    "edc.participant.id", "test-catalog",
                     "web.http.port", CATALOG_DEFAULT.port(),
                     "web.http.path", CATALOG_DEFAULT.path(),
                     "web.http.protocol.port", CATALOG_PROTOCOL.port(),
@@ -102,6 +104,18 @@ class FederatedCatalogTest {
     private final TypeTransformerRegistry typeTransformerRegistry = new TypeTransformerRegistryImpl();
     private final ObjectMapper mapper = JacksonJsonLd.createObjectMapper();
     private final ManagementApiClient apiClient = new ManagementApiClient(CATALOG_MANAGEMENT, CONNECTOR_MANAGEMENT, mapper, new TitaniumJsonLd(mock(Monitor.class)), typeTransformerRegistry);
+
+    private static Map<String, String> configOf(String... keyValuePairs) {
+        if (keyValuePairs.length % 2 != 0) {
+            throw new IllegalArgumentException("Must have an even number of key value pairs, was " + keyValuePairs.length);
+        }
+
+        var map = new HashMap<String, String>();
+        for (int i = 0; i < keyValuePairs.length - 1; i += 2) {
+            map.put(keyValuePairs[i], keyValuePairs[i + 1]);
+        }
+        return map;
+    }
 
     @BeforeEach
     void setUp() {
@@ -165,18 +179,6 @@ class FederatedCatalogTest {
                     });
 
                 });
-    }
-
-    private static Map<String, String> configOf(String... keyValuePairs) {
-        if (keyValuePairs.length % 2 != 0) {
-            throw new IllegalArgumentException("Must have an even number of key value pairs, was " + keyValuePairs.length);
-        }
-
-        var map = new HashMap<String, String>();
-        for (int i = 0; i < keyValuePairs.length - 1; i += 2) {
-            map.put(keyValuePairs[i], keyValuePairs[i + 1]);
-        }
-        return map;
     }
 
     private String getError(Result<String> r) {

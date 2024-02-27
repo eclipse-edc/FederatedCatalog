@@ -20,6 +20,10 @@ import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.catalog.spi.model.CatalogUpdateResponse;
+import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
+import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
+import org.eclipse.edc.catalog.transform.JsonObjectToDatasetTransformer;
+import org.eclipse.edc.catalog.transform.JsonObjectToDistributionTransformer;
 import org.eclipse.edc.crawler.spi.CrawlerActionRegistry;
 import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
 import org.eclipse.edc.crawler.spi.TargetNodeFilter;
@@ -76,6 +80,8 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
 
     @Inject
     private Monitor monitor;
+    @Inject
+    private TypeTransformerRegistry transformerRegistry;
 
     @Override
     public String name() {
@@ -106,6 +112,8 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
                 .nodeDirectory(directory)
                 .nodeFilterFunction(nodeFilter)
                 .build();
+
+        registerTransformers();
     }
 
     @Override
@@ -122,6 +130,13 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
             nodeQueryAdapterRegistry.register(DATASPACE_PROTOCOL, new DspCatalogRequestAction(dispatcherRegistry, context.getMonitor(), mapper, registry, jsonLdService));
         }
         return nodeQueryAdapterRegistry;
+    }
+
+    private void registerTransformers() {
+        transformerRegistry.register(new JsonObjectToCatalogTransformer());
+        transformerRegistry.register(new JsonObjectToDatasetTransformer());
+        transformerRegistry.register(new JsonObjectToDataServiceTransformer());
+        transformerRegistry.register(new JsonObjectToDistributionTransformer());
     }
 
     /**
