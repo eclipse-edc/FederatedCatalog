@@ -15,12 +15,22 @@
 package org.eclipse.edc.catalog.api.query;
 
 import io.restassured.specification.RequestSpecification;
+import jakarta.json.Json;
 import org.eclipse.edc.catalog.spi.CacheQueryAdapter;
 import org.eclipse.edc.catalog.spi.CacheQueryAdapterRegistry;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
+import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
+import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
+import org.eclipse.edc.catalog.transform.JsonObjectToDatasetTransformer;
+import org.eclipse.edc.catalog.transform.JsonObjectToDistributionTransformer;
+import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.junit.annotations.ApiTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
+import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromCatalogTransformer;
+import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,6 +59,7 @@ class FederatedCatalogApiControllerTest {
                 "web.http.port", String.valueOf(port),
                 "web.http.path", BASE_PATH
         ));
+        extension.registerSystemExtension(ServiceExtension.class, new TransformerRegistrarExtension());
     }
 
     @Test
@@ -97,5 +108,25 @@ class FederatedCatalogApiControllerTest {
                 .baseUri("http://localhost:" + port)
                 .basePath(BASE_PATH)
                 .when();
+    }
+
+    // registers all the necessary transformers to avoid duplicating their behaviour in mocks
+    private void registerTransformers() {
+
+    }
+
+    public static class TransformerRegistrarExtension implements ServiceExtension {
+
+        @Override
+        public void initialize(ServiceExtensionContext context) {
+            var typeTransformerRegistry = context.getService(TypeTransformerRegistry.class);
+            var factory = Json.createBuilderFactory(Map.of());
+            var mapper = JacksonJsonLd.createObjectMapper();
+            typeTransformerRegistry.register(new JsonObjectToCatalogTransformer());
+            typeTransformerRegistry.register(new JsonObjectFromCatalogTransformer(factory, mapper));
+            typeTransformerRegistry.register(new JsonObjectToDatasetTransformer());
+            typeTransformerRegistry.register(new JsonObjectToDataServiceTransformer());
+            typeTransformerRegistry.register(new JsonObjectToDistributionTransformer());
+        }
     }
 }

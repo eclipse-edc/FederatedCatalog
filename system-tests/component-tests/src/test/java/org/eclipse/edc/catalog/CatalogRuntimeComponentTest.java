@@ -90,7 +90,8 @@ public class CatalogRuntimeComponentTest {
                 // give the runtime time to set up everything
                 "edc.catalog.cache.execution.delay.seconds", "1",
                 "web.http.port", valueOf(TestFunctions.PORT),
-                "web.http.path", TestFunctions.BASE_PATH
+                "web.http.path", TestFunctions.BASE_PATH,
+                "edc.participant.id", "test-participant"
         ));
         dispatcher = mock(DspHttpRemoteMessageDispatcher.class);
         when(dispatcher.protocol()).thenReturn(DATASPACE_PROTOCOL);
