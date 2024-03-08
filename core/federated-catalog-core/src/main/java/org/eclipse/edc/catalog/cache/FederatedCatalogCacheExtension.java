@@ -24,6 +24,8 @@ import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDatasetTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDistributionTransformer;
+import org.eclipse.edc.core.transform.transformer.edc.to.JsonValueToGenericTypeTransformer;
+import org.eclipse.edc.core.transform.transformer.odrl.OdrlTransformersFactory;
 import org.eclipse.edc.crawler.spi.CrawlerActionRegistry;
 import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
 import org.eclipse.edc.crawler.spi.TargetNodeFilter;
@@ -33,6 +35,7 @@ import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
+import org.eclipse.edc.spi.agent.ParticipantIdMapper;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
@@ -77,6 +80,9 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
     private TypeTransformerRegistry registry;
     @Inject
     private JsonLd jsonLdService;
+
+    @Inject
+    private ParticipantIdMapper participantIdMapper;
 
     @Inject
     private Monitor monitor;
@@ -137,6 +143,8 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
         transformerRegistry.register(new JsonObjectToDatasetTransformer());
         transformerRegistry.register(new JsonObjectToDataServiceTransformer());
         transformerRegistry.register(new JsonObjectToDistributionTransformer());
+        OdrlTransformersFactory.jsonObjectToOdrlTransformers(participantIdMapper).forEach(transformerRegistry::register);
+        transformerRegistry.register(new JsonValueToGenericTypeTransformer(typeManager.getMapper(JSON_LD)));
     }
 
     /**

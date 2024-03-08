@@ -20,7 +20,6 @@ plugins {
 val fccScmConnection: String by project
 val fccScmUrl: String by project
 val annotationProcessorVersion: String by project
-val metaModelVersion: String by project
 
 buildscript {
     dependencies {
@@ -35,14 +34,10 @@ allprojects {
     // configure which version of the annotation processor to use. defaults to the same version as the plugin
     configure<org.eclipse.edc.plugins.autodoc.AutodocExtension> {
         processorVersion.set(annotationProcessorVersion)
-        outputDirectory.set(project.buildDir)
+        outputDirectory.set(project.layout.buildDirectory.asFile.get())
     }
 
     configure<org.eclipse.edc.plugins.edcbuild.extensions.BuildExtension> {
-        versions {
-            // override default dependency versions here
-            metaModel.set(metaModelVersion)
-        }
         pom {
             scmConnection.set(fccScmConnection)
             scmUrl.set(fccScmUrl)

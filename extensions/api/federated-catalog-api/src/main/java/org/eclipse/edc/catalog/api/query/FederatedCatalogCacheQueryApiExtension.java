@@ -51,7 +51,8 @@ public class FederatedCatalogCacheQueryApiExtension implements ServiceExtension 
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var catalogController = new FederatedCatalogApiController(queryEngine, transformerRegistry);
+        var managementApiTransformerRegistry = transformerRegistry.forContext("management-api");
+        var catalogController = new FederatedCatalogApiController(queryEngine, managementApiTransformerRegistry);
         webService.registerResource(config.getContextAlias(), catalogController);
 
         // contribute to the liveness probe

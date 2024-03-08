@@ -24,6 +24,7 @@ dependencies {
     api(project(":spi:federated-catalog-spi"))
 
     runtimeOnly(libs.edc.core.connector)
+    implementation(libs.edc.core.transform)
     implementation(libs.edc.api.management.config)
     runtimeOnly(libs.edc.spi.jsonld)
     runtimeOnly(libs.edc.jsonld)

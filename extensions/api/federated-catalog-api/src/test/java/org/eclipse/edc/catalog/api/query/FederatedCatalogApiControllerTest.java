@@ -24,6 +24,7 @@ import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDatasetTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDistributionTransformer;
+import org.eclipse.edc.connector.core.base.agent.NoOpParticipantIdMapper;
 import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.junit.annotations.ApiTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
@@ -110,11 +111,6 @@ class FederatedCatalogApiControllerTest {
                 .when();
     }
 
-    // registers all the necessary transformers to avoid duplicating their behaviour in mocks
-    private void registerTransformers() {
-
-    }
-
     public static class TransformerRegistrarExtension implements ServiceExtension {
 
         @Override
@@ -123,7 +119,7 @@ class FederatedCatalogApiControllerTest {
             var factory = Json.createBuilderFactory(Map.of());
             var mapper = JacksonJsonLd.createObjectMapper();
             typeTransformerRegistry.register(new JsonObjectToCatalogTransformer());
-            typeTransformerRegistry.register(new JsonObjectFromCatalogTransformer(factory, mapper));
+            typeTransformerRegistry.register(new JsonObjectFromCatalogTransformer(factory, mapper, new NoOpParticipantIdMapper()));
             typeTransformerRegistry.register(new JsonObjectToDatasetTransformer());
             typeTransformerRegistry.register(new JsonObjectToDataServiceTransformer());
             typeTransformerRegistry.register(new JsonObjectToDistributionTransformer());
