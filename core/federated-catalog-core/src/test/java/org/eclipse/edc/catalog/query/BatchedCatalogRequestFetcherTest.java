@@ -29,17 +29,18 @@ import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDatasetTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDistributionTransformer;
+import org.eclipse.edc.connector.core.base.agent.NoOpParticipantIdMapper;
 import org.eclipse.edc.core.transform.TypeTransformerRegistryImpl;
-import org.eclipse.edc.core.transform.transformer.from.JsonObjectFromPolicyTransformer;
-import org.eclipse.edc.core.transform.transformer.to.JsonObjectToPolicyTransformer;
+import org.eclipse.edc.core.transform.transformer.dcat.from.JsonObjectFromCatalogTransformer;
+import org.eclipse.edc.core.transform.transformer.dcat.from.JsonObjectFromDataServiceTransformer;
+import org.eclipse.edc.core.transform.transformer.dcat.from.JsonObjectFromDatasetTransformer;
+import org.eclipse.edc.core.transform.transformer.dcat.from.JsonObjectFromDistributionTransformer;
+import org.eclipse.edc.core.transform.transformer.odrl.from.JsonObjectFromPolicyTransformer;
+import org.eclipse.edc.core.transform.transformer.odrl.to.JsonObjectToPolicyTransformer;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromCatalogTransformer;
-import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDataServiceTransformer;
-import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDatasetTransformer;
-import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDistributionTransformer;
 import org.eclipse.edc.spi.message.Range;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.response.StatusResult;
@@ -147,15 +148,16 @@ class BatchedCatalogRequestFetcherTest {
     private void registerTransformers() {
         var factory = Json.createBuilderFactory(Map.of());
         var mapper = JacksonJsonLd.createObjectMapper();
-        typeTransformerRegistry.register(new JsonObjectFromCatalogTransformer(factory, mapper));
+        var participantIdMapper = new NoOpParticipantIdMapper();
+        typeTransformerRegistry.register(new JsonObjectFromCatalogTransformer(factory, mapper, participantIdMapper));
         typeTransformerRegistry.register(new JsonObjectFromDatasetTransformer(factory, mapper));
         typeTransformerRegistry.register(new JsonObjectFromDataServiceTransformer(factory));
-        typeTransformerRegistry.register(new JsonObjectFromPolicyTransformer(factory));
+        typeTransformerRegistry.register(new JsonObjectFromPolicyTransformer(factory, participantIdMapper));
         typeTransformerRegistry.register(new JsonObjectFromDistributionTransformer(factory));
         typeTransformerRegistry.register(new JsonObjectToCatalogTransformer());
         typeTransformerRegistry.register(new JsonObjectToDatasetTransformer());
         typeTransformerRegistry.register(new JsonObjectToDataServiceTransformer());
-        typeTransformerRegistry.register(new JsonObjectToPolicyTransformer());
+        typeTransformerRegistry.register(new JsonObjectToPolicyTransformer(participantIdMapper));
         typeTransformerRegistry.register(new JsonObjectToDistributionTransformer());
     }
 

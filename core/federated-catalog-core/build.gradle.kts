@@ -31,6 +31,7 @@ dependencies {
 
     // required for integration test
     testImplementation(libs.edc.dsp.transform.catalog)
+    testImplementation(libs.edc.core.transform)
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.core.transform)
     testImplementation(libs.edc.ext.http)
