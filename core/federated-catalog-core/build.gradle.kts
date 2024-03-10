@@ -26,6 +26,8 @@ dependencies {
 
     implementation(libs.edc.util)
     implementation(libs.edc.core.connector)
+    implementation(libs.edc.core.transform)
+    implementation(libs.edc.dsp.api.configuration)
     implementation(libs.edc.spi.jsonld)
     implementation(libs.edc.jsonld)
 

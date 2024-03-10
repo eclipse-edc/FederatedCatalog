@@ -17,7 +17,6 @@ package org.eclipse.edc.end2end;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.json.Json;
-import jakarta.json.JsonBuilderFactory;
 import org.eclipse.edc.catalog.directory.InMemoryNodeDirectory;
 import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
@@ -122,7 +121,7 @@ class FederatedCatalogTest {
     void setUp() {
         //needed for ZonedDateTime
         mapper.registerModule(new JavaTimeModule());
-        JsonBuilderFactory factory = Json.createBuilderFactory(Map.of());
+        var factory = Json.createBuilderFactory(Map.of());
         var participantIdMapper = new NoOpParticipantIdMapper();
         typeTransformerRegistry.register(new JsonObjectFromCatalogTransformer(factory, mapper, participantIdMapper));
         typeTransformerRegistry.register(new JsonObjectFromDatasetTransformer(factory, mapper));
