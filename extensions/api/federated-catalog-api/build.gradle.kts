@@ -37,6 +37,7 @@ dependencies {
     testImplementation(libs.edc.iam.mock)
     testImplementation(libs.edc.jsonld)
     testImplementation(libs.edc.dsp.transform.catalog)
+    testImplementation(libs.edc.core.transform)
 
 }
 

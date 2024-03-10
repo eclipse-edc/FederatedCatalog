@@ -27,6 +27,7 @@ import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.health.HealthCheckService;
 import org.eclipse.edc.spi.system.injection.ObjectFactory;
+import org.eclipse.edc.spi.types.TypeManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,6 +59,7 @@ class FederatedCatalogCacheExtensionTest {
         context.registerService(FederatedCacheStore.class, storeMock);
         context.registerService(TargetNodeFilter.class, null);
         context.registerService(ExecutionPlan.class, new RecurringExecutionPlan(Duration.ofSeconds(1), Duration.ofSeconds(0), mock()));
+        context.registerService(TypeManager.class, mock());
         extension = factory.constructInstance(FederatedCatalogCacheExtension.class);
     }
 

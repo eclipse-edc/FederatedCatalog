@@ -24,10 +24,14 @@ import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDatasetTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDistributionTransformer;
+import org.eclipse.edc.connector.core.base.agent.NoOpParticipantIdMapper;
+import org.eclipse.edc.core.transform.transformer.dcat.from.JsonObjectFromCatalogTransformer;
+import org.eclipse.edc.core.transform.transformer.dcat.from.JsonObjectFromDataServiceTransformer;
+import org.eclipse.edc.core.transform.transformer.dcat.from.JsonObjectFromDatasetTransformer;
+import org.eclipse.edc.core.transform.transformer.dcat.from.JsonObjectFromDistributionTransformer;
 import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.junit.annotations.ApiTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
-import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromCatalogTransformer;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
@@ -110,11 +114,6 @@ class FederatedCatalogApiControllerTest {
                 .when();
     }
 
-    // registers all the necessary transformers to avoid duplicating their behaviour in mocks
-    private void registerTransformers() {
-
-    }
-
     public static class TransformerRegistrarExtension implements ServiceExtension {
 
         @Override
@@ -123,7 +122,10 @@ class FederatedCatalogApiControllerTest {
             var factory = Json.createBuilderFactory(Map.of());
             var mapper = JacksonJsonLd.createObjectMapper();
             typeTransformerRegistry.register(new JsonObjectToCatalogTransformer());
-            typeTransformerRegistry.register(new JsonObjectFromCatalogTransformer(factory, mapper));
+            typeTransformerRegistry.register(new JsonObjectFromDatasetTransformer(factory, mapper));
+            typeTransformerRegistry.register(new JsonObjectFromDistributionTransformer(factory));
+            typeTransformerRegistry.register(new JsonObjectFromDataServiceTransformer(factory));
+            typeTransformerRegistry.register(new JsonObjectFromCatalogTransformer(factory, mapper, new NoOpParticipantIdMapper()));
             typeTransformerRegistry.register(new JsonObjectToDatasetTransformer());
             typeTransformerRegistry.register(new JsonObjectToDataServiceTransformer());
             typeTransformerRegistry.register(new JsonObjectToDistributionTransformer());

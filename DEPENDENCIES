@@ -24,9 +24,9 @@ maven/mavencentral/com.fasterxml.jackson.module/jackson-module-jakarta-xmlbind-a
 maven/mavencentral/com.fasterxml.jackson.module/jackson-module-jakarta-xmlbind-annotations/2.16.1, Apache-2.0, approved, #11856
 maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.15.1, Apache-2.0, approved, #7929
 maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.16.1, Apache-2.0, approved, #11852
-maven/mavencentral/com.github.docker-java/docker-java-api/3.3.5, Apache-2.0, approved, #10346
-maven/mavencentral/com.github.docker-java/docker-java-transport-zerodep/3.3.5, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause), approved, #7946
-maven/mavencentral/com.github.docker-java/docker-java-transport/3.3.5, Apache-2.0, approved, #7942
+maven/mavencentral/com.github.docker-java/docker-java-api/3.3.6, Apache-2.0, approved, #10346
+maven/mavencentral/com.github.docker-java/docker-java-transport-zerodep/3.3.6, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause), approved, #7946
+maven/mavencentral/com.github.docker-java/docker-java-transport/3.3.6, Apache-2.0, approved, #7942
 maven/mavencentral/com.github.stephenc.jcip/jcip-annotations/1.0-1, Apache-2.0, approved, CQ21949
 maven/mavencentral/com.google.code.findbugs/jsr305/3.0.2, Apache-2.0, approved, #20
 maven/mavencentral/com.google.code.gson/gson/2.10.1, Apache-2.0, approved, #6159
@@ -39,7 +39,7 @@ maven/mavencentral/com.google.guava/guava/33.0.0-jre, Apache-2.0 AND CC0-1.0, ap
 maven/mavencentral/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava, Apache-2.0, approved, CQ22657
 maven/mavencentral/com.google.protobuf/protobuf-java/3.24.3, BSD-3-Clause, approved, clearlydefined
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.37.3, Apache-2.0, approved, #11701
-maven/mavencentral/com.puppycrawl.tools/checkstyle/10.14.0, , restricted, clearlydefined
+maven/mavencentral/com.puppycrawl.tools/checkstyle/10.14.0, LGPL-2.1-or-later AND (Apache-2.0 AND LGPL-2.1-or-later) AND Apache-2.0, approved, #13562
 maven/mavencentral/com.squareup.okhttp3/okhttp-dnsoverhttps/4.12.0, Apache-2.0, approved, #11159
 maven/mavencentral/com.squareup.okhttp3/okhttp/4.12.0, Apache-2.0, approved, #11156
 maven/mavencentral/com.squareup.okhttp3/okhttp/4.9.3, Apache-2.0 AND MPL-2.0, approved, #3225
@@ -300,8 +300,8 @@ maven/mavencentral/org.slf4j/slf4j-api/1.7.30, MIT, approved, CQ13368
 maven/mavencentral/org.slf4j/slf4j-api/1.7.35, MIT, approved, CQ13368
 maven/mavencentral/org.slf4j/slf4j-api/1.7.36, MIT, approved, CQ13368
 maven/mavencentral/org.slf4j/slf4j-api/2.0.9, MIT, approved, #5915
-maven/mavencentral/org.testcontainers/junit-jupiter/1.19.6, MIT, approved, #10344
-maven/mavencentral/org.testcontainers/testcontainers/1.19.6, Apache-2.0 AND MIT, approved, #10347
+maven/mavencentral/org.testcontainers/junit-jupiter/1.19.7, MIT, approved, #10344
+maven/mavencentral/org.testcontainers/testcontainers/1.19.7, Apache-2.0 AND MIT, approved, #10347
 maven/mavencentral/org.xmlresolver/xmlresolver/5.2.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.yaml/snakeyaml/2.0, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #7275
 maven/mavencentral/org.yaml/snakeyaml/2.2, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #10232
