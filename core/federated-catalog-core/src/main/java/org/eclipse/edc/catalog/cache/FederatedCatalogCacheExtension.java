@@ -54,8 +54,8 @@ import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import java.util.Map;
 
 import static java.util.Optional.ofNullable;
+import static org.eclipse.edc.catalog.cache.FederatedCatalogDefaultServicesExtension.NUM_CRAWLER_SETTING;
 import static org.eclipse.edc.catalog.spi.CacheSettings.DEFAULT_NUMBER_OF_CRAWLERS;
-import static org.eclipse.edc.catalog.spi.CacheSettings.NUM_CRAWLER_SETTING;
 import static org.eclipse.edc.catalog.spi.CatalogConstants.DATASPACE_PROTOCOL;
 import static org.eclipse.edc.spi.CoreConstants.JSON_LD;
 
