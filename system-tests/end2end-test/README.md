@@ -23,7 +23,7 @@ Please follow these steps in order to run the tests on a local dev environment.
    will later be used in docker containers. In order to build them, simply execute
    ```shell
    ./gradlew :system-tests:end2end-test:catalog-runtime:shadowJar
-   ./gradlew :system-tests:end2end-test:conenctor-runtime:shadowJar
+   ./gradlew :system-tests:end2end-test:connector-runtime:shadowJar
    ```
 
 2. Run `docker-compose`: from you project root directory execute the following command to bring up the test backend
