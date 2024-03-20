@@ -28,6 +28,7 @@ import org.eclipse.edc.crawler.spi.model.ExecutionPlan;
 import org.eclipse.edc.crawler.spi.model.RecurringExecutionPlan;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.util.concurrency.LockManager;
@@ -39,10 +40,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import static java.lang.String.format;
 import static org.eclipse.edc.catalog.spi.CacheSettings.DEFAULT_EXECUTION_PERIOD_SECONDS;
 import static org.eclipse.edc.catalog.spi.CacheSettings.DEFAULT_NUMBER_OF_CRAWLERS;
-import static org.eclipse.edc.catalog.spi.CacheSettings.EXECUTION_PLAN_DELAY_SECONDS;
-import static org.eclipse.edc.catalog.spi.CacheSettings.EXECUTION_PLAN_PERIOD_SECONDS;
 import static org.eclipse.edc.catalog.spi.CacheSettings.LOW_EXECUTION_PERIOD_SECONDS_THRESHOLD;
-import static org.eclipse.edc.catalog.spi.CacheSettings.NUM_CRAWLER_SETTING;
 
 /**
  * Provides default service implementations for fallback
@@ -51,6 +49,13 @@ import static org.eclipse.edc.catalog.spi.CacheSettings.NUM_CRAWLER_SETTING;
 public class FederatedCatalogDefaultServicesExtension implements ServiceExtension {
 
     public static final String NAME = "Federated Catalog Default Services";
+
+    @Setting("The time to elapse between two crawl runs")
+    public static final String EXECUTION_PLAN_PERIOD_SECONDS = "edc.catalog.cache.execution.period.seconds";
+    @Setting("The number of crawlers (execution threads) that should be used. The engine will re-use crawlers when necessary.")
+    public static final String NUM_CRAWLER_SETTING = "edc.catalog.cache.partition.num.crawlers";
+    @Setting("The initial delay for the cache crawler engine")
+    public static final String EXECUTION_PLAN_DELAY_SECONDS = "edc.catalog.cache.execution.delay.seconds";
 
     @Inject
     private FederatedCacheStore store;

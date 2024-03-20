@@ -14,7 +14,6 @@
 
 package org.eclipse.edc.catalog.spi;
 
-import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 
 /**
  * Object that provides configuration for the federated catalog.
@@ -26,11 +25,5 @@ public interface CacheSettings {
     int LOW_EXECUTION_PERIOD_SECONDS_THRESHOLD = 10;
     int DEFAULT_NUMBER_OF_CRAWLERS = 2;
 
-    @Setting("The time to elapse between two crawl runs")
-    String EXECUTION_PLAN_PERIOD_SECONDS = "edc.catalog.cache.execution.period.seconds";
-    @Setting("The number of crawlers (execution threads) that should be used. The engine will re-use crawlers when necessary.")
-    String NUM_CRAWLER_SETTING = "edc.catalog.cache.partition.num.crawlers";
-    @Setting("The initial delay for the cache crawler engine")
-    String EXECUTION_PLAN_DELAY_SECONDS = "edc.catalog.cache.execution.delay.seconds";
 
 }
