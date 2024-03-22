@@ -20,6 +20,7 @@ dependencies {
     implementation(project(":core:federated-catalog-core"))
     implementation(project(":extensions:api:federated-catalog-api"))
     runtimeOnly(libs.bundles.edc.connector)
+    runtimeOnly(libs.edc.core.transform)
     runtimeOnly(libs.edc.core.controlplane)
     runtimeOnly(libs.edc.core.dataPlane.selector)
 

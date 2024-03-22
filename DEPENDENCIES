@@ -135,6 +135,7 @@ maven/mavencentral/org.eclipse.edc/asset-api/0.5.2-SNAPSHOT, Apache-2.0, approve
 maven/mavencentral/org.eclipse.edc/asset-spi/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/auth-spi/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/autodoc-processor/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/boot-lib/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/boot/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/catalog-api/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/catalog-core/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -175,6 +176,7 @@ maven/mavencentral/org.eclipse.edc/dsp-transfer-process-transform/0.5.2-SNAPSHOT
 maven/mavencentral/org.eclipse.edc/dsp-transfer-process/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-version-api/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/http-lib/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/http-spi/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/http/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/iam-mock/0.5.2-SNAPSHOT, Apache-2.0, approved, technology.edc

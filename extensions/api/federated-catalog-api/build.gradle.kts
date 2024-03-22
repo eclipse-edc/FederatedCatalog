@@ -23,7 +23,6 @@ dependencies {
     implementation(libs.edc.spi.web)
     api(project(":spi:federated-catalog-spi"))
 
-    runtimeOnly(libs.edc.core.connector)
     implementation(libs.edc.api.management.config)
     runtimeOnly(libs.edc.spi.jsonld)
     runtimeOnly(libs.edc.jsonld)
@@ -31,6 +30,7 @@ dependencies {
     // required for integration test
     testImplementation(testFixtures(project(":core:federated-catalog-core"))) // provides the TestUtil
     testImplementation(libs.edc.junit)
+    testImplementation(libs.edc.core.connector)
     testImplementation(libs.edc.ext.http)
     testImplementation(libs.edc.dsp.api.configuration)
     testImplementation(libs.restAssured)
