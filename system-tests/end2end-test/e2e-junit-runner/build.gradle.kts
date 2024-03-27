@@ -25,7 +25,7 @@ dependencies {
     testImplementation(libs.edc.api.management)
     testImplementation(libs.edc.core.transform)
     testImplementation(libs.edc.junit)
-    testImplementation(libs.edc.jsonld)
+    testImplementation(libs.edc.json.ld.lib)
 }
 
 edcBuild {
