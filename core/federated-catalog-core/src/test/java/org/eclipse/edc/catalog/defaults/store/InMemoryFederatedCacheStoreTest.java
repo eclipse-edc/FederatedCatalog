@@ -21,7 +21,7 @@ import org.eclipse.edc.catalog.spi.DataService;
 import org.eclipse.edc.catalog.spi.Dataset;
 import org.eclipse.edc.catalog.spi.Distribution;
 import org.eclipse.edc.catalog.store.InMemoryFederatedCacheStore;
-import org.eclipse.edc.connector.core.store.CriterionOperatorRegistryImpl;
+import org.eclipse.edc.query.CriterionOperatorRegistryImpl;
 import org.eclipse.edc.spi.types.domain.asset.Asset;
 import org.eclipse.edc.util.concurrency.LockManager;
 import org.junit.jupiter.api.Test;

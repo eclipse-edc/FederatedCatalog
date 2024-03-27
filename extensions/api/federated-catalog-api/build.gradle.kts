@@ -25,7 +25,7 @@ dependencies {
 
     implementation(libs.edc.api.management.config)
     runtimeOnly(libs.edc.spi.jsonld)
-    runtimeOnly(libs.edc.jsonld)
+    runtimeOnly(libs.edc.json.ld.lib)
 
     // required for integration test
     testImplementation(testFixtures(project(":core:federated-catalog-core"))) // provides the TestUtil
@@ -35,7 +35,7 @@ dependencies {
     testImplementation(libs.edc.dsp.api.configuration)
     testImplementation(libs.restAssured)
     testImplementation(libs.edc.iam.mock)
-    testImplementation(libs.edc.jsonld)
+    testImplementation(libs.edc.json.ld.lib)
     testImplementation(libs.edc.dsp.transform.catalog)
     testImplementation(libs.edc.core.transform)
 

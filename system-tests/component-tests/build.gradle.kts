@@ -31,7 +31,7 @@ dependencies {
 
     testImplementation(libs.edc.spi.jsonld)
     testImplementation(libs.edc.dsp.all)
-    testImplementation(libs.edc.jsonld)
+    testImplementation(libs.edc.json.ld.lib)
     testRuntimeOnly(libs.edc.iam.mock)
 }
 
