@@ -25,7 +25,6 @@ dependencies {
     api(project(":spi:federated-catalog-spi"))
 
     implementation(libs.edc.util)
-    implementation(libs.edc.core.connector)
     implementation(libs.edc.spi.jsonld)
     implementation(libs.edc.jsonld)
     implementation(libs.edc.query.lib)
