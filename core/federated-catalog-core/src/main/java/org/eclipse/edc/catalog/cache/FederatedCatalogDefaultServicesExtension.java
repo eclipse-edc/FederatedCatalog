@@ -22,12 +22,13 @@ import org.eclipse.edc.catalog.spi.CacheQueryAdapterRegistry;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.catalog.spi.QueryEngine;
 import org.eclipse.edc.catalog.store.InMemoryFederatedCacheStore;
-import org.eclipse.edc.connector.core.store.CriterionOperatorRegistryImpl;
 import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
 import org.eclipse.edc.crawler.spi.model.ExecutionPlan;
 import org.eclipse.edc.crawler.spi.model.RecurringExecutionPlan;
+import org.eclipse.edc.query.CriterionOperatorRegistryImpl;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.util.concurrency.LockManager;
@@ -37,12 +38,11 @@ import java.util.Random;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static java.lang.String.format;
-import static org.eclipse.edc.catalog.spi.CacheSettings.DEFAULT_EXECUTION_PERIOD_SECONDS;
-import static org.eclipse.edc.catalog.spi.CacheSettings.DEFAULT_NUMBER_OF_CRAWLERS;
-import static org.eclipse.edc.catalog.spi.CacheSettings.EXECUTION_PLAN_DELAY_SECONDS;
-import static org.eclipse.edc.catalog.spi.CacheSettings.EXECUTION_PLAN_PERIOD_SECONDS;
-import static org.eclipse.edc.catalog.spi.CacheSettings.LOW_EXECUTION_PERIOD_SECONDS_THRESHOLD;
-import static org.eclipse.edc.catalog.spi.CacheSettings.NUM_CRAWLER_SETTING;
+import static org.eclipse.edc.catalog.cache.FederatedCatalogCacheExtension.DEFAULT_EXECUTION_PERIOD_SECONDS;
+import static org.eclipse.edc.catalog.cache.FederatedCatalogCacheExtension.DEFAULT_NUMBER_OF_CRAWLERS;
+import static org.eclipse.edc.catalog.cache.FederatedCatalogCacheExtension.EXECUTION_PLAN_PERIOD_SECONDS;
+import static org.eclipse.edc.catalog.cache.FederatedCatalogCacheExtension.LOW_EXECUTION_PERIOD_SECONDS_THRESHOLD;
+import static org.eclipse.edc.catalog.cache.FederatedCatalogCacheExtension.NUM_CRAWLER_SETTING;
 
 /**
  * Provides default service implementations for fallback
@@ -51,6 +51,8 @@ import static org.eclipse.edc.catalog.spi.CacheSettings.NUM_CRAWLER_SETTING;
 public class FederatedCatalogDefaultServicesExtension implements ServiceExtension {
 
     public static final String NAME = "Federated Catalog Default Services";
+    @Setting("The initial delay for the cache crawler engine")
+    public static final String EXECUTION_PLAN_DELAY_SECONDS = "edc.catalog.cache.execution.delay.seconds";
 
     @Inject
     private FederatedCacheStore store;

@@ -28,6 +28,7 @@ dependencies {
     implementation(libs.edc.core.connector)
     implementation(libs.edc.spi.jsonld)
     implementation(libs.edc.jsonld)
+    implementation(libs.edc.query.lib)
 
     // required for integration test
     testImplementation(libs.edc.dsp.transform.catalog)

@@ -33,6 +33,7 @@ import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
@@ -43,8 +44,6 @@ import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 
 import static java.util.Optional.ofNullable;
-import static org.eclipse.edc.catalog.spi.CacheSettings.DEFAULT_NUMBER_OF_CRAWLERS;
-import static org.eclipse.edc.catalog.spi.CacheSettings.NUM_CRAWLER_SETTING;
 import static org.eclipse.edc.catalog.spi.CatalogConstants.DATASPACE_PROTOCOL;
 import static org.eclipse.edc.spi.CoreConstants.JSON_LD;
 
@@ -52,6 +51,14 @@ import static org.eclipse.edc.spi.CoreConstants.JSON_LD;
 public class FederatedCatalogCacheExtension implements ServiceExtension {
 
     public static final String NAME = "Federated Catalog Cache";
+    public static final int DEFAULT_EXECUTION_PERIOD_SECONDS = 60;
+    public static final int LOW_EXECUTION_PERIOD_SECONDS_THRESHOLD = 10;
+    public static final int DEFAULT_NUMBER_OF_CRAWLERS = 2;
+
+    @Setting(value = "The time to elapse between two crawl runs", defaultValue = DEFAULT_EXECUTION_PERIOD_SECONDS + "")
+    public static final String EXECUTION_PLAN_PERIOD_SECONDS = "edc.catalog.cache.execution.period.seconds";
+    @Setting(value = "The number of crawlers (execution threads) that should be used. The engine will re-use crawlers when necessary.", defaultValue = DEFAULT_NUMBER_OF_CRAWLERS + "")
+    public static final String NUM_CRAWLER_SETTING = "edc.catalog.cache.partition.num.crawlers";
 
     @Inject
     private FederatedCacheStore store;
