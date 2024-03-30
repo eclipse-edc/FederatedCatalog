@@ -14,6 +14,8 @@
 
 package org.eclipse.edc.catalog.spi;
 
+import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
+
 import java.util.ArrayList;
 import java.util.List;
 

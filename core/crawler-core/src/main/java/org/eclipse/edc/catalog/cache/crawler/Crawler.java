@@ -14,7 +14,6 @@
 
 package org.eclipse.edc.catalog.cache.crawler;
 
-import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.crawler.spi.CrawlerAction;
 import org.eclipse.edc.crawler.spi.CrawlerErrorHandler;
 import org.eclipse.edc.crawler.spi.CrawlerSuccessHandler;
@@ -32,7 +31,7 @@ import java.util.concurrent.CompletableFuture;
 import static java.lang.String.format;
 
 /**
- * Receives a target (i.e. a {@link WorkItem}) that it queries for its {@link Catalog}.
+ * Receives a target (i.e. a {@link WorkItem}) that it queries for its {@code Catalog}.
  * The resulting {@link UpdateResponse} is returned if successful.
  */
 public class Crawler {

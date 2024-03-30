@@ -14,9 +14,9 @@
 
 package org.eclipse.edc.catalog.spi;
 
+import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 import org.eclipse.edc.spi.query.Criterion;
-import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
 
 import java.util.Collection;
 import java.util.List;
@@ -28,12 +28,12 @@ import java.util.List;
 public interface FederatedCacheStore {
 
     /**
-     * Adds an {@link ContractOffer} to the store
+     * Adds an {@code ContractOffer} to the store
      */
     void save(Catalog catalog);
 
     /**
-     * Queries the store for {@link ContractOffer}s
+     * Queries the store for {@code ContractOffer}s
      *
      * @param query A list of criteria the asset must fulfill
      * @return A collection of assets that are already in the store and that satisfy a given list of criteria.

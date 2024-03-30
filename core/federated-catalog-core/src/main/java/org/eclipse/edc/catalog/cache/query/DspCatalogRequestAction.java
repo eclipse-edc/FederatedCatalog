@@ -16,8 +16,8 @@ package org.eclipse.edc.catalog.cache.query;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.catalog.spi.CatalogConstants;
-import org.eclipse.edc.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.catalog.spi.model.CatalogUpdateResponse;
+import org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.crawler.spi.CrawlerAction;
 import org.eclipse.edc.crawler.spi.model.UpdateRequest;
 import org.eclipse.edc.crawler.spi.model.UpdateResponse;

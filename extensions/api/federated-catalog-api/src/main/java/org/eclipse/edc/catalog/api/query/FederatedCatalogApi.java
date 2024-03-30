@@ -24,7 +24,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.json.JsonArray;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
-import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractOffer;
 
 @OpenAPIDefinition(
         info = @Info(description = "This represents the Federated Catalog API. It serves the cached Catalogs fetched from the data providers.",

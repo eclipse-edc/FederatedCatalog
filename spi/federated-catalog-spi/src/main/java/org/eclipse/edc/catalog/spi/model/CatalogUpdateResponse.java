@@ -16,7 +16,7 @@ package org.eclipse.edc.catalog.spi.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.eclipse.edc.catalog.spi.Catalog;
+import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.crawler.spi.model.UpdateResponse;
 
 public class CatalogUpdateResponse extends UpdateResponse {
