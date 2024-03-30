@@ -17,7 +17,6 @@ package org.eclipse.edc.catalog.cache;
 import jakarta.json.Json;
 import org.eclipse.edc.catalog.cache.crawler.CrawlerActionRegistryImpl;
 import org.eclipse.edc.catalog.cache.query.DspCatalogRequestAction;
-import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.spi.FederatedCacheStore;
 import org.eclipse.edc.catalog.spi.model.CatalogUpdateResponse;
@@ -25,7 +24,8 @@ import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDatasetTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDistributionTransformer;
-import org.eclipse.edc.connector.core.base.agent.NoOpParticipantIdMapper;
+import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
+import org.eclipse.edc.connector.core.agent.NoOpParticipantIdMapper;
 import org.eclipse.edc.core.transform.transformer.dcat.from.JsonObjectFromCatalogTransformer;
 import org.eclipse.edc.core.transform.transformer.dcat.from.JsonObjectFromDataServiceTransformer;
 import org.eclipse.edc.core.transform.transformer.dcat.from.JsonObjectFromDatasetTransformer;
@@ -57,7 +57,7 @@ import static java.util.Optional.ofNullable;
 import static org.eclipse.edc.catalog.cache.FederatedCatalogDefaultServicesExtension.NUM_CRAWLER_SETTING;
 import static org.eclipse.edc.catalog.spi.CacheSettings.DEFAULT_NUMBER_OF_CRAWLERS;
 import static org.eclipse.edc.catalog.spi.CatalogConstants.DATASPACE_PROTOCOL;
-import static org.eclipse.edc.spi.CoreConstants.JSON_LD;
+import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 
 @Extension(value = FederatedCatalogCacheExtension.NAME)
 public class FederatedCatalogCacheExtension implements ServiceExtension {

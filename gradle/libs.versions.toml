@@ -32,6 +32,7 @@ edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-query-lib = { module = "org.eclipse.edc:query-lib", version.ref = "edc" }
 edc-json-ld-lib = { module = "org.eclipse.edc:json-ld-lib", version.ref = "edc" }
 edc-spi-catalog = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
+edc-spi-contract = { module = "org.eclipse.edc:contract-spi", version.ref = "edc" }
 edc-spi-core = { module = "org.eclipse.edc:core-spi", version.ref = "edc" }
 edc-spi-web = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 edc-spi-dsp = { module = "org.eclipse.edc:dsp-spi", version.ref = "edc" }

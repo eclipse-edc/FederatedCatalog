@@ -15,9 +15,9 @@
 package org.eclipse.edc.catalog.cache.query;
 
 import org.eclipse.edc.catalog.spi.CacheQueryAdapter;
-import org.eclipse.edc.catalog.spi.Catalog;
 import org.eclipse.edc.catalog.spi.QueryResponse;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
+import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.spi.EdcException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;

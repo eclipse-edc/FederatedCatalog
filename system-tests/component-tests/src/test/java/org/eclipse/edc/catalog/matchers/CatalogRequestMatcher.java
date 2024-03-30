@@ -14,7 +14,7 @@
 
 package org.eclipse.edc.catalog.matchers;
 
-import org.eclipse.edc.catalog.spi.CatalogRequestMessage;
+import org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequestMessage;
 import org.mockito.ArgumentMatcher;
 
 public abstract class CatalogRequestMatcher implements ArgumentMatcher<CatalogRequestMessage> {

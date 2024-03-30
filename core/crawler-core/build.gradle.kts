@@ -20,6 +20,7 @@ plugins {
 dependencies {
     api(libs.edc.spi.core)
     api(libs.edc.spi.web)
+    api(libs.edc.spi.contract)
     api(project(":spi:crawler-spi"))
 
     implementation(libs.edc.core.connector)

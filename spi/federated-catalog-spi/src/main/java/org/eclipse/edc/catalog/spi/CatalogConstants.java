@@ -14,7 +14,8 @@
 
 package org.eclipse.edc.catalog.spi;
 
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public interface CatalogConstants {
     String PROPERTY_ORIGINATOR = EDC_NAMESPACE + "originator";

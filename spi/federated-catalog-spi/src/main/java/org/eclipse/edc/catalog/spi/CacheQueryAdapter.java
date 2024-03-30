@@ -15,7 +15,8 @@
 package org.eclipse.edc.catalog.spi;
 
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
-import org.eclipse.edc.spi.types.domain.asset.Asset;
+import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
+import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 
 import java.util.stream.Stream;
 

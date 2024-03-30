@@ -14,9 +14,9 @@
 
 package org.eclipse.edc.catalog.test;
 
+import org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.crawler.spi.TargetNode;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.spi.types.domain.offer.ContractOffer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

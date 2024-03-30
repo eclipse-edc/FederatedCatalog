@@ -46,7 +46,7 @@ allprojects {
         swagger {
             title.set((project.findProperty("apiTitle") ?: "EDC REST API") as String)
             description =
-                    (project.findProperty("apiDescription") ?: "EDC REST APIs - merged by OpenApiMerger") as String
+                (project.findProperty("apiDescription") ?: "EDC REST APIs - merged by OpenApiMerger") as String
             outputFilename.set(project.name)
             outputDirectory.set(file("${rootProject.projectDir.path}/resources/openapi/yaml"))
         }
@@ -55,13 +55,6 @@ allprojects {
     configure<CheckstyleExtension> {
         configFile = rootProject.file("resources/edc-checkstyle-config.xml")
         configDirectory.set(rootProject.file("resources"))
-    }
-
-    // EdcRuntimeExtension uses this to determine the runtime classpath of the module to run.
-    tasks.register("printClasspath") {
-        doLast {
-            println(sourceSets["main"].runtimeClasspath.asPath)
-        }
     }
 
 }

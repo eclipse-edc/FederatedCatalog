@@ -30,6 +30,7 @@ dependencies {
     testImplementation(libs.awaitility)
 
     testImplementation(libs.edc.spi.jsonld)
+    testImplementation(libs.edc.spi.catalog)
     testImplementation(libs.edc.dsp.all)
     testImplementation(libs.edc.json.ld.lib)
     testRuntimeOnly(libs.edc.iam.mock)
