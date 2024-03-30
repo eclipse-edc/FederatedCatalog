@@ -16,7 +16,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FederatedCatalogCacheQuery'
+              $ref: "#/components/schemas/FederatedCatalogCacheQuery"
       responses:
         "200":
           description: "A list of Catalog is returned, potentially empty"
@@ -26,7 +26,7 @@ paths:
                 type: array
                 example: null
                 items:
-                  $ref: '#/components/schemas/ContractOffer'
+                  $ref: "#/components/schemas/ContractOffer"
         "500":
           description: A Query could not be completed due to an internal error
 components:
@@ -35,7 +35,7 @@ components:
       type: object
       properties:
         constraint:
-          $ref: '#/components/schemas/Constraint'
+          $ref: "#/components/schemas/Constraint"
         includedIn:
           type: string
           example: null
@@ -64,7 +64,7 @@ components:
           type: string
           example: null
         policy:
-          $ref: '#/components/schemas/Policy'
+          $ref: "#/components/schemas/Policy"
       example: null
     Criterion:
       type: object
@@ -83,16 +83,16 @@ components:
       type: object
       properties:
         action:
-          $ref: '#/components/schemas/Action'
+          $ref: "#/components/schemas/Action"
         consequence:
-          $ref: '#/components/schemas/Duty'
+          $ref: "#/components/schemas/Duty"
         constraints:
           type: array
           example: null
           items:
-            $ref: '#/components/schemas/Constraint'
+            $ref: "#/components/schemas/Constraint"
         parentPermission:
-          $ref: '#/components/schemas/Permission'
+          $ref: "#/components/schemas/Permission"
       example: null
     FederatedCatalogCacheQuery:
       type: object
@@ -101,7 +101,7 @@ components:
           type: array
           example: null
           items:
-            $ref: '#/components/schemas/Criterion'
+            $ref: "#/components/schemas/Criterion"
       example: null
     JsonArray:
       type: array
@@ -122,7 +122,7 @@ components:
           - "NULL"
       example: null
       items:
-        $ref: '#/components/schemas/JsonValue'
+        $ref: "#/components/schemas/JsonValue"
     JsonValue:
       type: object
       properties:
@@ -142,17 +142,17 @@ components:
       type: object
       properties:
         action:
-          $ref: '#/components/schemas/Action'
+          $ref: "#/components/schemas/Action"
         constraints:
           type: array
           example: null
           items:
-            $ref: '#/components/schemas/Constraint'
+            $ref: "#/components/schemas/Constraint"
         duties:
           type: array
           example: null
           items:
-            $ref: '#/components/schemas/Duty'
+            $ref: "#/components/schemas/Duty"
       example: null
     Policy:
       type: object
@@ -183,17 +183,17 @@ components:
           type: array
           example: null
           items:
-            $ref: '#/components/schemas/Duty'
+            $ref: "#/components/schemas/Duty"
         permissions:
           type: array
           example: null
           items:
-            $ref: '#/components/schemas/Permission'
+            $ref: "#/components/schemas/Permission"
         prohibitions:
           type: array
           example: null
           items:
-            $ref: '#/components/schemas/Prohibition'
+            $ref: "#/components/schemas/Prohibition"
         target:
           type: string
           example: null
@@ -202,15 +202,15 @@ components:
       type: object
       properties:
         action:
-          $ref: '#/components/schemas/Action'
+          $ref: "#/components/schemas/Action"
         constraints:
           type: array
           example: null
           items:
-            $ref: '#/components/schemas/Constraint'
+            $ref: "#/components/schemas/Constraint"
         remedies:
           type: array
           example: null
           items:
-            $ref: '#/components/schemas/Duty'
+            $ref: "#/components/schemas/Duty"
       example: null
