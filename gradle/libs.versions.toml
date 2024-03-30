@@ -20,7 +20,6 @@ edc-core-dataPlane-selector = { module = "org.eclipse.edc:data-plane-selector-co
 edc-core-catalog = { module = "org.eclipse.edc:catalog-core", version.ref = "edc" }
 edc-core-jersey = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
 edc-core-jetty = { module = "org.eclipse.edc:jetty-core", version.ref = "edc" }
-edc-core-transform = { module = "org.eclipse.edc:transform-core", version.ref = "edc" }
 edc-dpf-selector-client = { module = "org.eclipse.edc:data-plane-selector-client", version.ref = "edc" }
 edc-dpf-selector-core = { module = "org.eclipse.edc:data-plane-selector-core", version.ref = "edc" }
 edc-dpf-selector-spi = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
@@ -41,11 +40,13 @@ edc-spi-transform = { module = "org.eclipse.edc:transform-spi", version.ref = "e
 edc-util = { module = "org.eclipse.edc:util", version.ref = "edc" }
 failsafe-core = { module = "dev.failsafe:failsafe", version.ref = "failsafe" }
 restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssured" }
+edc-lib-transform = { module = "org.eclipse.edc:transform-lib", version.ref = "edc" }
 
 # protocol modules
 edc-dsp-api-configuration = { module = "org.eclipse.edc:dsp-api-configuration", version.ref = "edc" }
 edc-dsp-all = { module = "org.eclipse.edc:dsp", version.ref = "edc" }
 edc-dsp-transform-catalog = { module = "org.eclipse.edc:dsp-catalog-transform", version.ref = "edc" }
+edc-controlplane-transform = { module = "org.eclipse.edc:control-plane-transform", version.ref = "edc" }
 
 [bundles]
 edc-connector = ["edc-boot", "edc-core-connector", "edc-core-jersey", "edc-api-observability"]

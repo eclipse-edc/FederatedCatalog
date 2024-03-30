@@ -21,9 +21,11 @@ dependencies {
     testImplementation(project(":core:federated-catalog-core"))
     testImplementation(libs.edc.core.connector)
     testImplementation(libs.edc.dsp.transform.catalog)
+    testImplementation(libs.edc.lib.transform)
+    testImplementation(libs.edc.controlplane.transform)
     testImplementation(libs.awaitility)
     testImplementation(libs.edc.api.management)
-    testImplementation(libs.edc.core.transform)
+    testImplementation(libs.edc.dsp.transform.catalog)
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.json.ld.lib)
 }
