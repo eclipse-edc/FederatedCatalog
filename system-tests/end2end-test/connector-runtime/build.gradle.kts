@@ -26,12 +26,12 @@ dependencies {
     runtimeOnly(libs.edc.api.management)
     runtimeOnly(libs.edc.config.filesystem)
     runtimeOnly(libs.edc.dpf.transfer)
-    implementation(libs.edc.ext.http)
-    implementation(libs.edc.spi.jsonld)
+    runtimeOnly(libs.edc.ext.http)
+    runtimeOnly(libs.edc.spi.jsonld)
 
     // protocol modules
-    implementation(libs.edc.dsp.all)
-    implementation(libs.edc.iam.mock)
+    runtimeOnly(libs.edc.dsp.all)
+    runtimeOnly(libs.edc.iam.mock)
 
     // Embedded DPF
     runtimeOnly(libs.bundles.edc.dpf)
