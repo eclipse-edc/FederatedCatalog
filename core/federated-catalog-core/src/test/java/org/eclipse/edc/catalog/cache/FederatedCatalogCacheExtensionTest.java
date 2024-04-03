@@ -25,6 +25,7 @@ import org.eclipse.edc.crawler.spi.TargetNodeFilter;
 import org.eclipse.edc.crawler.spi.model.ExecutionPlan;
 import org.eclipse.edc.crawler.spi.model.RecurringExecutionPlan;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.health.HealthCheckService;
 import org.eclipse.edc.spi.types.TypeManager;
@@ -42,6 +43,7 @@ import static org.eclipse.edc.catalog.test.TestUtil.TEST_PROTOCOL;
 import static org.eclipse.edc.catalog.test.TestUtil.createCatalog;
 import static org.eclipse.edc.catalog.test.TestUtil.createNode;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -55,11 +57,17 @@ class FederatedCatalogCacheExtensionTest {
 
     @BeforeEach
     void setUp(ServiceExtensionContext context, ObjectFactory factory) {
+        var monitorWithPrefix = mock(Monitor.class);
+        var monitor = mock(Monitor.class);
+        when(monitor.withPrefix(anyString())).thenReturn(monitorWithPrefix);
+
         context.registerService(TargetNodeDirectory.class, nodeDirectoryMock);
         context.registerService(FederatedCacheStore.class, storeMock);
         context.registerService(TargetNodeFilter.class, null);
         context.registerService(ExecutionPlan.class, new RecurringExecutionPlan(Duration.ofSeconds(1), Duration.ofSeconds(0), mock()));
         context.registerService(TypeManager.class, mock());
+        context.registerService(Monitor.class, monitor);
+
         extension = factory.constructInstance(FederatedCatalogCacheExtension.class);
     }
 
