@@ -41,6 +41,8 @@ edc-util = { module = "org.eclipse.edc:util", version.ref = "edc" }
 failsafe-core = { module = "dev.failsafe:failsafe", version.ref = "failsafe" }
 restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssured" }
 edc-lib-transform = { module = "org.eclipse.edc:transform-lib", version.ref = "edc" }
+edc-lib-providers-jersey = { module = "org.eclipse.edc:jersey-providers-lib", version.ref = "edc" }
+edc-lib-boot = { module = "org.eclipse.edc:boot-lib", version.ref = "edc" }
 
 # protocol modules
 edc-dsp-api-configuration = { module = "org.eclipse.edc:dsp-api-configuration", version.ref = "edc" }

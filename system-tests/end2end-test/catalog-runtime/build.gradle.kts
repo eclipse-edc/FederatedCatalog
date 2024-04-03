@@ -29,9 +29,10 @@ dependencies {
     runtimeOnly(libs.edc.core.controlplane)
     runtimeOnly(libs.edc.core.jetty)
     runtimeOnly(libs.edc.core.dataPlane.selector)
+    runtimeOnly(libs.edc.lib.providers.jersey)
+    runtimeOnly(libs.edc.lib.boot)
 
 
-    // IDS stuff
     runtimeOnly(libs.edc.dsp.all)
     runtimeOnly(libs.edc.iam.mock)
 }
