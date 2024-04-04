@@ -18,21 +18,22 @@ plugins {
 }
 
 dependencies {
+    api(project(":spi:federated-catalog-spi"))
     api(libs.edc.spi.core)
     implementation(libs.edc.spi.transform)
     implementation(libs.edc.spi.web)
-    api(project(":spi:federated-catalog-spi"))
 
     implementation(libs.edc.api.management.config)
     runtimeOnly(libs.edc.spi.jsonld)
     runtimeOnly(libs.edc.json.ld.lib)
 
     // required for integration test
+    testImplementation(libs.edc.spi.dsp.http)
+    testImplementation(libs.edc.lib.boot)
     testImplementation(testFixtures(project(":core:federated-catalog-core"))) // provides the TestUtil
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.core.connector)
     testImplementation(libs.edc.ext.http)
-    testImplementation(libs.edc.dsp.api.configuration)
     testImplementation(libs.restAssured)
     testImplementation(libs.edc.iam.mock)
     testImplementation(libs.edc.json.ld.lib)
