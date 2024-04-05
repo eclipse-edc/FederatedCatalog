@@ -24,7 +24,7 @@ dependencies {
     api(project(":core:crawler-core"))
     api(project(":spi:federated-catalog-spi"))
 
-    implementation(libs.edc.util)
+    implementation(libs.edc.lib.util)
     implementation(libs.edc.core.connector)
     implementation(libs.edc.query.lib)
     implementation(libs.edc.dsp.transform.catalog)
