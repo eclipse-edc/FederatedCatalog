@@ -221,7 +221,6 @@ maven/mavencentral/org.eclipse.edc/transfer-spi/0.6.1-SNAPSHOT, Apache-2.0, appr
 maven/mavencentral/org.eclipse.edc/transform-lib/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transform-spi/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/util-lib/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/util/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/validator-lib/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/validator-spi/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/verifiable-credentials-spi/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
