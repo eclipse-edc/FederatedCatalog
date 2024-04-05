@@ -84,8 +84,6 @@ components:
       properties:
         action:
           $ref: "#/components/schemas/Action"
-        consequence:
-          $ref: "#/components/schemas/Duty"
         constraints:
           type: array
           example: null
