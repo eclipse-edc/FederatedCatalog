@@ -68,7 +68,7 @@ class JsonObjectToCatalogTransformerTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(CATALOG_ID);
-        assertThat(result.getDatasets()).isNull();
+        assertThat(result.getDatasets()).isNotNull().isEmpty();
         assertThat(result.getDataServices()).isNull();
 
         verifyNoInteractions(context);
