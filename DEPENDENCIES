@@ -120,9 +120,9 @@ maven/mavencentral/org.apache.xbean/xbean-reflect/3.7, Apache-2.0, approved, cle
 maven/mavencentral/org.apiguardian/apiguardian-api/1.1.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.assertj/assertj-core/3.25.3, Apache-2.0, approved, #12585
 maven/mavencentral/org.awaitility/awaitility/4.2.0, Apache-2.0, approved, #14178
-maven/mavencentral/org.bouncycastle/bcpkix-jdk18on/1.77, MIT, approved, #11593
-maven/mavencentral/org.bouncycastle/bcprov-jdk18on/1.77, MIT AND CC0-1.0, approved, #11595
-maven/mavencentral/org.bouncycastle/bcutil-jdk18on/1.77, MIT, approved, #11596
+maven/mavencentral/org.bouncycastle/bcpkix-jdk18on/1.78, MIT, approved, #14235
+maven/mavencentral/org.bouncycastle/bcprov-jdk18on/1.78, MIT AND CC0-1.0, approved, #14237
+maven/mavencentral/org.bouncycastle/bcutil-jdk18on/1.78, MIT, approved, #14238
 maven/mavencentral/org.ccil.cowan.tagsoup/tagsoup/1.2.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.checkerframework/checker-qual/3.42.0, MIT, approved, clearlydefined
 maven/mavencentral/org.codehaus.plexus/plexus-classworlds/2.6.0, Apache-2.0 AND Plexus, approved, CQ22821
@@ -193,6 +193,7 @@ maven/mavencentral/org.eclipse.edc/jetty-core/0.6.1-SNAPSHOT, Apache-2.0, approv
 maven/mavencentral/org.eclipse.edc/json-ld-lib/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/json-ld-spi/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/json-ld/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/json-lib/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/junit-base/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/junit/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/jwt-spi/0.6.1-SNAPSHOT, Apache-2.0, approved, technology.edc
