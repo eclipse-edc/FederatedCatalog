@@ -6,6 +6,7 @@ awaitility = "4.2.0"
 edc = "0.6.1-SNAPSHOT"
 failsafe = "3.3.2"
 restAssured = "5.4.0"
+jackson = "2.17.0"
 
 [libraries]
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
@@ -53,6 +54,10 @@ edc-dsp-api-configuration = { module = "org.eclipse.edc:dsp-http-api-configurati
 edc-dsp-all = { module = "org.eclipse.edc:dsp", version.ref = "edc" }
 edc-dsp-transform-catalog = { module = "org.eclipse.edc:dsp-catalog-transform", version.ref = "edc" }
 edc-controlplane-transform = { module = "org.eclipse.edc:control-plane-transform", version.ref = "edc" }
+
+# third-party desp
+jackson-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
+
 
 [bundles]
 edc-connector = ["edc-boot", "edc-core-connector", "edc-core-jersey", "edc-api-observability"]

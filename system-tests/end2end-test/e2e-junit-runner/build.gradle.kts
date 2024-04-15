@@ -28,6 +28,7 @@ dependencies {
     testImplementation(libs.edc.dsp.transform.catalog)
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.json.ld.lib)
+    testImplementation(libs.jackson.jsr310)
 }
 
 edcBuild {
