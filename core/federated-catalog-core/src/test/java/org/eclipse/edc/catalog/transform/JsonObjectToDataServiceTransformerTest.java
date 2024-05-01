@@ -27,8 +27,8 @@ import static org.eclipse.edc.catalog.transform.TestInput.getExpanded;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_DATA_SERVICE_TYPE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCT_ENDPOINT_URL_ATTRIBUTE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCT_TERMS_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_ENDPOINT_DESCRIPTION_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_ENDPOINT_URL_ATTRIBUTE;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -58,15 +58,15 @@ class JsonObjectToDataServiceTransformerTest {
         var dataService = jsonFactory.createObjectBuilder()
                 .add(ID, DATA_SERVICE_ID)
                 .add(TYPE, DCAT_DATA_SERVICE_TYPE)
-                .add(DCT_TERMS_ATTRIBUTE, terms)
-                .add(DCT_ENDPOINT_URL_ATTRIBUTE, url)
+                .add(DCAT_ENDPOINT_DESCRIPTION_ATTRIBUTE, terms)
+                .add(DCAT_ENDPOINT_URL_ATTRIBUTE, url)
                 .build();
 
         var result = transformer.transform(getExpanded(dataService), context);
 
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(DATA_SERVICE_ID);
-        assertThat(result.getTerms()).isEqualTo(terms);
+        assertThat(result.getEndpointDescription()).isEqualTo(terms);
         assertThat(result.getEndpointUrl()).isEqualTo(url);
 
         verifyNoInteractions(context);
