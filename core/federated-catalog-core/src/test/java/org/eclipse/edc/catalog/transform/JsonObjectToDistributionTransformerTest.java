@@ -62,7 +62,7 @@ class JsonObjectToDistributionTransformerTest {
         assertThat(result).isNotNull();
         assertThat(result.getFormat()).isEqualTo(format);
         assertThat(result.getDataService()).isNotNull()
-                .matches(ds -> ds.getId().equals(dataServiceId) && ds.getTerms() == null && ds.getEndpointUrl() == null);
+                .matches(ds -> ds.getId().equals(dataServiceId) && ds.getEndpointDescription() == null && ds.getEndpointUrl() == null);
 
         verifyNoInteractions(context);
     }

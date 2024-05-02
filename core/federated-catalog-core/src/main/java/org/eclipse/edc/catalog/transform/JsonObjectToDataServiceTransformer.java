@@ -22,6 +22,8 @@ import org.eclipse.edc.transform.spi.TransformerContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_ENDPOINT_DESCRIPTION_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_ENDPOINT_URL_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCT_ENDPOINT_URL_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCT_TERMS_ATTRIBUTE;
 
@@ -45,10 +47,12 @@ public class JsonObjectToDataServiceTransformer extends AbstractJsonLdTransforme
     }
 
     private void transformProperties(String key, JsonValue value, DataService.Builder builder, TransformerContext context) {
-        if (DCT_TERMS_ATTRIBUTE.equals(key)) {
-            transformString(value, builder::terms, context);
-        } else if (DCT_ENDPOINT_URL_ATTRIBUTE.equals(key)) {
+        if (DCT_ENDPOINT_URL_ATTRIBUTE.equals(key)) {
             transformString(value, builder::endpointUrl, context);
+        } else if (DCAT_ENDPOINT_URL_ATTRIBUTE.equals(key)) {
+            transformString(value, builder::endpointUrl, context);
+        } else if (DCT_TERMS_ATTRIBUTE.equals(key) || DCAT_ENDPOINT_DESCRIPTION_ATTRIBUTE.equals(key)) {
+            transformString(value, builder::endpointDescription, context);
         }
     }
 }
