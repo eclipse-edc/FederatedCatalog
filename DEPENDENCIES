@@ -28,7 +28,6 @@ maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.17.1, Apache-2.0, approve
 maven/mavencentral/com.github.docker-java/docker-java-api/3.3.6, Apache-2.0, approved, #10346
 maven/mavencentral/com.github.docker-java/docker-java-transport-zerodep/3.3.6, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause), approved, #7946
 maven/mavencentral/com.github.docker-java/docker-java-transport/3.3.6, Apache-2.0, approved, #7942
-maven/mavencentral/com.github.stephenc.jcip/jcip-annotations/1.0-1, Apache-2.0, approved, CQ21949
 maven/mavencentral/com.google.code.findbugs/jsr305/3.0.2, Apache-2.0, approved, #20
 maven/mavencentral/com.google.code.gson/gson/2.10.1, Apache-2.0, approved, #6159
 maven/mavencentral/com.google.crypto.tink/tink/1.13.0, Apache-2.0, approved, #14502
@@ -38,8 +37,8 @@ maven/mavencentral/com.google.guava/failureaccess/1.0.2, Apache-2.0, approved, C
 maven/mavencentral/com.google.guava/guava/33.1.0-jre, Apache-2.0 AND CC0-1.0, approved, #13675
 maven/mavencentral/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava, Apache-2.0, approved, CQ22657
 maven/mavencentral/com.google.protobuf/protobuf-java/3.25.1, BSD-3-Clause, approved, clearlydefined
-maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.37.3, Apache-2.0, approved, #11701
-maven/mavencentral/com.puppycrawl.tools/checkstyle/10.16.0, , restricted, clearlydefined
+maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.38, Apache-2.0, approved, clearlydefined
+maven/mavencentral/com.puppycrawl.tools/checkstyle/10.16.0, LGPL-2.1-or-later AND (Apache-2.0 AND LGPL-2.1-or-later) AND Apache-2.0, approved, #14689
 maven/mavencentral/com.squareup.okhttp3/okhttp-dnsoverhttps/4.12.0, Apache-2.0, approved, #11159
 maven/mavencentral/com.squareup.okhttp3/okhttp/4.12.0, Apache-2.0, approved, #11156
 maven/mavencentral/com.squareup.okhttp3/okhttp/4.9.3, Apache-2.0 AND MPL-2.0, approved, #3225
