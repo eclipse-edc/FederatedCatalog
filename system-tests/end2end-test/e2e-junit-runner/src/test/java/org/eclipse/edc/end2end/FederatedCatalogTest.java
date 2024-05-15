@@ -68,6 +68,7 @@ class FederatedCatalogTest {
     private static final Endpoint CONNECTOR_MANAGEMENT = new Endpoint("/management", "8081");
     private static final Endpoint CONNECTOR_PROTOCOL = new Endpoint("/api/v1/dsp", "8082");
     private static final Endpoint CONNECTOR_DEFAULT = new Endpoint("/api/v1/", "8080");
+    private static final Endpoint CONNECTOR_CONTROL = new Endpoint("/api/v1/control", "8093");
 
     private static final Endpoint CATALOG_MANAGEMENT = new Endpoint("/management", "8091");
     private static final Endpoint CATALOG_PROTOCOL = new Endpoint("/api/v1/dsp", "8092");
@@ -81,6 +82,8 @@ class FederatedCatalogTest {
                     "web.http.path", CONNECTOR_DEFAULT.path(),
                     "web.http.protocol.port", CONNECTOR_PROTOCOL.port(),
                     "web.http.protocol.path", CONNECTOR_PROTOCOL.path(),
+                    "web.http.control.port", CONNECTOR_CONTROL.port(),
+                    "web.http.control.path", CONNECTOR_CONTROL.path(),
                     "web.http.management.port", CONNECTOR_MANAGEMENT.port(),
                     "edc.participant.id", "test-connector",
                     "web.http.management.path", CONNECTOR_MANAGEMENT.path(),
