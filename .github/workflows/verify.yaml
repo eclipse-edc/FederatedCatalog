@@ -42,6 +42,28 @@ jobs:
         with:
           command: ./gradlew test jacocoTestReport
 
+  Verify-Launcher:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
+
+      - name: 'Build launcher'
+        run: ./gradlew :launchers:shadowJar
+
+      - name: 'Build Docker image'
+        run: docker build -t federated-catalog ./launchers
+
+      - name: 'Start FCC Container'
+        run: |
+          docker run -d --rm --name fcc federated-catalog:latest
+
+      - name: 'Wait for Federated Catalog to be healthy'
+        uses: raschmitt/wait-for-healthy-container@v1
+        with:
+          container-name: fcc
+          timeout: 60
+
   Postgresql-Integration-Tests:
     runs-on: ubuntu-latest
     if: ${{ false }}
