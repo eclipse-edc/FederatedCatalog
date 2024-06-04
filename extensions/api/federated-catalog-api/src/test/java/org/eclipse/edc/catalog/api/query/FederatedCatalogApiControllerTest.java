@@ -54,14 +54,16 @@ import static org.mockito.Mockito.when;
 @ApiTest
 @ExtendWith(EdcExtension.class)
 class FederatedCatalogApiControllerTest {
-    private static final String BASE_PATH = "/api";
+    private static final String BASE_PATH = "/api/catalog";
     private final int port = getFreePort();
 
     @BeforeEach
     void setUp(EdcExtension extension) {
         extension.setConfiguration(Map.of(
-                "web.http.port", String.valueOf(port),
-                "web.http.path", BASE_PATH
+                "web.http.path", "/api",
+                "web.http.port", String.valueOf(getFreePort()),
+                "web.http.catalog.port", String.valueOf(port),
+                "web.http.catalog.path", BASE_PATH
         ));
         extension.registerSystemExtension(ServiceExtension.class, new TransformerRegistrarExtension());
     }

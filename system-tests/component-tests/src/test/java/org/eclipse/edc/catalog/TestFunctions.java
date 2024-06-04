@@ -56,8 +56,8 @@ import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.mockito.Mockito.mock;
 
 public class TestFunctions {
-    public static final String BASE_PATH = "/api";
-    public static final int PORT = getFreePort();
+    public static final String CATALOG_QUERY_BASE_PATH = "/catalog";
+    public static final int CATALOG_QUERY_PORT = getFreePort();
     private static final String PATH = "/federatedcatalog";
     private static final TypeReference<List<Map<String, Object>>> MAP_TYPE = new TypeReference<>() {
     };
@@ -66,8 +66,8 @@ public class TestFunctions {
 
     private static RequestSpecification baseRequest() {
         return given()
-                .baseUri("http://localhost:" + PORT)
-                .basePath(BASE_PATH)
+                .baseUri("http://localhost:" + CATALOG_QUERY_PORT)
+                .basePath(CATALOG_QUERY_BASE_PATH)
                 .contentType(ContentType.JSON)
                 .when();
     }

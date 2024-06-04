@@ -63,6 +63,7 @@ import static org.eclipse.edc.catalog.matchers.CatalogRequestMatcher.sentTo;
 import static org.eclipse.edc.catalog.spi.CatalogConstants.DATASPACE_PROTOCOL;
 import static org.eclipse.edc.catalog.spi.CatalogConstants.PROPERTY_ORIGINATOR;
 import static org.eclipse.edc.jsonld.util.JacksonJsonLd.createObjectMapper;
+import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
@@ -89,8 +90,12 @@ public class CatalogRuntimeComponentTest {
                 "edc.catalog.cache.partition.num.crawlers", "10",
                 // give the runtime time to set up everything
                 "edc.catalog.cache.execution.delay.seconds", "1",
-                "web.http.port", valueOf(TestFunctions.PORT),
-                "web.http.path", TestFunctions.BASE_PATH,
+                "web.http.catalog.port", valueOf(TestFunctions.CATALOG_QUERY_PORT),
+                "web.http.catalog.path", TestFunctions.CATALOG_QUERY_BASE_PATH,
+                "web.http.port", valueOf(getFreePort()),
+                "web.http.path", "/api/v1",
+                "web.http.protocol.port", valueOf(getFreePort()),
+                "web.http.protocol.path", "/api/v1/dsp",
                 "edc.participant.id", "test-participant"
         ));
         dispatcher = mock(DspHttpRemoteMessageDispatcher.class);

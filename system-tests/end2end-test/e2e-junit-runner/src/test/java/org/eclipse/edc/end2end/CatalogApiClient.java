@@ -36,7 +36,7 @@ import java.util.Map;
 
 import static java.lang.String.format;
 
-class ManagementApiClient {
+class CatalogApiClient {
     private static final TypeReference<List<Map<String, Object>>> LIST_TYPE_REFERENCE = new TypeReference<>() {
     };
     private static final MediaType JSON = MediaType.parse("application/json");
@@ -46,9 +46,9 @@ class ManagementApiClient {
     private final JsonLd jsonLdService;
     private final TypeTransformerRegistry typeTransformerRegistry;
 
-    ManagementApiClient(Endpoint catalogManagement, Endpoint connectorManagement,
-                        ObjectMapper mapper, JsonLd jsonLdService,
-                        TypeTransformerRegistry typeTransformerRegistry) {
+    CatalogApiClient(Endpoint catalogManagement, Endpoint connectorManagement,
+                     ObjectMapper mapper, JsonLd jsonLdService,
+                     TypeTransformerRegistry typeTransformerRegistry) {
         this.mapper = mapper;
         this.jsonLdService = jsonLdService;
         this.typeTransformerRegistry = typeTransformerRegistry;
@@ -61,11 +61,11 @@ class ManagementApiClient {
     }
 
     Result<String> postPolicy(String policyJsonLd) {
-        return postObjectWithId(createPostRequest(policyJsonLd, managementBaseUrl + "/v2/policydefinitions"));
+        return postObjectWithId(createPostRequest(policyJsonLd, managementBaseUrl + "/v3/policydefinitions"));
     }
 
     Result<String> postContractDefinition(JsonObject definition) {
-        return postObjectWithId(createPostRequest(definition, managementBaseUrl + "/v2/contractdefinitions"));
+        return postObjectWithId(createPostRequest(definition, managementBaseUrl + "/v3/contractdefinitions"));
     }
 
     List<Catalog> getContractOffers() {
