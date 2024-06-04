@@ -68,11 +68,12 @@ class FederatedCatalogTest {
     private static final Endpoint CONNECTOR_MANAGEMENT = new Endpoint("/management", "8081");
     private static final Endpoint CONNECTOR_PROTOCOL = new Endpoint("/api/v1/dsp", "8082");
     private static final Endpoint CONNECTOR_DEFAULT = new Endpoint("/api/v1/", "8080");
-    private static final Endpoint CONNECTOR_CONTROL = new Endpoint("/api/v1/control", "8093");
+    private static final Endpoint CONNECTOR_CONTROL = new Endpoint("/api/v1/control", "8083");
 
     private static final Endpoint CATALOG_MANAGEMENT = new Endpoint("/management", "8091");
     private static final Endpoint CATALOG_PROTOCOL = new Endpoint("/api/v1/dsp", "8092");
     private static final Endpoint CATALOG_DEFAULT = new Endpoint("/api/v1/", "8090");
+    private static final Endpoint CATALOG_CATALOG = new Endpoint("/catalog", "8093");
 
     @RegisterExtension
     static EdcRuntimeExtension connector = new EdcRuntimeExtension(":system-tests:end2end-test:connector-runtime", "connector",
@@ -103,10 +104,12 @@ class FederatedCatalogTest {
                     "web.http.protocol.path", CATALOG_PROTOCOL.path(),
                     "web.http.management.port", CATALOG_MANAGEMENT.port(),
                     "web.http.management.path", CATALOG_MANAGEMENT.path(),
+                    "web.http.catalog.port", CATALOG_CATALOG.port(),
+                    "web.http.catalog.path", CATALOG_CATALOG.path(),
                     "edc.web.rest.cors.headers", "origin,content-type,accept,authorization,x-api-key"));
     private final TypeTransformerRegistry typeTransformerRegistry = new TypeTransformerRegistryImpl();
     private final ObjectMapper mapper = JacksonJsonLd.createObjectMapper();
-    private final ManagementApiClient apiClient = new ManagementApiClient(CATALOG_MANAGEMENT, CONNECTOR_MANAGEMENT, mapper, new TitaniumJsonLd(mock(Monitor.class)), typeTransformerRegistry);
+    private final CatalogApiClient apiClient = new CatalogApiClient(CATALOG_CATALOG, CONNECTOR_MANAGEMENT, mapper, new TitaniumJsonLd(mock(Monitor.class)), typeTransformerRegistry);
 
     private static Map<String, String> configOf(String... keyValuePairs) {
         if (keyValuePairs.length % 2 != 0) {
@@ -174,13 +177,11 @@ class FederatedCatalogTest {
                     var catalogs = apiClient.getContractOffers();
 
                     assertThat(catalogs).hasSizeGreaterThanOrEqualTo(1);
-                    assertThat(catalogs).anySatisfy(catalog -> {
-                        assertThat(catalog.getDatasets())
-                                .anySatisfy(dataset -> {
-                                    assertThat(dataset.getOffers()).hasSizeGreaterThanOrEqualTo(1);
-                                    assertThat(dataset.getOffers().keySet()).anyMatch(key -> key.contains(assetIdBase64));
-                                });
-                    });
+                    assertThat(catalogs).anySatisfy(catalog -> assertThat(catalog.getDatasets())
+                            .anySatisfy(dataset -> {
+                                assertThat(dataset.getOffers()).hasSizeGreaterThanOrEqualTo(1);
+                                assertThat(dataset.getOffers().keySet()).anyMatch(key -> key.contains(assetIdBase64));
+                            }));
 
                 });
     }
