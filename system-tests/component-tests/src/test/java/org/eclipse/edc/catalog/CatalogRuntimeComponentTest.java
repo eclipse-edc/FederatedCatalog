@@ -20,12 +20,16 @@ import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
+import org.eclipse.edc.connector.dataplane.selector.spi.client.DataPlaneClientFactory;
 import org.eclipse.edc.crawler.spi.TargetNode;
 import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.ComponentTest;
-import org.eclipse.edc.junit.extensions.EdcExtension;
+import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
+import org.eclipse.edc.junit.extensions.RuntimePerMethodExtension;
 import org.eclipse.edc.protocol.dsp.http.spi.dispatcher.DspHttpRemoteMessageDispatcher;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -35,6 +39,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.security.SecureRandom;
 import java.time.Duration;
@@ -73,32 +78,32 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ComponentTest
-@ExtendWith(EdcExtension.class)
 public class CatalogRuntimeComponentTest {
     public static final String TEST_CATALOG_ID = "test-catalog-id";
     private static final Duration TEST_TIMEOUT = ofSeconds(10);
     private static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
     private static final JsonLd JSON_LD_SERVICE = new TitaniumJsonLd(mock(Monitor.class));
-    private DspHttpRemoteMessageDispatcher dispatcher;
+    private final DspHttpRemoteMessageDispatcher dispatcher = mock();
+
+    @RegisterExtension
+    protected static RuntimePerMethodExtension runtimePerClassExtension = new RuntimePerMethodExtension(new EmbeddedRuntime("catalog", Map.of(
+            // make sure only one crawl-run is performed
+            "edc.catalog.cache.execution.period.seconds", "2",
+            // number of crawlers will be limited by the number of crawl-targets
+            "edc.catalog.cache.partition.num.crawlers", "10",
+            // give the runtime time to set up everything
+            "edc.catalog.cache.execution.delay.seconds", "1",
+            "web.http.catalog.port", valueOf(TestFunctions.CATALOG_QUERY_PORT),
+            "web.http.catalog.path", TestFunctions.CATALOG_QUERY_BASE_PATH,
+            "web.http.port", valueOf(getFreePort()),
+            "web.http.path", "/api/v1",
+            "web.http.protocol.port", valueOf(getFreePort()),
+            "web.http.protocol.path", "/api/v1/dsp",
+            "edc.participant.id", "test-participant"
+    )));
 
     @BeforeEach
-    void setup(EdcExtension extension) {
-        extension.setConfiguration(Map.of(
-                // make sure only one crawl-run is performed
-                "edc.catalog.cache.execution.period.seconds", "2",
-                // number of crawlers will be limited by the number of crawl-targets
-                "edc.catalog.cache.partition.num.crawlers", "10",
-                // give the runtime time to set up everything
-                "edc.catalog.cache.execution.delay.seconds", "1",
-                "web.http.catalog.port", valueOf(TestFunctions.CATALOG_QUERY_PORT),
-                "web.http.catalog.path", TestFunctions.CATALOG_QUERY_BASE_PATH,
-                "web.http.port", valueOf(getFreePort()),
-                "web.http.path", "/api/v1",
-                "web.http.protocol.port", valueOf(getFreePort()),
-                "web.http.protocol.path", "/api/v1/dsp",
-                "edc.participant.id", "test-participant"
-        ));
-        dispatcher = mock(DspHttpRemoteMessageDispatcher.class);
+    void setup() {
         when(dispatcher.protocol()).thenReturn(DATASPACE_PROTOCOL);
     }
 
