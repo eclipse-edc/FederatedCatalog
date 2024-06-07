@@ -20,15 +20,12 @@ import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
-import org.eclipse.edc.connector.dataplane.selector.spi.client.DataPlaneClientFactory;
 import org.eclipse.edc.crawler.spi.TargetNode;
 import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
-import org.eclipse.edc.junit.extensions.RuntimeExtension;
-import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerMethodExtension;
 import org.eclipse.edc.protocol.dsp.http.spi.dispatcher.DspHttpRemoteMessageDispatcher;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
@@ -38,7 +35,6 @@ import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.security.SecureRandom;
@@ -83,8 +79,6 @@ public class CatalogRuntimeComponentTest {
     private static final Duration TEST_TIMEOUT = ofSeconds(10);
     private static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
     private static final JsonLd JSON_LD_SERVICE = new TitaniumJsonLd(mock(Monitor.class));
-    private final DspHttpRemoteMessageDispatcher dispatcher = mock();
-
     @RegisterExtension
     protected static RuntimePerMethodExtension runtimePerClassExtension = new RuntimePerMethodExtension(new EmbeddedRuntime("catalog", Map.of(
             // make sure only one crawl-run is performed
@@ -101,6 +95,7 @@ public class CatalogRuntimeComponentTest {
             "web.http.protocol.path", "/api/v1/dsp",
             "edc.participant.id", "test-participant"
     )));
+    private final DspHttpRemoteMessageDispatcher dispatcher = mock();
 
     @BeforeEach
     void setup() {

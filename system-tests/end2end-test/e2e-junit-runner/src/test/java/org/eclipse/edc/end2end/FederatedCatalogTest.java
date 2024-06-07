@@ -30,7 +30,6 @@ import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
-import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
@@ -112,7 +111,7 @@ class FederatedCatalogTest {
                     "web.http.catalog.port", CATALOG_CATALOG.port(),
                     "web.http.catalog.path", CATALOG_CATALOG.path(),
                     "edc.web.rest.cors.headers", "origin,content-type,accept,authorization,x-api-key"),
-            ":system-tests:end2end-test:catalog-runtime" ));
+            ":system-tests:end2end-test:catalog-runtime"));
     private final TypeTransformerRegistry typeTransformerRegistry = new TypeTransformerRegistryImpl();
     private final ObjectMapper mapper = JacksonJsonLd.createObjectMapper();
     private final CatalogApiClient apiClient = new CatalogApiClient(CATALOG_CATALOG, CONNECTOR_MANAGEMENT, mapper, new TitaniumJsonLd(mock(Monitor.class)), typeTransformerRegistry);
