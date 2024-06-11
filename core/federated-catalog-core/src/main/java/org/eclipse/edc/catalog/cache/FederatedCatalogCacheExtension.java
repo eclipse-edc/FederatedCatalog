@@ -109,7 +109,7 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
         int numCrawlers = context.getSetting(NUM_CRAWLER_SETTING, DEFAULT_NUMBER_OF_CRAWLERS);
 
         // by default only uses FC nodes that are not "self"
-        nodeFilter = ofNullable(nodeFilter).orElse(node -> !node.name().equals(context.getConnectorId()));
+        nodeFilter = ofNullable(nodeFilter).orElse(node -> !node.name().equals(context.getRuntimeId()));
 
         executionManager = ExecutionManager.Builder.newInstance()
                 .monitor(context.getMonitor().withPrefix("ExecutionManager"))
