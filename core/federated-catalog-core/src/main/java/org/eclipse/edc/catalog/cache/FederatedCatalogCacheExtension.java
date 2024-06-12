@@ -18,7 +18,7 @@ import jakarta.json.Json;
 import org.eclipse.edc.catalog.cache.crawler.CrawlerActionRegistryImpl;
 import org.eclipse.edc.catalog.cache.query.DspCatalogRequestAction;
 import org.eclipse.edc.catalog.spi.CatalogConstants;
-import org.eclipse.edc.catalog.spi.FederatedCacheStore;
+import org.eclipse.edc.catalog.spi.FederatedCatalogCache;
 import org.eclipse.edc.catalog.spi.model.CatalogUpdateResponse;
 import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
@@ -65,7 +65,7 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
     public static final String NAME = "Federated Catalog Cache";
 
     @Inject
-    private FederatedCacheStore store;
+    private FederatedCatalogCache store;
     @Inject(required = false)
     private HealthCheckService healthCheckService;
     @Inject
@@ -163,7 +163,7 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
     }
 
     /**
-     * inserts a particular {@link Catalog} in the {@link FederatedCacheStore}
+     * inserts a particular {@link Catalog} in the {@link FederatedCatalogCache}
      *
      * @param updateResponse The response that contains the catalog
      */
