@@ -16,7 +16,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/FederatedCatalogCacheQuery"
+              $ref: "#/components/schemas/QuerySpec"
       responses:
         "200":
           description: "A list of Catalog is returned, potentially empty"
@@ -89,15 +89,6 @@ components:
           example: null
           items:
             $ref: "#/components/schemas/Constraint"
-      example: null
-    FederatedCatalogCacheQuery:
-      type: object
-      properties:
-        criteria:
-          type: array
-          example: null
-          items:
-            $ref: "#/components/schemas/Criterion"
       example: null
     JsonArray:
       type: array
@@ -209,4 +200,30 @@ components:
           example: null
           items:
             $ref: "#/components/schemas/Duty"
+      example: null
+    QuerySpec:
+      type: object
+      properties:
+        filterExpression:
+          type: array
+          example: null
+          items:
+            $ref: "#/components/schemas/Criterion"
+        limit:
+          type: integer
+          format: int32
+          example: null
+        offset:
+          type: integer
+          format: int32
+          example: null
+        sortField:
+          type: string
+          example: null
+        sortOrder:
+          type: string
+          example: null
+          enum:
+          - ASC
+          - DESC
       example: null
