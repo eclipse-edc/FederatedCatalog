@@ -16,12 +16,9 @@ package org.eclipse.edc.catalog.api.query;
 
 import io.restassured.specification.RequestSpecification;
 import jakarta.json.Json;
-import org.eclipse.edc.catalog.cache.query.CacheQueryAdapterImpl;
-import org.eclipse.edc.catalog.cache.query.CacheQueryAdapterRegistryImpl;
-import org.eclipse.edc.catalog.cache.query.QueryEngineImpl;
-import org.eclipse.edc.catalog.spi.CacheQueryAdapter;
+import org.eclipse.edc.catalog.cache.query.QueryServiceImpl;
 import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
-import org.eclipse.edc.catalog.store.InMemoryFederatedCacheStore;
+import org.eclipse.edc.catalog.store.InMemoryFederatedCatalogCache;
 import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDatasetTransformer;
@@ -33,15 +30,13 @@ import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromCatalog
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDataServiceTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDatasetTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDistributionTransformer;
-import org.eclipse.edc.query.CriterionOperatorRegistryImpl;
+import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.transform.TypeTransformerRegistryImpl;
-import org.eclipse.edc.util.concurrency.LockManager;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
@@ -54,23 +49,17 @@ import static org.mockito.Mockito.when;
 
 @ApiTest
 class FederatedCatalogApiControllerTest extends RestControllerTestBase {
-    private final CacheQueryAdapterRegistryImpl cacheQueryAdapterRegistry = new CacheQueryAdapterRegistryImpl();
-    private InMemoryFederatedCacheStore store;
-
-    @BeforeEach
-    void setup() {
-        store = new InMemoryFederatedCacheStore(new LockManager(new ReentrantReadWriteLock()), CriterionOperatorRegistryImpl.ofDefaults());
-        var adapter = new CacheQueryAdapterImpl(store);
-        cacheQueryAdapterRegistry.register(adapter);
-    }
+    private final InMemoryFederatedCatalogCache store = mock();
 
     @Test
     void queryApi_whenEmptyResult() {
+        when(store.query(any())).thenReturn(Collections.emptyList());
         baseRequest()
                 .contentType(JSON)
                 .body(FederatedCatalogCacheQuery.Builder.newInstance().build())
                 .post("/federatedcatalog")
                 .then()
+                .log().ifError()
                 .statusCode(200)
                 .contentType(JSON)
                 .body("size()", is(0));
@@ -78,13 +67,15 @@ class FederatedCatalogApiControllerTest extends RestControllerTestBase {
 
     @Test
     void queryApi_whenResultsReturned() {
-        range(0, 3).mapToObj(i -> createCatalog("some-offer-" + i)).forEach(store::save);
+        var catalogs = range(0, 3).mapToObj(i -> createCatalog("some-offer-" + i)).toList();
+        when(store.query(any())).thenReturn(catalogs);
 
         baseRequest()
                 .contentType(JSON)
-                .body(FederatedCatalogCacheQuery.Builder.newInstance().build())
+                .body(QuerySpec.none())
                 .post("/federatedcatalog")
                 .then()
+                .log().ifError()
                 .statusCode(200)
                 .contentType(JSON)
                 .body("size()", is(3));
@@ -92,10 +83,7 @@ class FederatedCatalogApiControllerTest extends RestControllerTestBase {
 
     @Test
     void queryApi_whenQueryUnsuccessful() {
-        var adapter = mock(CacheQueryAdapter.class);
-        when(adapter.executeQuery(any())).thenThrow(new RuntimeException("test exception"));
-        when(adapter.canExecute(any())).thenReturn(true);
-        cacheQueryAdapterRegistry.register(adapter);
+        when(store.query(any())).thenThrow(new RuntimeException("test exception"));
 
         baseRequest()
                 .contentType(JSON)
@@ -118,7 +106,7 @@ class FederatedCatalogApiControllerTest extends RestControllerTestBase {
         typeTransformerRegistry.register(new JsonObjectToDatasetTransformer());
         typeTransformerRegistry.register(new JsonObjectToDataServiceTransformer());
         typeTransformerRegistry.register(new JsonObjectToDistributionTransformer());
-        return new FederatedCatalogApiController(new QueryEngineImpl(cacheQueryAdapterRegistry), typeTransformerRegistry);
+        return new FederatedCatalogApiController(new QueryServiceImpl(store), typeTransformerRegistry);
     }
 
     private RequestSpecification baseRequest() {

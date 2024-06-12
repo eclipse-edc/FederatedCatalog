@@ -15,7 +15,7 @@
 package org.eclipse.edc.catalog.api.query;
 
 import org.eclipse.edc.catalog.spi.FccApiContexts;
-import org.eclipse.edc.catalog.spi.QueryEngine;
+import org.eclipse.edc.catalog.spi.QueryService;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -42,7 +42,7 @@ public class FederatedCatalogCacheQueryApiExtension implements ServiceExtension 
     private WebService webService;
 
     @Inject
-    private QueryEngine queryEngine;
+    private QueryService queryService;
 
     @Inject(required = false)
     private HealthCheckService healthCheckService;
@@ -63,7 +63,7 @@ public class FederatedCatalogCacheQueryApiExtension implements ServiceExtension 
     public void initialize(ServiceExtensionContext context) {
         jsonLd.registerNamespace(ODRL_PREFIX, ODRL_SCHEMA, CATALOG_QUERY_SCOPE);
         var jsonLdMapper = typeManager.getMapper(JSON_LD);
-        var catalogController = new FederatedCatalogApiController(queryEngine, transformerRegistry);
+        var catalogController = new FederatedCatalogApiController(queryService, transformerRegistry);
         webService.registerResource(FccApiContexts.CATALOG_QUERY, catalogController);
         webService.registerResource(FccApiContexts.CATALOG_QUERY, new ObjectMapperProvider(jsonLdMapper));
         webService.registerResource(FccApiContexts.CATALOG_QUERY, new JerseyJsonLdInterceptor(jsonLd, jsonLdMapper, CATALOG_QUERY_SCOPE));
