@@ -73,6 +73,7 @@ detail [here](docs/developer/architecture/federated-catalog-apis.md).
 ## Future work
 
 - Generalization of the Crawler class
+- Additional informational endpoints to the [Catalog API](docs/developer/architecture/federated-catalog.architecture.md)
 - PostgreSQL implementation for the `FederatedCacheStore`
 
 ## Other documentation
