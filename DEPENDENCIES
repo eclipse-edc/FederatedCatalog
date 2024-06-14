@@ -48,7 +48,7 @@ maven/mavencentral/com.sun.activation/jakarta.activation/2.0.1, EPL-2.0 OR BSD-3
 maven/mavencentral/commons-beanutils/commons-beanutils/1.9.4, Apache-2.0, approved, CQ12654
 maven/mavencentral/commons-codec/commons-codec/1.11, Apache-2.0 AND BSD-3-Clause, approved, CQ15971
 maven/mavencentral/commons-codec/commons-codec/1.15, Apache-2.0 AND BSD-3-Clause AND LicenseRef-Public-Domain, approved, CQ22641
-maven/mavencentral/commons-collections/commons-collections/3.2.2, Apache-2.0, approved, CQ10385
+maven/mavencentral/commons-collections/commons-collections/3.2.2, Apache-2.0, approved, #15185
 maven/mavencentral/commons-logging/commons-logging/1.2, Apache-2.0, approved, CQ10162
 maven/mavencentral/dev.failsafe/failsafe-okhttp/3.3.2, Apache-2.0, approved, #9178
 maven/mavencentral/dev.failsafe/failsafe/3.3.2, Apache-2.0, approved, #9268
