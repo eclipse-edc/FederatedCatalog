@@ -26,46 +26,12 @@ paths:
                 type: array
                 example: null
                 items:
-                  $ref: "#/components/schemas/ContractOffer"
+                  type: object
+                  example: null
         "500":
           description: A Query could not be completed due to an internal error
 components:
   schemas:
-    Action:
-      type: object
-      properties:
-        constraint:
-          $ref: "#/components/schemas/Constraint"
-        includedIn:
-          type: string
-          example: null
-        type:
-          type: string
-          example: null
-      example: null
-    Constraint:
-      required:
-      - edctype
-      type: object
-      properties:
-        edctype:
-          type: string
-          example: null
-      example: null
-      discriminator:
-        propertyName: edctype
-    ContractOffer:
-      type: object
-      properties:
-        assetId:
-          type: string
-          example: null
-        id:
-          type: string
-          example: null
-        policy:
-          $ref: "#/components/schemas/Policy"
-      example: null
     Criterion:
       type: object
       properties:
@@ -78,17 +44,6 @@ components:
         operator:
           type: string
           example: null
-      example: null
-    Duty:
-      type: object
-      properties:
-        action:
-          $ref: "#/components/schemas/Action"
-        constraints:
-          type: array
-          example: null
-          items:
-            $ref: "#/components/schemas/Constraint"
       example: null
     JsonArray:
       type: array
@@ -124,82 +79,6 @@ components:
           - "TRUE"
           - "FALSE"
           - "NULL"
-      example: null
-    Permission:
-      type: object
-      properties:
-        action:
-          $ref: "#/components/schemas/Action"
-        constraints:
-          type: array
-          example: null
-          items:
-            $ref: "#/components/schemas/Constraint"
-        duties:
-          type: array
-          example: null
-          items:
-            $ref: "#/components/schemas/Duty"
-      example: null
-    Policy:
-      type: object
-      properties:
-        '@type':
-          type: string
-          example: null
-          enum:
-          - SET
-          - OFFER
-          - CONTRACT
-        assignee:
-          type: string
-          example: null
-        assigner:
-          type: string
-          example: null
-        extensibleProperties:
-          type: object
-          additionalProperties:
-            type: object
-            example: null
-          example: null
-        inheritsFrom:
-          type: string
-          example: null
-        obligations:
-          type: array
-          example: null
-          items:
-            $ref: "#/components/schemas/Duty"
-        permissions:
-          type: array
-          example: null
-          items:
-            $ref: "#/components/schemas/Permission"
-        prohibitions:
-          type: array
-          example: null
-          items:
-            $ref: "#/components/schemas/Prohibition"
-        target:
-          type: string
-          example: null
-      example: null
-    Prohibition:
-      type: object
-      properties:
-        action:
-          $ref: "#/components/schemas/Action"
-        constraints:
-          type: array
-          example: null
-          items:
-            $ref: "#/components/schemas/Constraint"
-        remedies:
-          type: array
-          example: null
-          items:
-            $ref: "#/components/schemas/Duty"
       example: null
     QuerySpec:
       type: object
