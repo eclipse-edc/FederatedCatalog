@@ -24,6 +24,7 @@ dependencies {
     implementation(libs.edc.spi.transform)
     implementation(libs.edc.spi.web)
     implementation(libs.edc.lib.jerseyproviders)
+    implementation(libs.edc.core.api) // for the ApiCoreSchema
 
     runtimeOnly(libs.edc.spi.jsonld)
     runtimeOnly(libs.edc.json.ld.lib)

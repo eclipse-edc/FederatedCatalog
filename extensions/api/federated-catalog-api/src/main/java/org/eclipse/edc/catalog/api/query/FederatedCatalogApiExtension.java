@@ -33,8 +33,8 @@ import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_PREFIX;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
 import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 
-@Extension(value = FederatedCatalogCacheQueryApiExtension.NAME)
-public class FederatedCatalogCacheQueryApiExtension implements ServiceExtension {
+@Extension(value = FederatedCatalogApiExtension.NAME)
+public class FederatedCatalogApiExtension implements ServiceExtension {
 
     public static final String NAME = "Cache Query API Extension";
     private static final String CATALOG_QUERY_SCOPE = "CATALOG_QUERY_API";

@@ -16,6 +16,7 @@ edc-api-control-config = { module = "org.eclipse.edc:control-api-configuration",
 edc-api-observability = { module = "org.eclipse.edc:api-observability", version.ref = "edc" }
 edc-boot = { module = "org.eclipse.edc:boot", version.ref = "edc" }
 edc-config-filesystem = { module = "org.eclipse.edc:configuration-filesystem", version.ref = "edc" }
+edc-core-api = { module = "org.eclipse.edc:api-core", version.ref = "edc" }
 edc-core-connector = { module = "org.eclipse.edc:connector-core", version.ref = "edc" }
 edc-core-controlplane = { module = "org.eclipse.edc:control-plane-core", version.ref = "edc" }
 edc-core-dataPlane-selector = { module = "org.eclipse.edc:data-plane-selector-core", version.ref = "edc" }
