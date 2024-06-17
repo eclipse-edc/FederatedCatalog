@@ -33,8 +33,15 @@ paths:
 components:
   schemas:
     Criterion:
+      required:
+      - operandLeft
+      - operandRight
+      - operator
       type: object
       properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/Criterion
         operandLeft:
           type: object
           example: null
@@ -44,7 +51,13 @@ components:
         operator:
           type: string
           example: null
-      example: null
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': Criterion
+        operandLeft: fieldName
+        operator: =
+        operandRight: some value
     JsonArray:
       type: array
       properties:
@@ -65,6 +78,26 @@ components:
       example: null
       items:
         $ref: "#/components/schemas/JsonValue"
+    JsonObject:
+      type: object
+      properties:
+        empty:
+          type: boolean
+          example: null
+        valueType:
+          type: string
+          example: null
+          enum:
+          - ARRAY
+          - OBJECT
+          - STRING
+          - NUMBER
+          - "TRUE"
+          - "FALSE"
+          - "NULL"
+      additionalProperties:
+        $ref: "#/components/schemas/JsonValue"
+      example: null
     JsonValue:
       type: object
       properties:
@@ -83,6 +116,9 @@ components:
     QuerySpec:
       type: object
       properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/QuerySpec
         filterExpression:
           type: array
           example: null
@@ -105,4 +141,12 @@ components:
           enum:
           - ASC
           - DESC
-      example: null
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': QuerySpec
+        offset: 5
+        limit: 10
+        sortOrder: DESC
+        sortField: fieldName
+        filterExpression: []
