@@ -28,7 +28,11 @@ edc-dpf-selector-spi = { module = "org.eclipse.edc:data-plane-selector-spi", ver
 edc-dpf-transfer = { module = "org.eclipse.edc:transfer-data-plane", version.ref = "edc" }
 edc-ext-http = { module = "org.eclipse.edc:http", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
-edc-ids = { module = "org.eclipse.edc:ids", version.ref = "edc" }
+edc-dcp = { module = "org.eclipse.edc:identity-trust", version.ref = "edc" }
+edc-did-core = { module = "org.eclipse.edc:identity-did-core", version.ref = "edc" }
+edc-did-web = { module = "org.eclipse.edc:identity-did-web", version.ref = "edc" }
+edc-oauth2-client = { module = "org.eclipse.edc:oauth2-client", version.ref = "edc" }
+
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-json-ld-lib = { module = "org.eclipse.edc:json-ld-lib", version.ref = "edc" }
 edc-spi-catalog = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
@@ -66,6 +70,7 @@ jackson-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr
 [bundles]
 edc-connector = ["edc-boot", "edc-core-connector", "edc-core-jersey", "edc-api-observability"]
 edc-dpf = ["edc-dpf-selector-spi", "edc-dpf-selector-core"]
+dcp = ["edc-dcp", "edc-did-core", "edc-did-web", "edc-oauth2-client"]
 
 [plugins]
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
