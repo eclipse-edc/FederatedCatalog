@@ -26,10 +26,10 @@ import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerMethodExtension;
 import org.eclipse.edc.protocol.dsp.http.spi.dispatcher.DspHttpRemoteMessageDispatcher;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.response.StatusResult;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.junit.jupiter.api.BeforeEach;
@@ -78,9 +78,9 @@ public class CatalogRuntimeComponentTest {
     public static final String TEST_CATALOG_ID = "test-catalog-id";
     private static final Duration TEST_TIMEOUT = ofSeconds(10);
     private static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
-    private static final JsonLd JSON_LD_SERVICE = new TitaniumJsonLd(mock(Monitor.class));
+    private static final JsonLd JSON_LD_SERVICE = new TitaniumJsonLd(mock());
     @RegisterExtension
-    protected static RuntimePerMethodExtension runtimePerClassExtension = new RuntimePerMethodExtension(new EmbeddedRuntime("catalog", Map.of(
+    protected static RuntimeExtension runtimePerClassExtension = new RuntimePerMethodExtension(new EmbeddedRuntime("catalog", Map.of(
             // make sure only one crawl-run is performed
             "edc.catalog.cache.execution.period.seconds", "2",
             // number of crawlers will be limited by the number of crawl-targets

@@ -14,7 +14,6 @@
 
 package org.eclipse.edc.catalog.spi;
 
-import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.spi.query.QuerySpec;
@@ -23,7 +22,7 @@ import org.eclipse.edc.spi.result.ServiceResult;
 import java.util.Collection;
 
 /**
- * Accepts a {@link FederatedCatalogCacheQuery} and fetches a collection of {@link Asset} that conform to that query.
+ * Accepts a {@link QuerySpec} and fetches a collection of {@link Asset} that conform to that query.
  */
 @FunctionalInterface
 public interface QueryService {

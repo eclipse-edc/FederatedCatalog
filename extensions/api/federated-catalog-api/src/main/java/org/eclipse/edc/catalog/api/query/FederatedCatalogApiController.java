@@ -26,6 +26,7 @@ import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.AbstractResult;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
+import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.edc.web.spi.exception.ServiceResultHandler;
 
 import javax.xml.catalog.Catalog;
@@ -47,8 +48,11 @@ public class FederatedCatalogApiController implements FederatedCatalogApi {
 
     @Override
     @POST
-    public JsonArray getCachedCatalog(QuerySpec catalogQuery) {
-        var catalogs = queryService.getCatalog(catalogQuery)
+    public JsonArray getCachedCatalog(JsonObject catalogQuery) {
+        var querySpec = transformerRegistry.transform(catalogQuery, QuerySpec.class)
+                .orElseThrow(InvalidRequestException::new);
+        
+        var catalogs = queryService.getCatalog(querySpec)
                 .orElseThrow(ServiceResultHandler.exceptionMapper(Catalog.class));
 
         return catalogs.stream().map(c -> transformerRegistry.transform(c, JsonObject.class))

@@ -17,7 +17,6 @@ package org.eclipse.edc.catalog.api.query;
 import io.restassured.specification.RequestSpecification;
 import jakarta.json.Json;
 import org.eclipse.edc.catalog.cache.query.QueryServiceImpl;
-import org.eclipse.edc.catalog.spi.model.FederatedCatalogCacheQuery;
 import org.eclipse.edc.catalog.store.InMemoryFederatedCatalogCache;
 import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
@@ -30,8 +29,8 @@ import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromCatalog
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDataServiceTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDatasetTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDistributionTransformer;
-import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.transform.TypeTransformerRegistryImpl;
+import org.eclipse.edc.transform.transformer.edc.to.JsonObjectToQuerySpecTransformer;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
 import org.junit.jupiter.api.Test;
 
@@ -56,7 +55,7 @@ class FederatedCatalogApiControllerTest extends RestControllerTestBase {
         when(store.query(any())).thenReturn(Collections.emptyList());
         baseRequest()
                 .contentType(JSON)
-                .body(FederatedCatalogCacheQuery.Builder.newInstance().build())
+                .body("{}")
                 .post("/federatedcatalog")
                 .then()
                 .log().ifError()
@@ -72,7 +71,7 @@ class FederatedCatalogApiControllerTest extends RestControllerTestBase {
 
         baseRequest()
                 .contentType(JSON)
-                .body(QuerySpec.none())
+                .body("{}")
                 .post("/federatedcatalog")
                 .then()
                 .log().ifError()
@@ -87,7 +86,7 @@ class FederatedCatalogApiControllerTest extends RestControllerTestBase {
 
         baseRequest()
                 .contentType(JSON)
-                .body(FederatedCatalogCacheQuery.Builder.newInstance().build())
+                .body("{}")
                 .post("/federatedcatalog")
                 .then()
                 .statusCode(500);
@@ -106,6 +105,7 @@ class FederatedCatalogApiControllerTest extends RestControllerTestBase {
         typeTransformerRegistry.register(new JsonObjectToDatasetTransformer());
         typeTransformerRegistry.register(new JsonObjectToDataServiceTransformer());
         typeTransformerRegistry.register(new JsonObjectToDistributionTransformer());
+        typeTransformerRegistry.register(new JsonObjectToQuerySpecTransformer());
         return new FederatedCatalogApiController(new QueryServiceImpl(store), typeTransformerRegistry);
     }
 
