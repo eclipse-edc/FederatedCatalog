@@ -58,7 +58,7 @@ import static org.mockito.Mockito.mock;
 public class TestFunctions {
     public static final String CATALOG_QUERY_BASE_PATH = "/catalog";
     public static final int CATALOG_QUERY_PORT = getFreePort();
-    private static final String PATH = "/federatedcatalog";
+    private static final String PATH = "/v1alpha/catalog/query";
     private static final TypeReference<List<Map<String, Object>>> MAP_TYPE = new TypeReference<>() {
     };
 
