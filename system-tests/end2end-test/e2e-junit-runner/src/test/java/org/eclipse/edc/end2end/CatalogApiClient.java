@@ -68,7 +68,7 @@ class CatalogApiClient {
     }
 
     List<Catalog> getContractOffers() {
-        var rq = createPostRequest(TestFunctions.createEmptyQuery(), catalog("/federatedcatalog"));
+        var rq = createPostRequest(TestFunctions.createEmptyQuery(), catalog("/v1alpha/catalog/query"));
 
         try (var response = getClient().newCall(rq).execute()) {
             if (response.isSuccessful()) {

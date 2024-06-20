@@ -49,6 +49,7 @@ import static org.mockito.Mockito.when;
 @ApiTest
 class FederatedCatalogApiControllerTest extends RestControllerTestBase {
     private final InMemoryFederatedCatalogCache store = mock();
+    private static final String PATH = "/v1alpha/catalog/query";
 
     @Test
     void queryApi_whenEmptyResult() {
@@ -56,7 +57,7 @@ class FederatedCatalogApiControllerTest extends RestControllerTestBase {
         baseRequest()
                 .contentType(JSON)
                 .body("{}")
-                .post("/federatedcatalog")
+                .post(PATH)
                 .then()
                 .log().ifError()
                 .statusCode(200)
@@ -72,7 +73,7 @@ class FederatedCatalogApiControllerTest extends RestControllerTestBase {
         baseRequest()
                 .contentType(JSON)
                 .body("{}")
-                .post("/federatedcatalog")
+                .post(PATH)
                 .then()
                 .log().ifError()
                 .statusCode(200)
@@ -87,7 +88,7 @@ class FederatedCatalogApiControllerTest extends RestControllerTestBase {
         baseRequest()
                 .contentType(JSON)
                 .body("{}")
-                .post("/federatedcatalog")
+                .post(PATH)
                 .then()
                 .statusCode(500);
     }

@@ -35,7 +35,7 @@ import static jakarta.json.stream.JsonCollectors.toJsonArray;
 
 @Consumes({ MediaType.APPLICATION_JSON })
 @Produces({ MediaType.APPLICATION_JSON })
-@Path("/federatedcatalog")
+@Path("/v1alpha/catalog/query")
 public class FederatedCatalogApiController implements FederatedCatalogApi {
 
     private final QueryService queryService;
