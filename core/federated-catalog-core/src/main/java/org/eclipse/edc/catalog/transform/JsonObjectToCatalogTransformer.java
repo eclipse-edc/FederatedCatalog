@@ -64,7 +64,6 @@ public class JsonObjectToCatalogTransformer extends AbstractJsonLdTransformer<Js
                         .forEach(builder::dataset);
             } else {
                 builder.dataset(transformDataset(value, context));
-
             }
         } else if (DCAT_DATA_SERVICE_ATTRIBUTE.equalsIgnoreCase(key)) {
             transformArrayOrObject(value, DataService.class, builder::dataService, context);

@@ -35,20 +35,15 @@ import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 import static java.util.concurrent.CompletableFuture.completedFuture;
+import static org.eclipse.edc.federatedcatalog.util.FederatedCatalogUtil.copy;
 
 public class DspCatalogRequestAction implements CrawlerAction {
     private static final int INITIAL_OFFSET = 0;
     private static final int BATCH_SIZE = 100;
-    private final PagingCatalogRequestFetcher fetcher;
-    private final boolean preserveHierarchy;
+    private final PagingCatalogFetcher fetcher;
 
     public DspCatalogRequestAction(RemoteMessageDispatcherRegistry dispatcherRegistry, Monitor monitor, ObjectMapper objectMapper, TypeTransformerRegistry transformerRegistry, JsonLd jsonLdService) {
-        this(dispatcherRegistry, monitor, objectMapper, transformerRegistry, jsonLdService, true);
-    }
-
-    public DspCatalogRequestAction(RemoteMessageDispatcherRegistry dispatcherRegistry, Monitor monitor, ObjectMapper objectMapper, TypeTransformerRegistry transformerRegistry, JsonLd jsonLdService, boolean preserveHierarchy) {
-        fetcher = new PagingCatalogRequestFetcher(dispatcherRegistry, monitor, objectMapper, transformerRegistry, jsonLdService);
-        this.preserveHierarchy = preserveHierarchy;
+        fetcher = new PagingCatalogFetcher(dispatcherRegistry, monitor, objectMapper, transformerRegistry, jsonLdService);
     }
 
     @Override
@@ -57,7 +52,7 @@ public class DspCatalogRequestAction implements CrawlerAction {
         var catalogFuture = fetcher.fetch(catalogRequest, INITIAL_OFFSET, BATCH_SIZE);
 
         return catalogFuture
-                .thenCompose(catalog -> expandCatalog(catalog, preserveHierarchy))
+                .thenCompose(this::expandCatalog)
                 .thenApply(catalog -> new CatalogUpdateResponse(request.nodeUrl(), catalog));
     }
 
@@ -69,7 +64,15 @@ public class DspCatalogRequestAction implements CrawlerAction {
                 .build();
     }
 
-    private CompletableFuture<Catalog> expandCatalog(Catalog rootCatalog, boolean preserveHierarchy) {
+    /**
+     * This will go through the root catalog, and for every {@link Dataset}, that is in fact a {@link Catalog}, it will recurse down
+     * and fetch that {@link Catalog} as well.
+     * Not that this method will preserve hierarchy, so there could be catalogs within catalogs withing catalogs...
+     *
+     * @param rootCatalog the root catalog, e.g. of a catalog server
+     * @return a {@link Catalog} that contains expanded subcatalogs
+     */
+    private CompletableFuture<Catalog> expandCatalog(Catalog rootCatalog) {
         var partitions = rootCatalog.getDatasets().stream().collect(Collectors.groupingBy(Dataset::getClass));
 
         var datasets = partitions.get(Dataset.class);
@@ -96,21 +99,8 @@ public class DspCatalogRequestAction implements CrawlerAction {
                 .map(ur -> (CatalogUpdateResponse) ur)
                 .map(CatalogUpdateResponse::getCatalog);
 
-        if (preserveHierarchy) {
-            expandedSubCatalogs.forEach(datasets::add);
-            return completedFuture(CatalogUtil.copyCatalog(rootCatalog, datasets).build());
-        } else {
-            var catalogCopy = CatalogUtil.copyCatalog(rootCatalog, datasets).build();
-            var mergedSubCatalog = expandedSubCatalogs.reduce(CatalogUtil::merge)
-                    .orElse(null);
-
-            if (mergedSubCatalog != null) {
-                return completedFuture(CatalogUtil.merge(catalogCopy, mergedSubCatalog));
-            }
-
-            return completedFuture(rootCatalog);
-        }
-
+        expandedSubCatalogs.forEach(datasets::add);
+        return completedFuture(copy(rootCatalog, datasets).build());
 
     }
 

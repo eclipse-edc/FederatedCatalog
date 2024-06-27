@@ -37,22 +37,22 @@ import java.util.concurrent.CompletableFuture;
 import static java.lang.String.format;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.CompletableFuture.failedFuture;
-import static org.eclipse.edc.catalog.cache.query.CatalogUtil.copyCatalog;
-import static org.eclipse.edc.catalog.cache.query.CatalogUtil.merge;
+import static org.eclipse.edc.federatedcatalog.util.FederatedCatalogUtil.copy;
+import static org.eclipse.edc.federatedcatalog.util.FederatedCatalogUtil.merge;
 
 /**
  * Helper class that runs through a loop and sends {@link CatalogRequestMessage}s until no more {@link ContractOffer}s are
  * received. This is useful to avoid overloading the provider connector by chunking the resulting response payload
  * size.
  */
-public class PagingCatalogRequestFetcher {
+public class PagingCatalogFetcher {
     private final RemoteMessageDispatcherRegistry dispatcherRegistry;
     private final Monitor monitor;
     private final ObjectMapper objectMapper;
     private final TypeTransformerRegistry transformerRegistry;
     private final JsonLd jsonLdService;
 
-    public PagingCatalogRequestFetcher(RemoteMessageDispatcherRegistry dispatcherRegistry, Monitor monitor, ObjectMapper objectMapper, TypeTransformerRegistry transformerRegistry, JsonLd jsonLdService) {
+    public PagingCatalogFetcher(RemoteMessageDispatcherRegistry dispatcherRegistry, Monitor monitor, ObjectMapper objectMapper, TypeTransformerRegistry transformerRegistry, JsonLd jsonLdService) {
         this.dispatcherRegistry = dispatcherRegistry;
         this.monitor = monitor;
         this.objectMapper = objectMapper;
@@ -79,7 +79,7 @@ public class PagingCatalogRequestFetcher {
 
         return dispatcherRegistry.dispatch(byte[].class, rq)
                 .thenCompose(this::readCatalogFrom)
-                .thenCompose(catalog -> completedFuture(copyCatalog(catalog).build()))
+                .thenCompose(catalog -> completedFuture(copy(catalog).build()))
                 .thenCompose(catalog -> {
 
                     var datasets = catalog.getDatasets();
