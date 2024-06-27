@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 
@@ -32,7 +33,7 @@ public class FederatedCatalogUtil {
     public static Catalog merge(Catalog destination, Catalog source) {
         return copy(destination)
                 .datasets(source.getDatasets())
-                .dataServices(source.getDataServices())
+                .dataServices(Stream.concat(destination.getDataServices().stream(), source.getDataServices().stream()).toList())
                 .properties(source.getProperties())
                 .distributions(source.getDistributions())
                 .build();
@@ -46,6 +47,7 @@ public class FederatedCatalogUtil {
                 .participantId(catalog.getParticipantId())
                 .properties(ofNullable(catalog.getProperties()).orElseGet(HashMap::new))
                 .dataServices(ofNullable(catalog.getDataServices()).orElseGet(ArrayList::new))
+                .distributions(ofNullable(catalog.getDistributions()).orElseGet(ArrayList::new))
                 .datasets(ofNullable(catalog.getDatasets()).orElseGet(ArrayList::new));
     }
 
@@ -57,6 +59,7 @@ public class FederatedCatalogUtil {
                 .participantId(catalog.getParticipantId())
                 .properties(ofNullable(catalog.getProperties()).orElseGet(HashMap::new))
                 .dataServices(ofNullable(catalog.getDataServices()).orElseGet(ArrayList::new))
+                .distributions(ofNullable(catalog.getDistributions()).orElseGet(ArrayList::new))
                 .datasets(datasets);
     }
 

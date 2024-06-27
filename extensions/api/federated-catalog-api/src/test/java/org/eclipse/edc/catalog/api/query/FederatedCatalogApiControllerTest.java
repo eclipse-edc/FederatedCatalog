@@ -133,14 +133,10 @@ class FederatedCatalogApiControllerTest extends RestControllerTestBase {
         var typeTransformerRegistry = new TypeTransformerRegistryImpl();
         var factory = Json.createBuilderFactory(Map.of());
         var mapper = JacksonJsonLd.createObjectMapper();
-//        typeTransformerRegistry.register(new JsonObjectToCatalogTransformer());
         typeTransformerRegistry.register(new JsonObjectFromCatalogTransformer(factory, mapper, new NoOpParticipantIdMapper()));
         typeTransformerRegistry.register(new JsonObjectFromDatasetTransformer(factory, mapper));
         typeTransformerRegistry.register(new JsonObjectFromDistributionTransformer(factory));
         typeTransformerRegistry.register(new JsonObjectFromDataServiceTransformer(factory));
-//        typeTransformerRegistry.register(new JsonObjectToDatasetTransformer());
-//        typeTransformerRegistry.register(new JsonObjectToDataServiceTransformer());
-//        typeTransformerRegistry.register(new JsonObjectToDistributionTransformer());
         typeTransformerRegistry.register(new JsonObjectToQuerySpecTransformer());
         return new FederatedCatalogApiController(new QueryServiceImpl(store), typeTransformerRegistry);
     }
