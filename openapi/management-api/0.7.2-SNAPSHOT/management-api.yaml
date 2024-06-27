@@ -12,6 +12,16 @@ paths:
       - Federated Catalog
       description: Obtains all Catalog currently held by this cache instance
       operationId: getCachedCatalog
+      parameters:
+      - name: flatten
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: boolean
+          example: null
+          default: false
       requestBody:
         content:
           application/json:
