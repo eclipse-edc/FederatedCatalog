@@ -149,7 +149,8 @@ public class CatalogRuntimeComponentTest {
         // intercept request egress
         reg.register(dispatcher);
         when(dispatcher.dispatch(eq(byte[].class), isA(CatalogRequestMessage.class)))
-                .thenReturn(randomCatalog(catalog -> StatusResult.success(TestUtils.getResourceFileContentAsString("catalog_of_catalogs.json").getBytes()), TEST_CATALOG_ID, 5));
+                .thenReturn(randomCatalog(catalog -> StatusResult.success(TestUtils.getResourceFileContentAsString("catalog_of_catalogs.json").getBytes()), "root-catalog-id", 5))
+                .thenReturn(randomCatalog(catalog -> StatusResult.success(TestUtils.getResourceFileContentAsString("catalog.json").getBytes()), "sub-catalog-id", 5));
 
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
