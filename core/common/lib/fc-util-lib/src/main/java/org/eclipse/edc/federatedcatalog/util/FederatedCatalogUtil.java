@@ -30,11 +30,12 @@ public class FederatedCatalogUtil {
      * Merges two catalogs by adding all datasets, dataservices, properties and distributions of the source into the target
      */
     public static Catalog merge(Catalog destination, Catalog source) {
-        destination.getDatasets().addAll(source.getDatasets());
-        destination.getDataServices().addAll(source.getDataServices());
-        destination.getProperties().putAll(source.getProperties());
-        destination.getDistributions().addAll(source.getDistributions());
-        return destination;
+        return copy(destination)
+                .datasets(source.getDatasets())
+                .dataServices(source.getDataServices())
+                .properties(source.getProperties())
+                .distributions(source.getDistributions())
+                .build();
     }
 
     /**
@@ -78,7 +79,7 @@ public class FederatedCatalogUtil {
                     .orElse(null);
         }
 
-        return (flattenedCatalog);
+        return flattenedCatalog;
     }
 
     @SuppressWarnings("unchecked")
