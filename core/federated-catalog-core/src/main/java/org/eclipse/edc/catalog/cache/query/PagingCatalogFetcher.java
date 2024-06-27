@@ -79,7 +79,7 @@ public class PagingCatalogFetcher {
 
         return dispatcherRegistry.dispatch(byte[].class, rq)
                 .thenCompose(this::readCatalogFrom)
-                .thenCompose(catalog -> completedFuture(copy(catalog).build()))
+                .thenApply(catalog -> copy(catalog).build())
                 .thenCompose(catalog -> {
 
                     var datasets = catalog.getDatasets();

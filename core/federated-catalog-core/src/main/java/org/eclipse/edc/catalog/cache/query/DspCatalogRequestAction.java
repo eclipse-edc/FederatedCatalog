@@ -29,6 +29,7 @@ import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -75,7 +76,6 @@ public class DspCatalogRequestAction implements CrawlerAction {
     private CompletableFuture<Catalog> expandCatalog(Catalog rootCatalog) {
         var partitions = rootCatalog.getDatasets().stream().collect(Collectors.groupingBy(Dataset::getClass));
 
-        var datasets = partitions.get(Dataset.class);
         var subCatalogs = partitions.get(Catalog.class);
 
         if (subCatalogs == null || subCatalogs.isEmpty()) {
@@ -99,6 +99,7 @@ public class DspCatalogRequestAction implements CrawlerAction {
                 .map(ur -> (CatalogUpdateResponse) ur)
                 .map(CatalogUpdateResponse::getCatalog);
 
+        var datasets = new ArrayList<>(partitions.get(Dataset.class));
         expandedSubCatalogs.forEach(datasets::add);
         return completedFuture(copy(rootCatalog, datasets).build());
 
