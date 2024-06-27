@@ -67,7 +67,7 @@ public class DspCatalogRequestAction implements CrawlerAction {
     /**
      * This will go through the root catalog, and for every {@link Dataset}, that is in fact a {@link Catalog}, it will recurse down
      * and fetch that {@link Catalog} as well.
-     * Not that this method will preserve hierarchy, so there could be catalogs within catalogs withing catalogs...
+     * Note that this method will preserve hierarchy, so there could be catalogs within catalogs withing catalogs...
      *
      * @param rootCatalog the root catalog, e.g. of a catalog server
      * @return a {@link Catalog} that contains expanded subcatalogs
