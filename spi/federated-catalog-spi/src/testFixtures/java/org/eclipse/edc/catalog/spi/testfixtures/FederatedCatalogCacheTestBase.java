@@ -46,12 +46,14 @@ public abstract class FederatedCatalogCacheTestBase {
 
     private Catalog.Builder createCatalogBuilder(String id, Asset asset, String ednpointUrl) {
         var dataService = DataService.Builder.newInstance().endpointUrl(ednpointUrl).build();
+        var dataset = Dataset.Builder.newInstance().id(asset.getId()).properties(asset.getProperties()).distributions(List.of(Distribution.Builder.newInstance().dataService(dataService).format("test-format").build())).build();
 
+        var nestedCatalog = Catalog.Builder.newInstance().participantId("participantId").build();
 
         return Catalog.Builder.newInstance()
                 .id(id)
                 .dataServices(List.of(dataService))
-                .datasets(List.of(Dataset.Builder.newInstance().id(asset.getId()).properties(asset.getProperties()).distributions(List.of(Distribution.Builder.newInstance().dataService(dataService).format("test-format").build())).build()))
+                .datasets(List.of(dataset, nestedCatalog))
                 .property(CatalogConstants.PROPERTY_ORIGINATOR, "https://test.source/" + id);
     }
 
@@ -80,7 +82,10 @@ public abstract class FederatedCatalogCacheTestBase {
 
             assertThat(result)
                     .hasSize(1)
-                    .allSatisfy(co -> assertThat(co.getDatasets().get(0).getId()).isEqualTo(assetId));
+                    .allSatisfy(co -> {
+                        assertThat(co.getDatasets().get(0).getId()).isEqualTo(assetId);
+                        assertThat(co.getDatasets().get(1)).isInstanceOf(Catalog.class);
+                    });
         }
 
         @Test

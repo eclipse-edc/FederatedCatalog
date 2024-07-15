@@ -14,8 +14,10 @@
 
 package org.eclipse.edc.catalog.store.sql;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.catalog.spi.FederatedCatalogCache;
-import org.eclipse.edc.json.JacksonTypeManager;
+import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
+import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
@@ -35,9 +37,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(DependencyInjectionExtension.class)
 public class SqlFederatedCatalogCacheExtensionTest {
 
+    private final TypeManager typeManager = mock();
+
     @BeforeEach
     void setUp(ServiceExtensionContext context) {
-        context.registerService(TypeManager.class, new JacksonTypeManager());
+        context.registerService(TypeManager.class, typeManager);
+        when(typeManager.getMapper()).thenReturn(new ObjectMapper());
     }
 
     @Test
@@ -51,6 +56,7 @@ public class SqlFederatedCatalogCacheExtensionTest {
         var service = context.getService(FederatedCatalogCache.class);
         assertThat(service).isInstanceOf(SqlFederatedCatalogCache.class);
 
+        verify(typeManager).registerTypes(Catalog.class, Dataset.class);
         verify(config).getString(DATASOURCE_NAME_SETTING, DataSourceRegistry.DEFAULT_DATASOURCE);
     }
 }

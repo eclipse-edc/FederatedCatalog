@@ -16,6 +16,8 @@ package org.eclipse.edc.catalog.store.sql;
 
 import org.eclipse.edc.catalog.spi.FederatedCatalogCache;
 import org.eclipse.edc.catalog.store.sql.schema.postgres.PostgresDialectStatements;
+import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
+import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provides;
@@ -48,6 +50,7 @@ public class SqlFederatedCatalogCacheExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
+        typeManager.registerTypes(Catalog.class, Dataset.class);
         var store = new SqlFederatedCatalogCache(dataSourceRegistry, getDataSourceName(context), trxContext,
                 typeManager.getMapper(), queryExecutor, getStatementImpl());
         context.registerService(FederatedCatalogCache.class, store);

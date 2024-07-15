@@ -44,6 +44,7 @@ public class SqlFederatedCatalogCache extends AbstractSqlStore implements Federa
 
     @Override
     public void save(Catalog catalog) {
+
         transactionContext.execute(() -> {
             try (var connection = getConnection()) {
                 var id = ofNullable(catalog.getProperties().get(CatalogConstants.PROPERTY_ORIGINATOR))
