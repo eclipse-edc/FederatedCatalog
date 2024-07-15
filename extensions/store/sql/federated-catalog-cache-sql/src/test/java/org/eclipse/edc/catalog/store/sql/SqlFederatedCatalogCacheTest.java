@@ -17,6 +17,8 @@ package org.eclipse.edc.catalog.store.sql;
 import org.eclipse.edc.catalog.spi.FederatedCatalogCache;
 import org.eclipse.edc.catalog.spi.testfixtures.FederatedCatalogCacheTestBase;
 import org.eclipse.edc.catalog.store.sql.schema.postgres.PostgresDialectStatements;
+import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
+import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.sql.QueryExecutor;
@@ -32,7 +34,7 @@ import java.nio.file.Paths;
 @ComponentTest
 @ExtendWith(PostgresqlStoreSetupExtension.class)
 public class SqlFederatedCatalogCacheTest extends FederatedCatalogCacheTestBase {
-    
+
     private final FederatedCatalogCacheStatements statements = new PostgresDialectStatements();
 
     private FederatedCatalogCache store;
@@ -40,6 +42,7 @@ public class SqlFederatedCatalogCacheTest extends FederatedCatalogCacheTestBase 
     @BeforeEach
     void setup(PostgresqlStoreSetupExtension extension, QueryExecutor queryExecutor) throws IOException {
         var typeManager = new JacksonTypeManager();
+        typeManager.registerTypes(Catalog.class, Dataset.class);
         store = new SqlFederatedCatalogCache(extension.getDataSourceRegistry(), extension.getDatasourceName(),
                 extension.getTransactionContext(), typeManager.getMapper(), queryExecutor, statements);
 
