@@ -34,7 +34,7 @@ import org.eclipse.edc.transaction.spi.TransactionContext;
 public class SqlFederatedCatalogCacheExtension implements ServiceExtension {
 
     @Setting
-    public static final String DATASOURCE_NAME_SETTING = "edc.datasource.federatedcataog.name";
+    public static final String DATASOURCE_NAME_SETTING = "edc.datasource.federatedcatalog.name";
 
     @Inject
     private DataSourceRegistry dataSourceRegistry;
