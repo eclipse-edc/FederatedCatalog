@@ -52,12 +52,13 @@ public class FederatedCatalogApiController implements FederatedCatalogApi {
     @Override
     @POST
     public JsonArray getCachedCatalog(JsonObject catalogQuery, @DefaultValue("false") @QueryParam("flatten") boolean flatten) {
-        var querySpec = transformerRegistry.transform(catalogQuery, QuerySpec.class)
-                .orElseThrow(InvalidRequestException::new);
+        var querySpec = catalogQuery == null
+                ? QuerySpec.Builder.newInstance().build()
+                : transformerRegistry.transform(catalogQuery, QuerySpec.class)
+                    .orElseThrow(InvalidRequestException::new);
 
         var catalogs = queryService.getCatalog(querySpec)
                 .orElseThrow(ServiceResultHandler.exceptionMapper(Catalog.class));
-
 
         return catalogs.stream()
                 .map(c -> flatten ? FederatedCatalogUtil.flatten(c) : c)
