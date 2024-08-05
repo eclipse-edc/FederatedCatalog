@@ -20,7 +20,7 @@ Once all catalogs are collected, clients may add additional query parameters to 
 the [QuerySpec class](https://github.com/eclipse-edc/Connector/blob/main/spi/common/core-spi/src/main/java/org/eclipse/edc/spi/query/QuerySpec.java)
 for details.
 
-Please also check out [this link](https://eclipse-edc.github.io/FederatedCAtalog/openapi/catalog-api) for the complete
+Please also check out [this link](https://eclipse-edc.github.io/FederatedCatalog/openapi/catalog-api) for the complete
 OpenAPI documentation.
 
 ## Observability API

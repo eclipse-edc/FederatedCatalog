@@ -45,9 +45,3 @@ dependencies {
 
     testImplementation(testFixtures(project(":spi:federated-catalog-spi")))
 }
-
-edcBuild {
-    swagger {
-        apiGroup.set("management-api")
-    }
-}

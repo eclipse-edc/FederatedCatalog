@@ -31,9 +31,3 @@ dependencies {
     testImplementation(libs.edc.ext.http)
     testImplementation(libs.awaitility)
 }
-
-edcBuild {
-    swagger {
-        apiGroup.set("management-api")
-    }
-}
