@@ -14,6 +14,7 @@
 
 package org.eclipse.edc.catalog.api.query;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.eclipse.edc.catalog.spi.QueryService;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
@@ -32,6 +33,7 @@ import org.eclipse.edc.web.jersey.providers.jsonld.ObjectMapperProvider;
 import org.eclipse.edc.web.spi.WebService;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 import static org.eclipse.edc.catalog.spi.FccApiContexts.CATALOG_QUERY;
 import static org.eclipse.edc.jsonld.spi.Namespaces.DCAT_PREFIX;
@@ -103,8 +105,10 @@ public class FederatedCatalogApiExtension implements ServiceExtension {
             if (versionContent == null) {
                 throw new EdcException("Version file not found or not readable.");
             }
-            var content = typeManager.getMapper().readValue(versionContent, VersionRecord.class);
-            apiVersionService.addRecord(CATALOG_QUERY, content);
+            Stream.of(typeManager.getMapper()
+                    .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+                    .readValue(versionContent, VersionRecord[].class))
+                            .forEach(vr -> apiVersionService.addRecord(CATALOG_QUERY, vr));
         } catch (IOException e) {
             throw new EdcException(e);
         }
