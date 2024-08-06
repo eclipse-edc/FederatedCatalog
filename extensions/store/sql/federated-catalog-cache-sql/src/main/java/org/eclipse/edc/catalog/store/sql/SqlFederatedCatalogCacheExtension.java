@@ -26,6 +26,7 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
+import org.eclipse.edc.sql.bootstrapper.SqlSchemaBootstrapper;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 
@@ -48,12 +49,17 @@ public class SqlFederatedCatalogCacheExtension implements ServiceExtension {
     @Inject
     private QueryExecutor queryExecutor;
 
+    @Inject
+    private SqlSchemaBootstrapper sqlSchemaBootstrapper;
+
     @Override
     public void initialize(ServiceExtensionContext context) {
         typeManager.registerTypes(Catalog.class, Dataset.class);
-        var store = new SqlFederatedCatalogCache(dataSourceRegistry, getDataSourceName(context), trxContext,
+        var dataSourceName = getDataSourceName(context);
+        var store = new SqlFederatedCatalogCache(dataSourceRegistry, dataSourceName, trxContext,
                 typeManager.getMapper(), queryExecutor, getStatementImpl());
         context.registerService(FederatedCatalogCache.class, store);
+        sqlSchemaBootstrapper.addStatementFromResource(dataSourceName, "cache-schema.sql");
     }
 
     /**

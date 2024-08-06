@@ -21,6 +21,7 @@ import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.junit.annotations.ComponentTest;
+import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.sql.testfixtures.PostgresqlStoreSetupExtension;
 import org.junit.jupiter.api.AfterEach;
@@ -28,8 +29,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 @ComponentTest
 @ExtendWith(PostgresqlStoreSetupExtension.class)
@@ -46,7 +45,7 @@ public class SqlFederatedCatalogCacheTest extends FederatedCatalogCacheTestBase 
         store = new SqlFederatedCatalogCache(extension.getDataSourceRegistry(), extension.getDatasourceName(),
                 extension.getTransactionContext(), typeManager.getMapper(), queryExecutor, statements);
 
-        var schema = Files.readString(Paths.get("./docs/schema.sql"));
+        var schema = TestUtils.getResourceFileContentAsString("cache-schema.sql");
         extension.runQuery(schema);
     }
 

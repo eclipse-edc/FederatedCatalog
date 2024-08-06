@@ -35,7 +35,8 @@ edc-dcp = { module = "org.eclipse.edc:identity-trust", version.ref = "edc" }
 edc-did-core = { module = "org.eclipse.edc:identity-did-core", version.ref = "edc" }
 edc-did-web = { module = "org.eclipse.edc:identity-did-web", version.ref = "edc" }
 edc-oauth2-client = { module = "org.eclipse.edc:oauth2-client", version.ref = "edc" }
-edc-core-sql = { module = "org.eclipse.edc:sql-core", version.ref = "edc" }
+edc-sql-core = { module = "org.eclipse.edc:sql-core", version.ref = "edc" }
+edc-sql-bootstrapper = { module = "org.eclipse.edc:sql-bootstrapper", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-json-ld-lib = { module = "org.eclipse.edc:json-ld-lib", version.ref = "edc" }
 edc-spi-catalog = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
