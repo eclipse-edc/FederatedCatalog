@@ -27,6 +27,7 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.sql.bootstrapper.SqlSchemaBootstrapper;
+import org.eclipse.edc.sql.configuration.DataSourceName;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 
@@ -34,8 +35,11 @@ import org.eclipse.edc.transaction.spi.TransactionContext;
 @Extension(value = "SQL federated catalog cache")
 public class SqlFederatedCatalogCacheExtension implements ServiceExtension {
 
+    @Deprecated(since = "0.8.1")
     @Setting
-    public static final String DATASOURCE_NAME_SETTING = "edc.datasource.federatedcatalog.name";
+    public static final String DATASOURCE_SETTING_NAME = "edc.datasource.federatedcatalog.name";
+    @Setting(value = "The datasource to be used", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE)
+    public static final String DATASOURCE_NAME = "edc.sql.store.federatedcatalog.datasource";
 
     @Inject
     private DataSourceRegistry dataSourceRegistry;
@@ -70,6 +74,6 @@ public class SqlFederatedCatalogCacheExtension implements ServiceExtension {
     }
 
     private String getDataSourceName(ServiceExtensionContext context) {
-        return context.getConfig().getString(DATASOURCE_NAME_SETTING, DataSourceRegistry.DEFAULT_DATASOURCE);
+        return DataSourceName.getDataSourceName(DATASOURCE_NAME, DATASOURCE_SETTING_NAME, context.getConfig(), context.getMonitor());
     }
 }
