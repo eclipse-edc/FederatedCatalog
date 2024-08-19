@@ -44,4 +44,5 @@ dependencies {
     testImplementation(libs.awaitility)
 
     testImplementation(testFixtures(project(":spi:federated-catalog-spi")))
+    testImplementation(testFixtures(project(":spi:crawler-spi")))
 }

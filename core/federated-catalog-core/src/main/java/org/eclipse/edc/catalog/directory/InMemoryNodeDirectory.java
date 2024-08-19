@@ -18,18 +18,19 @@ import org.eclipse.edc.crawler.spi.TargetNode;
 import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
 
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryNodeDirectory implements TargetNodeDirectory {
-    private final List<TargetNode> cache = new CopyOnWriteArrayList<>();
+    private final Map<String, TargetNode> cache = new ConcurrentHashMap<>();
 
     @Override
     public List<TargetNode> getAll() {
-        return List.copyOf(cache); //never return the internal copy
+        return List.copyOf(cache.values()); //never return the internal copy
     }
 
     @Override
     public void insert(TargetNode node) {
-        cache.add(node);
+        cache.put(node.id(), node);
     }
 }
