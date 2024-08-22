@@ -181,3 +181,8 @@ jobs:
           path: artifacts
       - name: CodeCov
         uses: codecov/codecov-action@v4
+
+  Verify-OpenApi:
+    if: github.event_name == 'pull_request'
+    uses: eclipse-edc/.github/.github/workflows/verify-openapi.yml@main
+    secrets: inherit
