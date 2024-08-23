@@ -48,9 +48,7 @@ jobs:
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
 
       - name: Run unit tests
-        uses: eclipse-edc/.github/.github/actions/run-tests@main
-        with:
-          command: ./gradlew test
+        run: ./gradlew test
 
   Verify-Launcher:
     runs-on: ubuntu-latest
