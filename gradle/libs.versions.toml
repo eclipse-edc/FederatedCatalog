@@ -28,7 +28,6 @@ edc-core-jetty = { module = "org.eclipse.edc:jetty-core", version.ref = "edc" }
 edc-dpf-selector-client = { module = "org.eclipse.edc:data-plane-selector-client", version.ref = "edc" }
 edc-dpf-selector-core = { module = "org.eclipse.edc:data-plane-selector-core", version.ref = "edc" }
 edc-dpf-selector-spi = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
-edc-dpf-transfer = { module = "org.eclipse.edc:transfer-data-plane", version.ref = "edc" }
 edc-ext-http = { module = "org.eclipse.edc:http", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
 edc-dcp = { module = "org.eclipse.edc:identity-trust", version.ref = "edc" }
