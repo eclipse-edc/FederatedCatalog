@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.util.stream.Stream;
 
 import static org.eclipse.edc.catalog.spi.FccApiContexts.CATALOG_QUERY;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.jsonld.spi.Namespaces.DCAT_PREFIX;
 import static org.eclipse.edc.jsonld.spi.Namespaces.DCAT_SCHEMA;
 import static org.eclipse.edc.jsonld.spi.Namespaces.DCT_PREFIX;
@@ -44,13 +45,15 @@ import static org.eclipse.edc.jsonld.spi.Namespaces.DSPACE_PREFIX;
 import static org.eclipse.edc.jsonld.spi.Namespaces.DSPACE_SCHEMA;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_PREFIX;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_PREFIX;
 import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 
 @Extension(value = FederatedCatalogApiExtension.NAME)
 public class FederatedCatalogApiExtension implements ServiceExtension {
 
     public static final String NAME = "Cache Query API Extension";
-    private static final String CATALOG_QUERY_SCOPE = "CATALOG_QUERY_API";
+    public static final String CATALOG_QUERY_SCOPE = "CATALOG_QUERY_API";
 
     private static final String API_VERSION_JSON_FILE = "catalog-version.json";
 
@@ -80,11 +83,14 @@ public class FederatedCatalogApiExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
+
+        jsonLd.registerNamespace(VOCAB, EDC_NAMESPACE, CATALOG_QUERY_SCOPE);
+        jsonLd.registerNamespace(EDC_PREFIX, EDC_NAMESPACE, CATALOG_QUERY_SCOPE);
         jsonLd.registerNamespace(ODRL_PREFIX, ODRL_SCHEMA, CATALOG_QUERY_SCOPE);
         jsonLd.registerNamespace(DCAT_PREFIX, DCAT_SCHEMA, CATALOG_QUERY_SCOPE);
         jsonLd.registerNamespace(DCT_PREFIX, DCT_SCHEMA, CATALOG_QUERY_SCOPE);
         jsonLd.registerNamespace(DSPACE_PREFIX, DSPACE_SCHEMA, CATALOG_QUERY_SCOPE);
-        
+
         var jsonLdMapper = typeManager.getMapper(JSON_LD);
         var catalogController = new FederatedCatalogApiController(queryService, transformerRegistry);
         webService.registerResource(CATALOG_QUERY, catalogController);
@@ -106,9 +112,9 @@ public class FederatedCatalogApiExtension implements ServiceExtension {
                 throw new EdcException("Version file not found or not readable.");
             }
             Stream.of(typeManager.getMapper()
-                    .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-                    .readValue(versionContent, VersionRecord[].class))
-                            .forEach(vr -> apiVersionService.addRecord(CATALOG_QUERY, vr));
+                            .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+                            .readValue(versionContent, VersionRecord[].class))
+                    .forEach(vr -> apiVersionService.addRecord(CATALOG_QUERY, vr));
         } catch (IOException e) {
             throw new EdcException(e);
         }
