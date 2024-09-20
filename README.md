@@ -1,4 +1,15 @@
-# Federated Catalog
+# EDC Federated Catalog
+
+[![documentation](https://img.shields.io/badge/documentation-8A2BE2?style=flat-square)](https://eclipse-edc.github.io)
+[![discord](https://img.shields.io/badge/discord-chat-brightgreen.svg?style=flat-square&logo=discord)](https://discord.gg/n4sD9qtjMQ)
+[![latest version](https://img.shields.io/maven-central/v/org.eclipse.edc/boot?logo=apache-maven&style=flat-square&label=latest%20version)](https://search.maven.org/artifact/org.eclipse.edc/boot)
+[![license](https://img.shields.io/github/license/eclipse-edc/FederatedCatalog?style=flat-square&logo=apache)](https://www.apache.org/licenses/LICENSE-2.0)
+<br>
+[![build](https://img.shields.io/github/actions/workflow/status/eclipse-edc/FederatedCatalog/verify.yaml?branch=main&logo=GitHub&style=flat-square&label=ci)](https://github.com/eclipse-edc/FederatedCatalog/actions/workflows/verify.yaml?query=branch%3Amain)
+[![snapshot build](https://img.shields.io/github/actions/workflow/status/eclipse-edc/FederatedCatalog/trigger_snapshot.yml?branch=main&logo=GitHub&style=flat-square&label=snapshot-build)](https://github.com/eclipse-edc/FederatedCatalog/actions/workflows/trigger_snapshot.yml)
+[![nightly build](https://img.shields.io/github/actions/workflow/status/eclipse-edc/Release/nightly.yaml?branch=main&logo=GitHub&style=flat-square&label=nightly-build)](https://github.com/eclipse-edc/Release/actions/workflows/nightly.yaml)
+
+---
 
 The Federated Catalog (FC) represents the aggregated catalogs of multiple participants in a dataspace. To achieve that,
 the FC employs a set of crawlers, that periodically scrape the dataspace requesting the catalog from each participant in
@@ -12,6 +23,11 @@ the [connector](https://github.com/eclipse-edc/Connector) for extension loading,
 handling etc., while adding specific functionality using the EDC extensibility mechanism.
 
 This repository contains all components needed to build and run a standalone version of the Federated Catalog.
+
+## Documentation
+
+Base documentation can be found on the [documentation website](https://eclipse-edc.github.io). \
+Developer documentation can be found under [docs/developer](docs/developer/README.md).
 
 ## Quick start
 
@@ -78,11 +94,6 @@ detail [here](docs/developer/architecture/federated-catalog-apis.md).
 - Generalization of the Crawler class
 - Additional informational endpoints to the [Catalog API](docs/developer/architecture/federated-catalog-apis.md)
 
-## Other documentation
-
-Developer documentation can be found under [docs/developer](docs/developer), where the main concepts and decisions are
-captured as [decision records](docs/developer/decision-records).
-
 ## References
 
 - Decentralized Claims Protocol (DCP): https://projects.eclipse.org/projects/technology.dataspace-dcp
@@ -90,4 +101,4 @@ captured as [decision records](docs/developer/decision-records).
 
 ## Contributing
 
-See [how to contribute](https://github.com/eclipse-edc/docs/blob/main/CONTRIBUTING.md) for details.
+See [how to contribute](https://github.com/eclipse-edc/eclipse-edc.github.io/blob/main/CONTRIBUTING.md).
