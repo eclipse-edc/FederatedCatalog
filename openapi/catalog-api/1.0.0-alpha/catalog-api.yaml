@@ -20,7 +20,6 @@ paths:
         explode: true
         schema:
           type: boolean
-          example: null
           default: false
       requestBody:
         content:
@@ -34,7 +33,6 @@ paths:
             application/json:
               schema:
                 type: array
-                example: null
                 items:
                   $ref: "#/components/schemas/Catalog"
         "500":
@@ -101,13 +99,10 @@ components:
           example: https://w3id.org/edc/v0.0.1/ns/Criterion
         operandLeft:
           type: object
-          example: null
         operandRight:
           type: object
-          example: null
         operator:
           type: string
-          example: null
       example:
         '@context':
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
@@ -120,10 +115,8 @@ components:
       properties:
         empty:
           type: boolean
-          example: null
         valueType:
           type: string
-          example: null
           enum:
           - ARRAY
           - OBJECT
@@ -132,7 +125,6 @@ components:
           - "TRUE"
           - "FALSE"
           - "NULL"
-      example: null
       items:
         $ref: "#/components/schemas/JsonValue"
     JsonObject:
@@ -140,10 +132,8 @@ components:
       properties:
         empty:
           type: boolean
-          example: null
         valueType:
           type: string
-          example: null
           enum:
           - ARRAY
           - OBJECT
@@ -154,13 +144,11 @@ components:
           - "NULL"
       additionalProperties:
         $ref: "#/components/schemas/JsonValue"
-      example: null
     JsonValue:
       type: object
       properties:
         valueType:
           type: string
-          example: null
           enum:
           - ARRAY
           - OBJECT
@@ -169,7 +157,6 @@ components:
           - "TRUE"
           - "FALSE"
           - "NULL"
-      example: null
     QuerySpec:
       type: object
       properties:
@@ -178,23 +165,18 @@ components:
           example: https://w3id.org/edc/v0.0.1/ns/QuerySpec
         filterExpression:
           type: array
-          example: null
           items:
             $ref: "#/components/schemas/Criterion"
         limit:
           type: integer
           format: int32
-          example: null
         offset:
           type: integer
           format: int32
-          example: null
         sortField:
           type: string
-          example: null
         sortOrder:
           type: string
-          example: null
           enum:
           - ASC
           - DESC
