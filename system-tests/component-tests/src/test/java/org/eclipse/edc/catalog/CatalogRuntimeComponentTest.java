@@ -33,7 +33,6 @@ import org.eclipse.edc.protocol.dsp.http.spi.dispatcher.DspHttpRemoteMessageDisp
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.response.StatusResult;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -98,18 +97,13 @@ public class CatalogRuntimeComponentTest {
     )));
     private final DspHttpRemoteMessageDispatcher dispatcher = mock();
 
-    @BeforeEach
-    void setup() {
-        when(dispatcher.protocol()).thenReturn(DATASPACE_PROTOCOL);
-    }
-
     @Test
     @DisplayName("Crawl a single target, yields no results")
     void crawlSingle_noResults(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
         // prepare node directory
         insertSingle(directory);
         // intercept request egress
-        reg.register(dispatcher);
+        reg.register(DATASPACE_PROTOCOL, dispatcher);
         when(dispatcher.dispatch(eq(byte[].class), isA(CatalogRequestMessage.class)))
                 .thenReturn(emptyCatalog(catalog -> toBytes(ttr, catalog)));
 
@@ -128,7 +122,7 @@ public class CatalogRuntimeComponentTest {
         // prepare node directory
         insertSingle(directory);
         // intercept request egress
-        reg.register(dispatcher);
+        reg.register(DATASPACE_PROTOCOL, dispatcher);
         when(dispatcher.dispatch(eq(byte[].class), isA(CatalogRequestMessage.class)))
                 .thenReturn(randomCatalog(catalog -> toBytes(ttr, catalog), TEST_CATALOG_ID, 5))
                 .thenReturn(emptyCatalog(catalog -> toBytes(ttr, catalog))); // this is important, otherwise there is an endless loop!
@@ -147,7 +141,7 @@ public class CatalogRuntimeComponentTest {
         // prepare node directory
         insertSingle(directory);
         // intercept request egress
-        reg.register(dispatcher);
+        reg.register(DATASPACE_PROTOCOL, dispatcher);
         when(dispatcher.dispatch(eq(byte[].class), isA(CatalogRequestMessage.class)))
                 .thenReturn(randomCatalog(catalog -> StatusResult.success(TestUtils.getResourceFileContentAsString("catalog_of_catalogs.json").getBytes()), "root-catalog-id", 5))
                 .thenReturn(randomCatalog(catalog -> StatusResult.success(TestUtils.getResourceFileContentAsString("catalog.json").getBytes()), "sub-catalog-id", 5));
@@ -170,7 +164,7 @@ public class CatalogRuntimeComponentTest {
         insertSingle(directory);
 
         // intercept request egress
-        reg.register(dispatcher);
+        reg.register(DATASPACE_PROTOCOL, dispatcher);
         when(dispatcher.dispatch(eq(byte[].class), isA(CatalogRequestMessage.class)))
                 .thenReturn(randomCatalog(catalog -> toBytes(ttr, catalog), TEST_CATALOG_ID, 100))
                 .thenReturn(randomCatalog(catalog -> toBytes(ttr, catalog), TEST_CATALOG_ID, 100))
@@ -194,7 +188,7 @@ public class CatalogRuntimeComponentTest {
         insertSingle(directory);
 
         // intercept request egress
-        reg.register(dispatcher);
+        reg.register(DATASPACE_PROTOCOL, dispatcher);
         when(dispatcher.dispatch(eq(byte[].class), isA(CatalogRequestMessage.class)))
                 .thenReturn(completedFuture(toBytes(ttr, catalogBuilder().id(TEST_CATALOG_ID).datasets(new ArrayList<>(List.of(
                         createDataset("offer1"), createDataset("offer2"), createDataset("offer3")
@@ -223,7 +217,7 @@ public class CatalogRuntimeComponentTest {
         insertSingle(directory);
 
         // intercept request egress
-        reg.register(dispatcher);
+        reg.register(DATASPACE_PROTOCOL, dispatcher);
         when(dispatcher.dispatch(eq(byte[].class), isA(CatalogRequestMessage.class)))
                 .thenReturn(completedFuture(toBytes(ttr, catalogBuilder().id(TEST_CATALOG_ID).datasets(new ArrayList<>(List.of(
                         createDataset("offer1"), createDataset("offer2"), createDataset("offer3")
@@ -251,7 +245,7 @@ public class CatalogRuntimeComponentTest {
         insertSingle(directory);
 
         // intercept request egress
-        reg.register(dispatcher);
+        reg.register(DATASPACE_PROTOCOL, dispatcher);
         when(dispatcher.dispatch(eq(byte[].class), isA(CatalogRequestMessage.class)))
                 .thenAnswer(a -> completedFuture(toBytes(ttr, catalogBuilder().id("test-cat")
                         .datasets(List.of(createDataset("dataset1"), createDataset("dataset2"))).build())))
@@ -279,7 +273,7 @@ public class CatalogRuntimeComponentTest {
         // prepare node directory
         insertSingle(directory);
         // intercept request egress
-        reg.register(dispatcher);
+        reg.register(DATASPACE_PROTOCOL, dispatcher);
         when(dispatcher.dispatch(eq(byte[].class), isA(CatalogRequestMessage.class)))
                 .thenReturn(randomCatalog(catalog -> toBytes(ttr, catalog), TEST_CATALOG_ID, 5))
                 .thenReturn(emptyCatalog(catalog -> toBytes(ttr, catalog))); // this is important, otherwise there is an endless loop!
@@ -302,7 +296,7 @@ public class CatalogRuntimeComponentTest {
         var rnd = new SecureRandom();
 
         // create 1000 crawl targets, setup dispatcher mocks for them
-        reg.register(dispatcher);
+        reg.register(DATASPACE_PROTOCOL, dispatcher);
         var numTargets = 50;
         range(0, numTargets)
                 .forEach(i -> {
@@ -335,7 +329,7 @@ public class CatalogRuntimeComponentTest {
 
         directory.insert(node1);
         directory.insert(node2);
-        reg.register(dispatcher);
+        reg.register(DATASPACE_PROTOCOL, dispatcher);
 
         when(dispatcher.dispatch(eq(byte[].class), argThat(sentTo(node1.id(), node1.targetUrl()))))
                 .thenReturn(catalogOf(catalog -> toBytes(ttr, catalog), "catalog-" + node1.targetUrl(), createDataset("offer1"), createDataset("offer2"), createDataset("offer3")))
