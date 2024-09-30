@@ -14,7 +14,6 @@
 
 package org.eclipse.edc.catalog.instrumentation;
 
-import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.connector.dataplane.selector.spi.client.DataPlaneClientFactory;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
@@ -23,8 +22,8 @@ import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
+import static org.eclipse.edc.catalog.spi.CatalogConstants.DATASPACE_PROTOCOL;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class MockInjectionExtension implements ServiceExtension {
 
@@ -34,14 +33,13 @@ public class MockInjectionExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        registry.register(createDispatcher());
+        registry.register(DATASPACE_PROTOCOL, createDispatcher());
     }
 
     @Provider
     public RemoteMessageDispatcher createDispatcher() {
         if (dispatcher == null) {
             dispatcher = mock(RemoteMessageDispatcher.class);
-            when(dispatcher.protocol()).thenReturn(CatalogConstants.DATASPACE_PROTOCOL);
         }
 
         return dispatcher;
