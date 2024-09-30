@@ -99,7 +99,9 @@ public class DspCatalogRequestAction implements CrawlerAction {
                 .map(ur -> (CatalogUpdateResponse) ur)
                 .map(CatalogUpdateResponse::getCatalog);
 
-        var datasets = new ArrayList<>(partitions.get(Dataset.class));
+        var datasets = ofNullable(partitions.get(Dataset.class))
+                .map(ds -> new ArrayList<>(ds))
+                .orElseGet(ArrayList::new);
         expandedSubCatalogs.forEach(datasets::add);
         return completedFuture(copy(rootCatalog, datasets).build());
 

@@ -37,12 +37,16 @@ dependencies {
     implementation(libs.edc.json.ld.lib)
     implementation(libs.edc.lib.store)
 
-    // required for integration test
-    testImplementation(libs.edc.dsp.transform.catalog)
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.ext.http)
     testImplementation(libs.awaitility)
 
     testImplementation(testFixtures(project(":spi:federated-catalog-spi")))
     testImplementation(testFixtures(project(":spi:crawler-spi")))
+
+    // required for integration test
+    testFixturesImplementation(libs.edc.core.connector)
+    testFixturesImplementation(libs.edc.dsp.transform.catalog)
+    testFixturesImplementation(libs.edc.json.ld.lib)
+    testFixturesImplementation(libs.edc.controlplane.transform)
 }
