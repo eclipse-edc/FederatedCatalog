@@ -59,6 +59,7 @@ import static java.util.Optional.ofNullable;
 import static org.eclipse.edc.catalog.cache.FederatedCatalogDefaultServicesExtension.NUM_CRAWLER_SETTING;
 import static org.eclipse.edc.catalog.spi.CacheSettings.DEFAULT_NUMBER_OF_CRAWLERS;
 import static org.eclipse.edc.catalog.spi.CatalogConstants.DATASPACE_PROTOCOL;
+import static org.eclipse.edc.protocol.dsp.spi.type.DspConstants.DSP_TRANSFORMER_CONTEXT_V_08;
 import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 
 @Extension(value = FederatedCatalogCacheExtension.NAME)
@@ -146,7 +147,7 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
             nodeQueryAdapterRegistry = new CrawlerActionRegistryImpl();
             // catalog queries via IDS multipart and DSP are supported by default
             var mapper = typeManager.getMapper(JSON_LD);
-            nodeQueryAdapterRegistry.register(DATASPACE_PROTOCOL, new DspCatalogRequestAction(dispatcherRegistry, context.getMonitor(), mapper, registry.forContext("dsp-api"), jsonLdService));
+            nodeQueryAdapterRegistry.register(DATASPACE_PROTOCOL, new DspCatalogRequestAction(dispatcherRegistry, context.getMonitor(), mapper, registry.forContext(DSP_TRANSFORMER_CONTEXT_V_08), jsonLdService));
         }
         return nodeQueryAdapterRegistry;
     }
