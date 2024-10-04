@@ -1,9 +1,9 @@
 {
-  "@id": "9789e27e-8200-4f65-b1c6-45d9938dc698",
+  "@id": "sub-catalog-id",
   "@type": "dcat:Catalog",
   "dcat:dataset": [
     {
-      "@id": "normal-asset-a873f2be-295e-4d03-af1c-0e15c1363627",
+      "@id": "subcatalog-asset-a873f2be-295e-4d03-af1c-0e15c1363627",
       "@type": "dcat:Dataset",
       "odrl:hasPolicy": {
         "@id": "ODkzNGY3MzEtYzdmMy00N2NiLTlmM2UtNGU1ZDljOGNjNzU3:bm9ybWFsLWFzc2V0LWE4NzNmMmJlLTI5NWUtNGQwMy1hZjFjLTBlMTVjMTM2MzYyNw==:OGZhMzc3ODktOTZlYS00ZGQ1LWIyZjktNjYzNTQwOWZlNTUw",
@@ -26,7 +26,7 @@
     "@id": "5cc832e4-9b77-412b-a21e-7d5b49516f2c",
     "@type": "dcat:DataService",
     "dcat:endpointDescription": "dspace:connector",
-    "dcat:endpointUrl": "http://localhost:55229/protocol",
+    "dcat:endpointURL": "http://localhost:55229/protocol",
     "dct:terms": "dspace:connector",
     "dct:endpointUrl": "http://localhost:55229/protocol"
   },
