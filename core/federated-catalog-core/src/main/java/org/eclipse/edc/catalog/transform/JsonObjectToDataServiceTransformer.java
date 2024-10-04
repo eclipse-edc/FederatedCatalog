@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_ENDPOINT_DESCRIPTION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_ENDPOINT_URL_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_ENDPOINT_URL_OLD_ATTRIBUTE;
 
 /**
  * Converts from a DCAT data service as a {@link JsonObject} in JSON-LD expanded form to a {@link DataService}.
@@ -45,7 +46,7 @@ public class JsonObjectToDataServiceTransformer extends AbstractJsonLdTransforme
     }
 
     private void transformProperties(String key, JsonValue value, DataService.Builder builder, TransformerContext context) {
-        if (DCAT_ENDPOINT_URL_ATTRIBUTE.equals(key)) {
+        if (DCAT_ENDPOINT_URL_ATTRIBUTE.equals(key) || DCAT_ENDPOINT_URL_OLD_ATTRIBUTE.equals(key)) {
             transformString(value, builder::endpointUrl, context);
         } else if (DCAT_ENDPOINT_DESCRIPTION_ATTRIBUTE.equals(key)) {
             transformString(value, builder::endpointDescription, context);

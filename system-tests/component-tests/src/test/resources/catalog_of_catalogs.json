@@ -1,5 +1,5 @@
 {
-  "@id": "9789e27e-8200-4f65-b1c6-45d9938dc698",
+  "@id": "root-catalog-id",
   "@type": "dcat:Catalog",
   "dcat:dataset": [
     {
@@ -37,7 +37,7 @@
       "dcat:service": {
         "@id": "Y2F0YWxvZy1hc3NldC01YTc0ODJiZC1hMmE4LTQyNDgtYThmYS0zNTNjYjFkMTRkZjc=",
         "@type": "dcat:DataService",
-        "dcat:endpointUrl": "http://quizzqua.zz/buzz",
+        "dcat:endpointURL": "http://quizzqua.zz/buzz",
         "dct:endpointUrl": "http://quizzqua.zz/buzz"
       },
       "isCatalog": true,
@@ -50,7 +50,7 @@
     "@id": "5cc832e4-9b77-412b-a21e-7d5b49516f2c",
     "@type": "dcat:DataService",
     "dcat:endpointDescription": "dspace:connector",
-    "dcat:endpointUrl": "http://localhost:55229/protocol",
+    "dcat:endpointURL": "http://localhost:55229/protocol",
     "dct:terms": "dspace:connector",
     "dct:endpointUrl": "http://localhost:55229/protocol"
   },
