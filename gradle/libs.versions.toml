@@ -9,6 +9,7 @@ restAssured = "5.5.0"
 jackson = "2.17.2"
 jupiter = "5.11.0"
 assertj = "3.26.3"
+postgres = "42.7.4"
 
 [libraries]
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
@@ -43,6 +44,8 @@ edc-did-core = { module = "org.eclipse.edc:identity-did-core", version.ref = "ed
 edc-did-web = { module = "org.eclipse.edc:identity-did-web", version.ref = "edc" }
 edc-oauth2-client = { module = "org.eclipse.edc:oauth2-client", version.ref = "edc" }
 edc-sql-core = { module = "org.eclipse.edc:sql-core", version.ref = "edc" }
+edc-sql-pool = { module = "org.eclipse.edc:sql-pool-apache-commons", version.ref = "edc" }
+edc-sql-transactionlocal = { module = "org.eclipse.edc:transaction-local", version.ref = "edc" }
 edc-sql-bootstrapper = { module = "org.eclipse.edc:sql-bootstrapper", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-json-ld-lib = { module = "org.eclipse.edc:json-ld-lib", version.ref = "edc" }
@@ -79,6 +82,7 @@ edc-controlplane-transform = { module = "org.eclipse.edc:control-plane-transform
 jackson-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jupiter" }
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 
 [bundles]
 edc-connector = ["edc-boot", "edc-core-connector", "edc-core-jersey", "edc-api-observability", "edc-config-filesystem",

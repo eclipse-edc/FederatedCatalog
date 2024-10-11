@@ -14,24 +14,19 @@
 
 plugins {
     `java-library`
-    id("application")
-    alias(libs.plugins.shadow)
 }
 
 dependencies {
-    runtimeOnly(project(":dist:bom:federatedcatalog-base-bom"))
-    runtimeOnly(libs.bundles.dcp)
-}
 
-application {
-    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
-}
+    // sql modules
+    api(project(":extensions:store:sql:federated-catalog-cache-sql"))
+    api(project(":extensions:store:sql:target-node-directory-sql"))
 
-tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
-    mergeServiceFiles()
-    archiveFileName.set("fc.jar")
-}
+    api(libs.edc.sql.core)
+    api(libs.edc.sql.pool)
+    api(libs.edc.sql.transactionlocal)
+    api(libs.edc.sql.bootstrapper)
 
-edcBuild {
-    publish.set(false)
+    // third-party deps
+    api(libs.postgres)
 }
