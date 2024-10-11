@@ -18,11 +18,11 @@ it is possible to run them in local dev environments, be aware of the more invol
 
 Please follow these steps in order to run the tests on a local dev environment.
 
-1. Build launchers: there are two submodules named `catalog-runtime` and `connector-runtimes`, which will produce
+1. Build launchers: there are two submodules named `catalog-dcp` and `connector-runtime`, which will produce
    executable JAR files that
    will later be used in docker containers. In order to build them, simply execute
    ```shell
-   ./gradlew :system-tests:end2end-test:catalog-runtime:shadowJar
+   ./gradlew :launchers:catalog-dcp:shadowJar
    ./gradlew :system-tests:end2end-test:connector-runtime:shadowJar
    ```
 

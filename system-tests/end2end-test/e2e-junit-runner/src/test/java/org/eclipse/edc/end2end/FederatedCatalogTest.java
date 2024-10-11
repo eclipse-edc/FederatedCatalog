@@ -62,6 +62,7 @@ import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.transform.odrl.OdrlTransformersFactory.jsonObjectToOdrlTransformers;
 import static org.eclipse.edc.end2end.TestFunctions.createContractDef;
 import static org.eclipse.edc.end2end.TestFunctions.createPolicy;
+import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.mockito.Mockito.mock;
 
 @EndToEndTest
@@ -108,10 +109,12 @@ class FederatedCatalogTest {
                     "web.http.protocol.path", CATALOG_PROTOCOL.path(),
                     "web.http.management.port", CATALOG_MANAGEMENT.port(),
                     "web.http.management.path", CATALOG_MANAGEMENT.path(),
+                    "web.http.version.port", getFreePort() + "",
+                    "web.http.version.path", "/.well-known/version",
                     "web.http.catalog.port", CATALOG_CATALOG.port(),
                     "web.http.catalog.path", CATALOG_CATALOG.path(),
                     "edc.web.rest.cors.headers", "origin,content-type,accept,authorization,x-api-key"),
-            ":system-tests:end2end-test:catalog-runtime"));
+            ":launchers:catalog-mocked"));
     private final TypeTransformerRegistry typeTransformerRegistry = new TypeTransformerRegistryImpl();
     private final ObjectMapper mapper = JacksonJsonLd.createObjectMapper();
     private final CatalogApiClient apiClient = new CatalogApiClient(CATALOG_CATALOG, CONNECTOR_MANAGEMENT, mapper, new TitaniumJsonLd(mock(Monitor.class)), typeTransformerRegistry);
