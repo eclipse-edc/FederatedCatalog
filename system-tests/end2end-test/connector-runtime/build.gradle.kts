@@ -28,6 +28,7 @@ dependencies {
     runtimeOnly(libs.edc.config.filesystem)
     runtimeOnly(libs.edc.ext.http)
     runtimeOnly(libs.edc.spi.jsonld)
+    runtimeOnly(libs.edc.core.edrstore)
 
     // protocol modules
     runtimeOnly(libs.edc.dsp.all)
