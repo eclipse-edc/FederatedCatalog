@@ -19,8 +19,7 @@ plugins {
 }
 
 dependencies {
-    runtimeOnly(project(":launchers:catalog-base"))
-    runtimeOnly(libs.bundles.dcp)
+    runtimeOnly(project(":dist:bom:federatedcatalog-dcp-bom"))
 }
 
 application {

@@ -20,9 +20,7 @@ plugins {
 
 dependencies {
     runtimeOnly(project(":dist:bom:federatedcatalog-base-bom"))
-
-    // this runtime contains the MockedIdentityService
-    runtimeOnly(libs.edc.iam.mock)
+    runtimeOnly(libs.bundles.dcp)
 }
 
 application {
@@ -31,7 +29,7 @@ application {
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     mergeServiceFiles()
-    archiveFileName.set("fc-mocked.jar")
+    archiveFileName.set("fc.jar")
 }
 
 edcBuild {

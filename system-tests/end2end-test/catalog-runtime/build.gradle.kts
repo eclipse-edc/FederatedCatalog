@@ -19,21 +19,7 @@ plugins {
 }
 
 dependencies {
-    runtimeOnly(project(":core:federated-catalog-core"))
-    runtimeOnly(project(":extensions:api:federated-catalog-api"))
-    runtimeOnly(project(":spi:federated-catalog-spi"))
-    runtimeOnly(libs.edc.lib.util)
-    runtimeOnly(libs.edc.spi.jsonld)
-
-    runtimeOnly(libs.bundles.edc.connector)
-    runtimeOnly(libs.edc.core.controlplane)
-    runtimeOnly(libs.edc.core.jetty)
-    runtimeOnly(libs.edc.core.edrstore)
-    runtimeOnly(libs.edc.lib.providers.jersey)
-    runtimeOnly(libs.edc.lib.boot)
-
-    runtimeOnly(libs.edc.dsp.all)
-    runtimeOnly(libs.edc.iam.mock)
+    runtimeOnly(project(":dist:bom:federatedcatalog-dcp-bom"))
 }
 
 application {
