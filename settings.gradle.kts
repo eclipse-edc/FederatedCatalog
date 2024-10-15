@@ -15,6 +15,7 @@ include(":launchers:catalog-mocked")
 include(":system-tests:component-tests")
 include(":system-tests:end2end-test:connector-runtime")
 include(":system-tests:end2end-test:e2e-junit-runner")
+include(":system-tests:bom-tests")
 include(":version-catalog")
 
 // BOM modules
