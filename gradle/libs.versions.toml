@@ -76,6 +76,7 @@ edc-lib-jerseyproviders = { module = "org.eclipse.edc:jersey-providers-lib", ver
 edc-dsp-api-configuration = { module = "org.eclipse.edc:dsp-http-api-configuration", version.ref = "edc" }
 edc-dsp-all = { module = "org.eclipse.edc:dsp", version.ref = "edc" }
 edc-dsp-transform-catalog = { module = "org.eclipse.edc:dsp-catalog-transform", version.ref = "edc" }
+edc-dsp-transform-catalog-lib = { module = "org.eclipse.edc:dsp-catalog-transform-lib", version.ref = "edc" }
 edc-controlplane-transform = { module = "org.eclipse.edc:control-plane-transform", version.ref = "edc" }
 
 # third-party desp
