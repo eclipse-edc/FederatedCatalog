@@ -93,10 +93,10 @@ maven/mavencentral/javax.servlet/javax.servlet-api/3.1.0, (CDDL-1.1 OR GPL-2.0-o
 maven/mavencentral/javax.ws.rs/javax.ws.rs-api/2.1, (CDDL-1.1 OR GPL-2.0 WITH Classpath-exception-2.0) AND Apache-2.0, approved, CQ18121
 maven/mavencentral/junit/junit/4.13.2, EPL-2.0, approved, CQ23636
 maven/mavencentral/net.bytebuddy/byte-buddy-agent/1.14.1, Apache-2.0, approved, #7164
-maven/mavencentral/net.bytebuddy/byte-buddy-agent/1.15.3, Apache-2.0, approved, #16009
+maven/mavencentral/net.bytebuddy/byte-buddy-agent/1.15.4, Apache-2.0, approved, #16009
 maven/mavencentral/net.bytebuddy/byte-buddy/1.14.1, Apache-2.0 AND BSD-3-Clause, approved, #7163
 maven/mavencentral/net.bytebuddy/byte-buddy/1.14.18, Apache-2.0 AND BSD-3-Clause, approved, #7163
-maven/mavencentral/net.bytebuddy/byte-buddy/1.15.3, Apache-2.0 AND BSD-3-Clause, approved, #16008
+maven/mavencentral/net.bytebuddy/byte-buddy/1.15.4, Apache-2.0 AND BSD-3-Clause, approved, #16008
 maven/mavencentral/net.java.dev.jna/jna/5.13.0, Apache-2.0 AND LGPL-2.1-or-later, approved, #15196
 maven/mavencentral/net.sf.saxon/Saxon-HE/12.5, W3C-19980720 AND MPL-2.0 AND MPL-1.0, approved, #16061
 maven/mavencentral/org.antlr/antlr4-runtime/4.13.2, BSD-3-Clause, approved, #10767
@@ -172,6 +172,7 @@ maven/mavencentral/org.eclipse.edc/data-plane-selector-spi/0.10.0-SNAPSHOT, Apac
 maven/mavencentral/org.eclipse.edc/data-plane-spi/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-catalog-http-api/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-catalog-http-dispatcher/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/dsp-catalog-transform-lib/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-catalog-transform/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-catalog-validation-lib/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-catalog/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -180,12 +181,14 @@ maven/mavencentral/org.eclipse.edc/dsp-http-core/0.10.0-SNAPSHOT, Apache-2.0, ap
 maven/mavencentral/org.eclipse.edc/dsp-http-spi/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-negotiation-http-api/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-negotiation-http-dispatcher/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/dsp-negotiation-transform-lib/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-negotiation-transform/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-negotiation-validation-lib/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-negotiation/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-spi/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-transfer-process-http-api/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-transfer-process-http-dispatcher/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/dsp-transfer-process-transform-lib/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-transfer-process-transform/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-transfer-process-validation-lib/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-transfer-process/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -320,7 +323,7 @@ maven/mavencentral/org.junit.platform/junit-platform-commons/1.11.2, EPL-2.0, ap
 maven/mavencentral/org.junit.platform/junit-platform-engine/1.11.2, EPL-2.0, approved, #15932
 maven/mavencentral/org.junit/junit-bom/5.11.2, EPL-2.0, approved, #16062
 maven/mavencentral/org.jvnet.mimepull/mimepull/1.9.15, CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0, approved, CQ21484
-maven/mavencentral/org.mockito/mockito-core/5.14.1, MIT AND (Apache-2.0 AND MIT) AND Apache-2.0, approved, #16375
+maven/mavencentral/org.mockito/mockito-core/5.14.2, MIT AND (Apache-2.0 AND MIT) AND Apache-2.0, approved, #16375
 maven/mavencentral/org.mockito/mockito-core/5.2.0, MIT AND (Apache-2.0 AND MIT) AND Apache-2.0, approved, #7401
 maven/mavencentral/org.objenesis/objenesis/3.3, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.opentest4j/opentest4j/1.3.0, Apache-2.0, approved, #9713
@@ -336,8 +339,8 @@ maven/mavencentral/org.slf4j/slf4j-api/1.7.36, MIT, approved, CQ13368
 maven/mavencentral/org.slf4j/slf4j-api/2.0.9, MIT, approved, #5915
 maven/mavencentral/org.testcontainers/database-commons/1.20.2, Apache-2.0, approved, #16630
 maven/mavencentral/org.testcontainers/jdbc/1.20.2, Apache-2.0, approved, #16621
-maven/mavencentral/org.testcontainers/junit-jupiter/1.20.2, None, restricted, #16552
-maven/mavencentral/org.testcontainers/postgresql/1.20.2, None, restricted, #16627
+maven/mavencentral/org.testcontainers/junit-jupiter/1.20.2, MIT, approved, #16552
+maven/mavencentral/org.testcontainers/postgresql/1.20.2, MIT, approved, #16627
 maven/mavencentral/org.testcontainers/testcontainers/1.20.2, MIT, approved, #15747
 maven/mavencentral/org.xmlresolver/xmlresolver/5.2.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.yaml/snakeyaml/2.2, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #10232
