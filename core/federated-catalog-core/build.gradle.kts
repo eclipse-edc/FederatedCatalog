@@ -30,6 +30,7 @@ dependencies {
     implementation(libs.edc.core.connector)
     implementation(libs.edc.lib.query)
     implementation(libs.edc.dsp.transform.catalog)
+    implementation(libs.edc.dsp.transform.catalog.lib)
     implementation(libs.edc.controlplane.transform)
     implementation(libs.edc.lib.transform)
     implementation(libs.edc.dsp.api.configuration)
@@ -47,6 +48,7 @@ dependencies {
     // required for integration test
     testFixturesImplementation(libs.edc.core.connector)
     testFixturesImplementation(libs.edc.dsp.transform.catalog)
+    testFixturesImplementation(libs.edc.dsp.transform.catalog.lib)
     testFixturesImplementation(libs.edc.json.ld.lib)
     testFixturesImplementation(libs.edc.controlplane.transform)
 }
