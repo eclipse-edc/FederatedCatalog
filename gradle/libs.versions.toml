@@ -7,7 +7,7 @@ edc = "0.10.0-SNAPSHOT"
 failsafe = "3.3.2"
 restAssured = "5.5.0"
 jackson = "2.18.0"
-jupiter = "5.11.2"
+jupiter = "5.11.3"
 assertj = "3.26.3"
 postgres = "42.7.4"
 
