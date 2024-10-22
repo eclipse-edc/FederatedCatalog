@@ -43,6 +43,7 @@ dependencies {
     testImplementation(libs.edc.dsp.transform.catalog)
     testImplementation(testFixtures(libs.edc.core.jersey))
     testImplementation(libs.edc.lib.transform)
+    testImplementation(libs.edc.lib.transform.catalog)
     testImplementation(libs.edc.lib.query)
 }
 
