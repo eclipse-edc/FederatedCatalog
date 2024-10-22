@@ -233,6 +233,7 @@ maven/mavencentral/org.eclipse.edc/management-api-lib/0.10.0-SNAPSHOT, Apache-2.
 maven/mavencentral/org.eclipse.edc/management-api/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/oauth2-client/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/oauth2-spi/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/participant-spi/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-definition-api/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-engine-lib/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-engine-spi/0.10.0-SNAPSHOT, Apache-2.0, approved, technology.edc
