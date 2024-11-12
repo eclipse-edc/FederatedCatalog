@@ -18,7 +18,9 @@
       "dcat:distribution": [
       ],
       "id": "normal-asset-a873f2be-295e-4d03-af1c-0e15c1363627"
-    },
+    }
+  ],
+  "dcat:catalog": [
     {
       "@id": "catalog-asset-5a7482bd-a2a8-4248-a8fa-353cb1d14df7",
       "@type": "dcat:Catalog",

@@ -25,12 +25,11 @@ import org.eclipse.edc.transform.spi.TransformerContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_CATALOG_TYPE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_CATALOG_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_DATASET_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_DATA_SERVICE_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_DISTRIBUTION_TYPE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DSPACE_PROPERTY_PARTICIPANT_ID_IRI;
-import static org.eclipse.edc.jsonld.spi.TypeUtil.nodeType;
 
 /**
  * Converts from a DCAT catalog as a {@link JsonObject} in JSON-LD expanded form to a {@link Catalog}.
@@ -52,8 +51,7 @@ public class JsonObjectToCatalogTransformer extends AbstractJsonLdTransformer<Js
     }
 
     private @Nullable Dataset transformDataset(JsonValue datasetJsonObj, TransformerContext context) {
-        var clazz = DCAT_CATALOG_TYPE.equals(nodeType(datasetJsonObj.asJsonObject())) ? Catalog.class : Dataset.class;
-        return context.transform(datasetJsonObj.asJsonObject(), clazz);
+        return transformObject(datasetJsonObj, Dataset.class, context);
     }
 
     private void transformProperties(String key, JsonValue value, Catalog.Builder builder, TransformerContext context) {
@@ -65,6 +63,8 @@ public class JsonObjectToCatalogTransformer extends AbstractJsonLdTransformer<Js
             } else {
                 builder.dataset(transformDataset(value, context));
             }
+        } else if (DCAT_CATALOG_ATTRIBUTE.equalsIgnoreCase(key)) {
+            transformArrayOrObject(value, Catalog.class, builder::dataset, context);
         } else if (DCAT_DATA_SERVICE_ATTRIBUTE.equalsIgnoreCase(key)) {
             transformArrayOrObject(value, DataService.class, builder::dataService, context);
         } else if (DSPACE_PROPERTY_PARTICIPANT_ID_IRI.equalsIgnoreCase(key)) {
