@@ -18,6 +18,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.connector.controlplane.catalog.spi.DataService;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Distribution;
@@ -32,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.catalog.transform.TestInput.getExpanded;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_CATALOG_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_CATALOG_TYPE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_DATASET_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_DATA_SERVICE_ATTRIBUTE;
@@ -136,6 +138,65 @@ class JsonObjectToCatalogTransformerTest {
         verify(context, never()).reportProblem(anyString());
         verify(context, times(1)).transform(isA(JsonObject.class), eq(Dataset.class));
         verify(context, times(1)).transform(isA(JsonObject.class), eq(DataService.class));
+    }
+
+    @Test
+    void transform_subCatalog_returnCatalog() {
+        var datasetJson = getJsonObject("dataset");
+        var dataServiceJson = getJsonObject("dataService");
+
+        var dataset = Dataset.Builder.newInstance()
+                .offer("offerId", Policy.Builder.newInstance().build())
+                .distribution(Distribution.Builder.newInstance()
+                        .format("format")
+                        .dataService(DataService.Builder.newInstance().build())
+                        .build())
+                .build();
+        var dataService = DataService.Builder.newInstance().build();
+
+
+        var subCatalog = Catalog.Builder.newInstance()
+                .id(CATALOG_ID + "-sub")
+                .dataService(dataService)
+                .dataset(dataset)
+                .build();
+
+        var subCatalogJson = jsonFactory.createObjectBuilder()
+                .add(ID, CATALOG_ID + "-sub")
+                .add(TYPE, DCAT_CATALOG_TYPE)
+                .add(DCAT_DATASET_ATTRIBUTE, datasetJson)
+                .add(DCAT_DATA_SERVICE_ATTRIBUTE, dataServiceJson)
+                .build();
+
+        when(context.transform(any(JsonObject.class), eq(Dataset.class)))
+                .thenReturn(dataset);
+        when(context.transform(any(JsonObject.class), eq(DataService.class)))
+                .thenReturn(dataService);
+
+        when(context.transform(any(JsonObject.class), eq(Catalog.class)))
+                .thenAnswer(args -> transformer.transform(args.getArgument(0), context));
+
+        var catalog = jsonFactory.createObjectBuilder()
+                .add(ID, CATALOG_ID)
+                .add(TYPE, DCAT_CATALOG_TYPE)
+                .add(DCAT_DATASET_ATTRIBUTE, datasetJson)
+                .add(DCAT_CATALOG_ATTRIBUTE, subCatalogJson)
+                .add(DCAT_DATA_SERVICE_ATTRIBUTE, dataServiceJson)
+                .build();
+
+        var result = transformer.transform(getExpanded(catalog), context);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(CATALOG_ID);
+        assertThat(result.getDatasets()).hasSize(2);
+        assertThat(result.getDatasets()).contains(dataset);
+        assertThat(result.getDatasets()).usingRecursiveFieldByFieldElementComparator().contains(subCatalog);
+        assertThat(result.getDataServices()).hasSize(1);
+        assertThat(result.getDataServices().get(0)).isEqualTo(dataService);
+
+        verify(context, never()).reportProblem(anyString());
+        verify(context, times(2)).transform(isA(JsonObject.class), eq(Dataset.class));
+        verify(context, times(2)).transform(isA(JsonObject.class), eq(DataService.class));
     }
 
     @Test

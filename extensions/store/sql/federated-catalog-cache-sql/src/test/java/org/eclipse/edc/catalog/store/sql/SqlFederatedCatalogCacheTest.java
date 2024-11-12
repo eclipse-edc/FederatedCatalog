@@ -20,7 +20,7 @@ import org.eclipse.edc.catalog.store.sql.schema.postgres.PostgresDialectStatemen
 import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
 import org.eclipse.edc.json.JacksonTypeManager;
-import org.eclipse.edc.junit.annotations.ComponentTest;
+import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.sql.testfixtures.PostgresqlStoreSetupExtension;
@@ -30,7 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.IOException;
 
-@ComponentTest
+@PostgresqlIntegrationTest
 @ExtendWith(PostgresqlStoreSetupExtension.class)
 public class SqlFederatedCatalogCacheTest extends FederatedCatalogCacheTestBase {
 
