@@ -81,8 +81,8 @@ _None_
 
 | Key                                         | Required | Type     | Default   | Pattern | Min | Max | Description               |
 | ------------------------------------------- | -------- | -------- | --------- | ------- | --- | --- | ------------------------- |
-| ~~edc.datasource.federatedcatalog.name~~    |          | `string` | ``        |         |     |     |                           |
-| `edc.sql.store.federatedcatalog.datasource` |          | `string` | `default` |         |     |     | The datasource to be used |
+| ~~edc.datasource.federatedcatalog.name~~    | `*`      | `string` | ``        |         |     |     |                           |
+| `edc.sql.store.federatedcatalog.datasource` | `*`      | `string` | `default` |         |     |     | The datasource to be used |
 
 #### Provided services
 - `org.eclipse.edc.catalog.spi.FederatedCatalogCache`
@@ -115,9 +115,9 @@ _None_
 
 | Key                                          | Required | Type     | Default | Pattern | Min | Max | Description                                                                                                     |
 | -------------------------------------------- | -------- | -------- | ------- | ------- | --- | --- | --------------------------------------------------------------------------------------------------------------- |
-| `edc.catalog.cache.execution.period.seconds` |          | `string` | ``      |         |     |     | The time to elapse between two crawl runs                                                                       |
-| `edc.catalog.cache.partition.num.crawlers`   |          | `string` | ``      |         |     |     | The number of crawlers (execution threads) that should be used. The engine will re-use crawlers when necessary. |
-| `edc.catalog.cache.execution.delay.seconds`  |          | `string` | ``      |         |     |     | The initial delay for the cache crawler engine                                                                  |
+| `edc.catalog.cache.execution.period.seconds` | `*`      | `string` | ``      |         |     |     | The time to elapse between two crawl runs                                                                       |
+| `edc.catalog.cache.partition.num.crawlers`   | `*`      | `string` | ``      |         |     |     | The number of crawlers (execution threads) that should be used. The engine will re-use crawlers when necessary. |
+| `edc.catalog.cache.execution.delay.seconds`  | `*`      | `string` | ``      |         |     |     | The initial delay for the cache crawler engine                                                                  |
 
 #### Provided services
 - `org.eclipse.edc.catalog.spi.FederatedCatalogCache`
@@ -138,7 +138,7 @@ _None_
 
 | Key                                   | Required | Type     | Default | Pattern | Min | Max | Description |
 | ------------------------------------- | -------- | -------- | ------- | ------- | --- | --- | ----------- |
-| `edc.catalog.cache.execution.enabled` |          | `string` | ``      |         |     |     |             |
+| `edc.catalog.cache.execution.enabled` | `*`      | `string` | ``      |         |     |     |             |
 
 #### Provided services
 - `org.eclipse.edc.crawler.spi.CrawlerActionRegistry`
@@ -187,7 +187,7 @@ _None_
 
 | Key                                            | Required | Type     | Default   | Pattern | Min | Max | Description               |
 | ---------------------------------------------- | -------- | -------- | --------- | ------- | --- | --- | ------------------------- |
-| `edc.sql.store.targetnodedirectory.datasource` |          | `string` | `default` |         |     |     | The datasource to be used |
+| `edc.sql.store.targetnodedirectory.datasource` | `*`      | `string` | `default` |         |     |     | The datasource to be used |
 
 #### Provided services
 - `org.eclipse.edc.crawler.spi.TargetNodeDirectory`
