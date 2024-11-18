@@ -47,12 +47,13 @@ public class FederatedCatalogDefaultServicesExtension implements ServiceExtensio
 
     public static final String NAME = "Federated Catalog Default Services";
 
-    @Setting("The time to elapse between two crawl runs")
-    public static final String EXECUTION_PLAN_PERIOD_SECONDS = "edc.catalog.cache.execution.period.seconds";
-    @Setting("The number of crawlers (execution threads) that should be used. The engine will re-use crawlers when necessary.")
-    public static final String NUM_CRAWLER_SETTING = "edc.catalog.cache.partition.num.crawlers";
-    @Setting("The initial delay for the cache crawler engine")
-    public static final String EXECUTION_PLAN_DELAY_SECONDS = "edc.catalog.cache.execution.delay.seconds";
+    @Setting(description = "The time to elapse between two crawl runs", key = "edc.catalog.cache.execution.period.seconds", defaultValue = DEFAULT_EXECUTION_PERIOD_SECONDS + "")
+    private long periodSeconds;
+
+    @Setting(description = "The number of crawlers (execution threads) that should be used. The engine will re-use crawlers when necessary.", key = "edc.catalog.cache.partition.num.crawlers", defaultValue = DEFAULT_NUMBER_OF_CRAWLERS+"")
+    private int numCrawlers;
+    @Setting(description = "The initial delay for the cache crawler engine", key = "edc.catalog.cache.execution.delay.seconds", required = false)
+    private Integer delaySeconds;
 
     @Inject
     private FederatedCatalogCache store;
@@ -79,23 +80,20 @@ public class FederatedCatalogDefaultServicesExtension implements ServiceExtensio
 
     @Provider(isDefault = true)
     public ExecutionPlan createRecurringExecutionPlan(ServiceExtensionContext context) {
-        var periodSeconds = context.getSetting(EXECUTION_PLAN_PERIOD_SECONDS, DEFAULT_EXECUTION_PERIOD_SECONDS);
-        var setting = context.getSetting(EXECUTION_PLAN_DELAY_SECONDS, null);
         int initialDelaySeconds;
-        if ("random".equals(setting) || setting == null) {
+        if ( delaySeconds == null) {
             initialDelaySeconds = randomSeconds();
         } else {
             try {
-                initialDelaySeconds = Integer.parseInt(setting);
+                initialDelaySeconds = delaySeconds;
             } catch (NumberFormatException ex) {
                 initialDelaySeconds = 0;
             }
         }
         var monitor = context.getMonitor();
         if (periodSeconds < LOW_EXECUTION_PERIOD_SECONDS_THRESHOLD) {
-            var crawlers = context.getSetting(NUM_CRAWLER_SETTING, DEFAULT_NUMBER_OF_CRAWLERS);
             monitor.warning(format("An execution period of %d seconds is very low (threshold = %d). This might result in the work queue to be ever growing." +
-                    " A longer execution period or more crawler threads (currently using %d) should be considered.", periodSeconds, LOW_EXECUTION_PERIOD_SECONDS_THRESHOLD, crawlers));
+                    " A longer execution period or more crawler threads (currently using %d) should be considered.", periodSeconds, LOW_EXECUTION_PERIOD_SECONDS_THRESHOLD, numCrawlers));
         }
         return new RecurringExecutionPlan(Duration.ofSeconds(periodSeconds), Duration.ofSeconds(initialDelaySeconds), monitor);
     }

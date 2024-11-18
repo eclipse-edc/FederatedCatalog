@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.util.Map;
+import java.util.HashMap;
 
 import static io.restassured.RestAssured.given;
 import static org.awaitility.Awaitility.await;
@@ -55,16 +55,22 @@ public class BomSmokeTests {
         @RegisterExtension
         protected RuntimeExtension runtime =
                 new RuntimePerMethodExtension(new EmbeddedRuntime("fc-dcp-bom",
-                        Map.of(
-                                "edc.iam.sts.oauth.token.url", "https://sts.com/token",
-                                "edc.iam.sts.oauth.client.id", "test-clientid",
-                                "edc.iam.sts.oauth.client.secret.alias", "test-alias",
-                                "web.http.port", "8080",
-                                "web.http.path", "/api",
-                                "web.http.catalog.port", "8081",
-                                "web.http.catalog.path", "/api/catalog",
-                                "edc.catalog.cache.execution.period.seconds", "5",
-                                "edc.catalog.cache.execution.delay.seconds", "0"),
+                        new HashMap<>() {
+                            {
+                                put("edc.iam.sts.oauth.token.url", "https://sts.com/token");
+                                put("edc.iam.sts.oauth.client.id", "test-clientid");
+                                put("edc.iam.sts.oauth.client.secret.alias", "test-alias");
+                                put("web.http.port", "8080");
+                                put("web.http.path", "/api");
+                                put("web.http.catalog.port", "8081");
+                                put("web.http.catalog.path", "/api/catalog");
+                                put("edc.catalog.cache.execution.period.seconds", "5");
+                                put("edc.iam.issuer.id", "did:web:testparticipant");
+                                put("edc.iam.sts.privatekey.alias", "private-alias");
+                                put("edc.iam.sts.publickey.id", "public-key-id");
+                                put("edc.catalog.cache.execution.delay.seconds", "0");
+                            }
+                        },
                         ":dist:bom:federatedcatalog-dcp-bom"
                 ));
     }

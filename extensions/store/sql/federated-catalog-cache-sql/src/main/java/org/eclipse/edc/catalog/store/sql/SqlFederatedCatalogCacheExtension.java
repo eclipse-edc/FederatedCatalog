@@ -35,11 +35,8 @@ import org.eclipse.edc.transaction.spi.TransactionContext;
 @Extension(value = "SQL federated catalog cache")
 public class SqlFederatedCatalogCacheExtension implements ServiceExtension {
 
-    @Deprecated(since = "0.8.1")
-    @Setting
-    public static final String DATASOURCE_SETTING_NAME = "edc.datasource.federatedcatalog.name";
-    @Setting(value = "The datasource to be used", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE)
-    public static final String DATASOURCE_NAME = "edc.sql.store.federatedcatalog.datasource";
+    @Setting(description = "The datasource to be used", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE, key= "edc.sql.store.federatedcatalog.datasource")
+    private String dataSourceName;
 
     @Inject
     private DataSourceRegistry dataSourceRegistry;
@@ -59,7 +56,6 @@ public class SqlFederatedCatalogCacheExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         typeManager.registerTypes(Catalog.class, Dataset.class);
-        var dataSourceName = getDataSourceName(context);
         var store = new SqlFederatedCatalogCache(dataSourceRegistry, dataSourceName, trxContext,
                 typeManager.getMapper(), queryExecutor, getStatementImpl());
         context.registerService(FederatedCatalogCache.class, store);
@@ -73,7 +69,4 @@ public class SqlFederatedCatalogCacheExtension implements ServiceExtension {
         return statements != null ? statements : new PostgresDialectStatements();
     }
 
-    private String getDataSourceName(ServiceExtensionContext context) {
-        return DataSourceName.getDataSourceName(DATASOURCE_NAME, DATASOURCE_SETTING_NAME, context.getConfig(), context.getMonitor());
-    }
 }
