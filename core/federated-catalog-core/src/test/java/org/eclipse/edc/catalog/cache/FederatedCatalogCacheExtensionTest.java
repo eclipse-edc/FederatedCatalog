@@ -27,7 +27,7 @@ import org.eclipse.edc.crawler.spi.model.RecurringExecutionPlan;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.configuration.Config;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.edc.spi.system.health.HealthCheckService;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,18 +36,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.eclipse.edc.catalog.cache.FederatedCatalogCacheExtension.CRAWLING_ENABLED_PROPERTY;
 import static org.eclipse.edc.catalog.test.TestUtil.TEST_PROTOCOL;
 import static org.eclipse.edc.catalog.test.TestUtil.createCatalog;
 import static org.eclipse.edc.catalog.test.TestUtil.createNode;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -86,7 +84,6 @@ class FederatedCatalogCacheExtensionTest {
         extension.initialize(context);
 
         verify(context, atLeastOnce()).getMonitor();
-        verify(context).getSetting("edc.catalog.cache.partition.num.crawlers", 2);
     }
 
     @Test
@@ -102,8 +99,7 @@ class FederatedCatalogCacheExtensionTest {
 
     @Test
     void initialize_withDisabledExecution(ServiceExtensionContext context, ObjectFactory factory) {
-        var mockedConfig = mock(Config.class);
-        when(mockedConfig.getBoolean(eq(CRAWLING_ENABLED_PROPERTY), anyBoolean())).thenReturn(false);
+        var mockedConfig = ConfigFactory.fromMap(Map.of("edc.catalog.cache.execution.enabled", Boolean.FALSE.toString()));
         when(context.getConfig()).thenReturn(mockedConfig);
         var mockedPlan = mock(ExecutionPlan.class);
         context.registerService(ExecutionPlan.class, mockedPlan);
@@ -114,7 +110,6 @@ class FederatedCatalogCacheExtensionTest {
         extension.start();
 
         verifyNoInteractions(mockedPlan);
-
     }
 
     @Test

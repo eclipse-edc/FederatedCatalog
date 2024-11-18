@@ -21,13 +21,11 @@ import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.catalog.store.sql.SqlTargetNodeDirectoryExtension.DATASOURCE_NAME;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -56,6 +54,5 @@ public class SqlTargetNodeDirectoryExtensionTest {
         assertThat(service).isInstanceOf(SqlTargetNodeDirectory.class);
 
         verify(typeManager).registerTypes(TargetNode.class);
-        verify(config).getString(DATASOURCE_NAME, DataSourceRegistry.DEFAULT_DATASOURCE);
     }
 }

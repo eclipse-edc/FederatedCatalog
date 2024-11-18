@@ -56,7 +56,6 @@ import org.eclipse.edc.transform.transformer.edc.to.JsonValueToGenericTypeTransf
 import java.util.Map;
 
 import static java.util.Optional.ofNullable;
-import static org.eclipse.edc.catalog.cache.FederatedCatalogDefaultServicesExtension.NUM_CRAWLER_SETTING;
 import static org.eclipse.edc.catalog.spi.CacheSettings.DEFAULT_NUMBER_OF_CRAWLERS;
 import static org.eclipse.edc.catalog.spi.CatalogConstants.DATASPACE_PROTOCOL;
 import static org.eclipse.edc.protocol.dsp.spi.type.DspConstants.DSP_TRANSFORMER_CONTEXT_V_08;
@@ -67,8 +66,11 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
 
     public static final String NAME = "Federated Catalog Cache";
 
-    @Setting
-    public static final String CRAWLING_ENABLED_PROPERTY = "edc.catalog.cache.execution.enabled";
+    @Setting(description = "Determines whether catalog crawling is globally enabled or disabled", key = "edc.catalog.cache.execution.enabled", defaultValue = "true")
+    private boolean executionEnabled;
+
+    @Setting(description = "The number of crawlers (execution threads) that should be used. The engine will re-use crawlers when necessary.", key = "edc.catalog.cache.partition.num.crawlers", defaultValue = DEFAULT_NUMBER_OF_CRAWLERS + "")
+    private int numCrawlers;
 
     @Inject
     private FederatedCatalogCache store;
@@ -112,12 +114,8 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
         if (healthCheckService != null) {
             healthCheckService.addReadinessProvider(() -> HealthCheckResult.Builder.newInstance().component("Crawler Subsystem").build());
         }
-        int numCrawlers = context.getSetting(NUM_CRAWLER_SETTING, DEFAULT_NUMBER_OF_CRAWLERS);
-
         // by default only uses FC nodes that are not "self"
         nodeFilter = ofNullable(nodeFilter).orElse(node -> !node.name().equals(context.getRuntimeId()));
-
-        var isEnabled = context.getConfig().getBoolean(CRAWLING_ENABLED_PROPERTY, true);
 
         executionManager = ExecutionManager.Builder.newInstance()
                 .monitor(context.getMonitor().withPrefix("ExecutionManager"))
@@ -130,7 +128,7 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
                 .onSuccess(this::persist)
                 .nodeDirectory(directory)
                 .nodeFilterFunction(nodeFilter)
-                .isEnabled(isEnabled)
+                .isEnabled(executionEnabled)
                 .build();
 
         registerTransformers(context);
