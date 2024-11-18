@@ -33,7 +33,7 @@ import org.eclipse.edc.transaction.spi.TransactionContext;
 @Extension(value = "SQL target node directory")
 public class SqlTargetNodeDirectoryExtension implements ServiceExtension {
 
-    @Setting(description = "The datasource to be used", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE, key="edc.sql.store.targetnodedirectory.datasource")
+    @Setting(description = "The datasource to be used", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE, key = "edc.sql.store.targetnodedirectory.datasource")
     private String dataSourceName;
 
     @Inject

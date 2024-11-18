@@ -66,10 +66,10 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
 
     public static final String NAME = "Federated Catalog Cache";
 
-    @Setting(description = "Determines whether catalog crawling is globally enabled or disabled", key= "edc.catalog.cache.execution.enabled", defaultValue = "true")
+    @Setting(description = "Determines whether catalog crawling is globally enabled or disabled", key = "edc.catalog.cache.execution.enabled", defaultValue = "true")
     private boolean executionEnabled;
 
-    @Setting(description = "The number of crawlers (execution threads) that should be used. The engine will re-use crawlers when necessary.", key = "edc.catalog.cache.partition.num.crawlers", defaultValue = DEFAULT_NUMBER_OF_CRAWLERS+"")
+    @Setting(description = "The number of crawlers (execution threads) that should be used. The engine will re-use crawlers when necessary.", key = "edc.catalog.cache.partition.num.crawlers", defaultValue = DEFAULT_NUMBER_OF_CRAWLERS + "")
     private int numCrawlers;
 
     @Inject
