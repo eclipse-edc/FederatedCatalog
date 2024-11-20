@@ -23,6 +23,7 @@ import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDatasetTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDistributionTransformer;
+import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.connector.controlplane.transform.odrl.from.JsonObjectFromPolicyTransformer;
 import org.eclipse.edc.connector.core.agent.NoOpParticipantIdMapper;
 import org.eclipse.edc.crawler.spi.TargetNode;
@@ -182,19 +183,31 @@ class FederatedCatalogTest {
                 .pollInterval(ofSeconds(1))
                 .atMost(TIMEOUT)
                 .untilAsserted(() -> {
-                    var catalogs = apiClient.getContractOffers();
 
-                    assertThat(catalogs).hasSizeGreaterThanOrEqualTo(1);
-                    assertThat(catalogs).anySatisfy(catalog -> assertThat(catalog.getDatasets())
-                            .anySatisfy(dataset -> {
-                                assertThat(dataset.getOffers()).hasSizeGreaterThanOrEqualTo(1);
-                                assertThat(dataset.getOffers().keySet()).anyMatch(key -> key.contains(assetIdBase64));
-                            }));
+                    // With empty query
+                    var emptyQuery = TestFunctions.createEmptyQuery();
+                    var catalogs = apiClient.getCatalogs(emptyQuery);
 
+                    assertCatalogContainsOffer(assetIdBase64, catalogs);
+
+                    // With query containing a filter expression for existing asset.
+                    var queryWithExistingAssetId = TestFunctions.createQuerySpecWithFilterExpressionForAssetId(id);
+                    catalogs = apiClient.getCatalogs(queryWithExistingAssetId);
+
+                    assertCatalogContainsOffer(assetIdBase64, catalogs);
                 });
     }
 
     private String getError(Result<String> r) {
         return ofNullable(r.getFailureDetail()).orElse("No error");
+    }
+
+    private void assertCatalogContainsOffer(String assetIdBase64, List<Catalog> catalogs) {
+        assertThat(catalogs).hasSizeGreaterThanOrEqualTo(1);
+        assertThat(catalogs).anySatisfy(catalog -> assertThat(catalog.getDatasets())
+                .anySatisfy(dataset -> {
+                    assertThat(dataset.getOffers()).hasSizeGreaterThanOrEqualTo(1);
+                    assertThat(dataset.getOffers().keySet()).anyMatch(key -> key.contains(assetIdBase64));
+                }));
     }
 }

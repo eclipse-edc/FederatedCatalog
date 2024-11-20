@@ -67,8 +67,8 @@ class CatalogApiClient {
         return postObjectWithId(createPostRequest(definition, managementBaseUrl + "/v3/contractdefinitions"));
     }
 
-    List<Catalog> getContractOffers() {
-        var rq = createPostRequest(TestFunctions.createEmptyQuery(), catalog("/v1alpha/catalog/query"));
+    List<Catalog> getCatalogs(JsonObject querySpec) {
+        var rq = createPostRequest(querySpec, catalog("/v1alpha/catalog/query"));
 
         try (var response = getClient().newCall(rq).execute()) {
             if (response.isSuccessful()) {
