@@ -35,6 +35,7 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileContentAsString;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_PREFIX;
+import static org.eclipse.edc.spi.query.QuerySpec.EDC_QUERY_SPEC_FILTER_EXPRESSION;
 
 public class TestFunctions {
 
@@ -60,7 +61,7 @@ public class TestFunctions {
                 .add(ID, id)
                 .add(CONTRACT_DEFINITION_ACCESSPOLICY_ID, accessPolicyId)
                 .add(CONTRACT_DEFINITION_CONTRACTPOLICY_ID, contractPolicyId)
-                .add(CONTRACT_DEFINITION_ASSETS_SELECTOR, createCriterionBuilder(assetId).build())
+                .add(CONTRACT_DEFINITION_ASSETS_SELECTOR, createCriterionBuilder(Asset.PROPERTY_ID, "=", assetId).build())
                 .build();
     }
 
@@ -70,13 +71,21 @@ public class TestFunctions {
                 .build();
     }
 
-    private static JsonArrayBuilder createCriterionBuilder(String assetId) {
+    public static JsonObject createQuerySpecWithFilterExpressionForAssetId(String id) {
+        return Json.createObjectBuilder()
+                .add(TYPE, QuerySpec.EDC_QUERY_SPEC_TYPE)
+                .add(EDC_QUERY_SPEC_FILTER_EXPRESSION, createCriterionBuilder("datasets.id", "=", id))
+                .build();
+    }
+
+
+    private static JsonArrayBuilder createCriterionBuilder(String operandLeft, String operator, String operandRight) {
         return Json.createArrayBuilder()
                 .add(Json.createObjectBuilder()
-                        .add(TYPE, EDC_NAMESPACE + "CriterionDto")
-                        .add(EDC_NAMESPACE + "operandLeft", Asset.PROPERTY_ID)
-                        .add(EDC_NAMESPACE + "operator", "=")
-                        .add(EDC_NAMESPACE + "operandRight", assetId)
+                        .add(TYPE, EDC_NAMESPACE + "Criterion")
+                        .add(EDC_NAMESPACE + "operandLeft", operandLeft)
+                        .add(EDC_NAMESPACE + "operator", operator)
+                        .add(EDC_NAMESPACE + "operandRight", operandRight)
                 );
     }
 

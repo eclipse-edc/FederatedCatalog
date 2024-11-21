@@ -50,6 +50,7 @@ import org.eclipse.edc.spi.system.health.HealthCheckResult;
 import org.eclipse.edc.spi.system.health.HealthCheckService;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
+import org.eclipse.edc.transform.transformer.edc.to.JsonObjectToCriterionTransformer;
 import org.eclipse.edc.transform.transformer.edc.to.JsonObjectToQuerySpecTransformer;
 import org.eclipse.edc.transform.transformer.edc.to.JsonValueToGenericTypeTransformer;
 
@@ -156,6 +157,7 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
         transformerRegistry.register(new JsonObjectToDataServiceTransformer());
         transformerRegistry.register(new JsonObjectToDistributionTransformer());
         transformerRegistry.register(new JsonObjectToQuerySpecTransformer());
+        transformerRegistry.register(new JsonObjectToCriterionTransformer());
 
         var jsonFactory = Json.createBuilderFactory(Map.of());
         var mapper = context.getService(TypeManager.class).getMapper(JSON_LD);
