@@ -18,12 +18,12 @@ plugins {
 
 dependencies {
     api(project(":spi:federated-catalog-spi"))
-    implementation(libs.edc.sql.core) // for the SqlStatements
+    implementation(libs.edc.lib.sql)
     implementation(libs.edc.sql.bootstrapper)
     implementation(libs.edc.spi.transaction.datasource)
     implementation(libs.edc.lib.util)
 
     testImplementation(libs.edc.junit)
-    testImplementation(testFixtures(libs.edc.sql.core))
+    testImplementation(testFixtures(libs.edc.sql.test.fixtures))
     testImplementation(testFixtures(project(":spi:federated-catalog-spi")))
 }
