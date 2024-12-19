@@ -27,8 +27,8 @@ Module `crawler-spi`
 **Categories:** _None_
 
 ### Extension points
-  - `org.eclipse.edc.crawler.spi.TargetNodeDirectory`
   - `org.eclipse.edc.crawler.spi.TargetNodeFilter`
+  - `org.eclipse.edc.crawler.spi.TargetNodeDirectory`
 
 ### Extensions
 Module `federated-catalog-api`
@@ -47,7 +47,12 @@ _None_
 **Overview:** No overview provided.
 
 
-### Configuration_None_
+### Configuration
+
+| Key                     | Required | Type     | Default        | Pattern | Min | Max | Description |
+| ----------------------- | -------- | -------- | -------------- | ------- | --- | --- | ----------- |
+| `web.http.catalog.port` | `*`      | `string` | `17171`        |         |     |     |             |
+| `web.http.catalog.path` | `*`      | `string` | `/api/catalog` |         |     |     |             |
 
 #### Provided services
 _None_
@@ -60,6 +65,7 @@ _None_
 - `org.eclipse.edc.spi.types.TypeManager` (required)
 - `org.eclipse.edc.transform.spi.TypeTransformerRegistry` (required)
 - `org.eclipse.edc.spi.system.apiversion.ApiVersionService` (required)
+- `org.eclipse.edc.web.spi.configuration.PortMappingRegistry` (required)
 
 Module `federated-catalog-cache-sql`
 ------------------------------------
