@@ -7,7 +7,7 @@ edc = "0.11.0-SNAPSHOT"
 restAssured = "5.5.0"
 jackson = "2.18.2"
 jupiter = "5.11.3"
-assertj = "3.26.3"
+assertj = "3.27.0"
 postgres = "42.7.4"
 
 [libraries]
