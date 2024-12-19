@@ -75,10 +75,12 @@ import static org.mockito.Mockito.when;
 
 @ComponentTest
 public class CatalogRuntimeComponentTest {
+
     public static final String TEST_CATALOG_ID = "test-catalog-id";
     private static final Duration TEST_TIMEOUT = ofSeconds(10);
     private static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
     private static final JsonLd JSON_LD_SERVICE = new TitaniumJsonLd(mock());
+
     @RegisterExtension
     protected static RuntimeExtension runtimePerClassExtension = new RuntimePerMethodExtension(new EmbeddedRuntime("catalog", Map.of(
             // make sure only one crawl-run is performed
