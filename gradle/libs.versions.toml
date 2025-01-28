@@ -63,6 +63,7 @@ restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssu
 # EDC libs
 edc-lib-boot = { module = "org.eclipse.edc:boot-lib", version.ref = "edc" }
 edc-lib-jerseyproviders = { module = "org.eclipse.edc:jersey-providers-lib", version.ref = "edc" }
+edc-lib-json = { module = "org.eclipse.edc:json-lib", version.ref = "edc" }
 edc-lib-providers-jersey = { module = "org.eclipse.edc:jersey-providers-lib", version.ref = "edc" }
 edc-lib-query = { module = "org.eclipse.edc:query-lib", version.ref = "edc" }
 edc-lib-sql = { module = "org.eclipse.edc:sql-lib", version.ref = "edc" }

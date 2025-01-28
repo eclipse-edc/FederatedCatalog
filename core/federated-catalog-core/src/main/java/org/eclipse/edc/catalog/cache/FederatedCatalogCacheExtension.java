@@ -160,16 +160,15 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
         transformerRegistry.register(new JsonObjectToCriterionTransformer());
 
         var jsonFactory = Json.createBuilderFactory(Map.of());
-        var mapper = context.getService(TypeManager.class).getMapper(JSON_LD);
         var participantIdMapper = new NoOpParticipantIdMapper();
-        transformerRegistry.register(new JsonObjectFromCatalogTransformer(jsonFactory, mapper, participantIdMapper));
-        transformerRegistry.register(new JsonObjectFromDatasetTransformer(jsonFactory, mapper));
+        transformerRegistry.register(new JsonObjectFromCatalogTransformer(jsonFactory, typeManager, JSON_LD, participantIdMapper));
+        transformerRegistry.register(new JsonObjectFromDatasetTransformer(jsonFactory, typeManager, JSON_LD));
         transformerRegistry.register(new JsonObjectFromDistributionTransformer(jsonFactory));
         transformerRegistry.register(new JsonObjectFromDataServiceTransformer(jsonFactory));
 
         transformerRegistry.register(new JsonObjectFromPolicyTransformer(jsonFactory, participantIdMapper));
         transformerRegistry.register(new JsonObjectToPolicyTransformer(participantIdMapper));
-        transformerRegistry.register(new JsonValueToGenericTypeTransformer(mapper));
+        transformerRegistry.register(new JsonValueToGenericTypeTransformer(typeManager, JSON_LD));
     }
 
     /**

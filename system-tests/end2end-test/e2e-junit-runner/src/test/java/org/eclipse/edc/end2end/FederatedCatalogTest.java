@@ -14,7 +14,6 @@
 
 package org.eclipse.edc.end2end;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.json.Json;
 import org.eclipse.edc.catalog.directory.InMemoryNodeDirectory;
@@ -28,6 +27,7 @@ import org.eclipse.edc.connector.controlplane.transform.odrl.from.JsonObjectFrom
 import org.eclipse.edc.connector.core.agent.NoOpParticipantIdMapper;
 import org.eclipse.edc.crawler.spi.TargetNode;
 import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
@@ -41,6 +41,7 @@ import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDataset
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDistributionTransformer;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.transform.TypeTransformerRegistryImpl;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.transform.transformer.edc.to.JsonValueToGenericTypeTransformer;
@@ -63,6 +64,7 @@ import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.transform.odrl.OdrlTransformersFactory.jsonObjectToOdrlTransformers;
 import static org.eclipse.edc.end2end.TestFunctions.createContractDef;
 import static org.eclipse.edc.end2end.TestFunctions.createPolicy;
+import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.mockito.Mockito.mock;
 
@@ -117,8 +119,8 @@ class FederatedCatalogTest {
                     "edc.web.rest.cors.headers", "origin,content-type,accept,authorization,x-api-key"),
             ":launchers:catalog-mocked"));
     private final TypeTransformerRegistry typeTransformerRegistry = new TypeTransformerRegistryImpl();
-    private final ObjectMapper mapper = JacksonJsonLd.createObjectMapper();
-    private final CatalogApiClient apiClient = new CatalogApiClient(CATALOG_CATALOG, CONNECTOR_MANAGEMENT, mapper, new TitaniumJsonLd(mock(Monitor.class)), typeTransformerRegistry);
+    private final TypeManager mapper = new JacksonTypeManager();
+    private final CatalogApiClient apiClient = new CatalogApiClient(CATALOG_CATALOG, CONNECTOR_MANAGEMENT, JacksonJsonLd.createObjectMapper(), new TitaniumJsonLd(mock(Monitor.class)), typeTransformerRegistry);
 
     private static Map<String, String> configOf(String... keyValuePairs) {
         if (keyValuePairs.length % 2 != 0) {
@@ -135,11 +137,11 @@ class FederatedCatalogTest {
     @BeforeEach
     void setUp() {
         //needed for ZonedDateTime
-        mapper.registerModule(new JavaTimeModule());
+        mapper.getMapper(JSON_LD).registerModule(new JavaTimeModule());
         var factory = Json.createBuilderFactory(Map.of());
         var participantIdMapper = new NoOpParticipantIdMapper();
-        typeTransformerRegistry.register(new JsonObjectFromCatalogTransformer(factory, mapper, participantIdMapper));
-        typeTransformerRegistry.register(new JsonObjectFromDatasetTransformer(factory, mapper));
+        typeTransformerRegistry.register(new JsonObjectFromCatalogTransformer(factory, mapper, JSON_LD, participantIdMapper));
+        typeTransformerRegistry.register(new JsonObjectFromDatasetTransformer(factory, mapper, JSON_LD));
         typeTransformerRegistry.register(new JsonObjectFromDataServiceTransformer(factory));
         typeTransformerRegistry.register(new JsonObjectFromPolicyTransformer(factory, participantIdMapper));
         typeTransformerRegistry.register(new JsonObjectFromDistributionTransformer(factory));
@@ -148,7 +150,7 @@ class FederatedCatalogTest {
         typeTransformerRegistry.register(new JsonObjectToDataServiceTransformer());
         jsonObjectToOdrlTransformers(participantIdMapper).forEach(typeTransformerRegistry::register);
         typeTransformerRegistry.register(new JsonObjectToDistributionTransformer());
-        typeTransformerRegistry.register(new JsonValueToGenericTypeTransformer(mapper));
+        typeTransformerRegistry.register(new JsonValueToGenericTypeTransformer(mapper, JSON_LD));
 
         var directory = new InMemoryNodeDirectory();
         directory.insert(new TargetNode("connector", "did:web:" + UUID.randomUUID(), "http://localhost:%s%s".formatted(CONNECTOR_PROTOCOL.port(), CONNECTOR_PROTOCOL.path()), List.of(CatalogConstants.DATASPACE_PROTOCOL)));

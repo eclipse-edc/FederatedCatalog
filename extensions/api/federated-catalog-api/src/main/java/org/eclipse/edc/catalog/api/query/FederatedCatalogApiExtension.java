@@ -100,8 +100,8 @@ public class FederatedCatalogApiExtension implements ServiceExtension {
         var jsonLdMapper = typeManager.getMapper(JSON_LD);
         var catalogController = new FederatedCatalogApiController(queryService, transformerRegistry);
         webService.registerResource(CATALOG_QUERY, catalogController);
-        webService.registerResource(CATALOG_QUERY, new ObjectMapperProvider(jsonLdMapper));
-        webService.registerResource(CATALOG_QUERY, new JerseyJsonLdInterceptor(jsonLd, jsonLdMapper, CATALOG_QUERY_SCOPE));
+        webService.registerResource(CATALOG_QUERY, new ObjectMapperProvider(typeManager, JSON_LD));
+        webService.registerResource(CATALOG_QUERY, new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, CATALOG_QUERY_SCOPE));
 
         // contribute to the liveness probe
         if (healthCheckService != null) {

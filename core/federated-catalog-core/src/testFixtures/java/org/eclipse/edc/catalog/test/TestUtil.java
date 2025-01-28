@@ -27,7 +27,7 @@ import org.eclipse.edc.connector.controlplane.transform.odrl.from.JsonObjectFrom
 import org.eclipse.edc.connector.controlplane.transform.odrl.to.JsonObjectToPolicyTransformer;
 import org.eclipse.edc.connector.core.agent.NoOpParticipantIdMapper;
 import org.eclipse.edc.crawler.spi.TargetNode;
-import org.eclipse.edc.jsonld.util.JacksonJsonLd;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromCatalogTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDataServiceTransformer;
@@ -42,6 +42,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 
 public class TestUtil {
 
@@ -95,10 +97,10 @@ public class TestUtil {
     // registers all the necessary transformers to avoid duplicating their behaviour in mocks
     public static void registerTransformers(TypeTransformerRegistry typeTransformerRegistry1) {
         var factory = Json.createBuilderFactory(Map.of());
-        var mapper = JacksonJsonLd.createObjectMapper();
+        var typeManager = new JacksonTypeManager();
         var participantIdMapper = new NoOpParticipantIdMapper();
-        typeTransformerRegistry1.register(new JsonObjectFromCatalogTransformer(factory, mapper, participantIdMapper));
-        typeTransformerRegistry1.register(new JsonObjectFromDatasetTransformer(factory, mapper));
+        typeTransformerRegistry1.register(new JsonObjectFromCatalogTransformer(factory, typeManager, JSON_LD, participantIdMapper));
+        typeTransformerRegistry1.register(new JsonObjectFromDatasetTransformer(factory, typeManager, JSON_LD));
         typeTransformerRegistry1.register(new JsonObjectFromDataServiceTransformer(factory));
         typeTransformerRegistry1.register(new JsonObjectFromPolicyTransformer(factory, participantIdMapper));
         typeTransformerRegistry1.register(new JsonObjectFromDistributionTransformer(factory));
