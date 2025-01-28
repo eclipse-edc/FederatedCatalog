@@ -27,6 +27,7 @@ import java.util.HashMap;
 
 import static io.restassured.RestAssured.given;
 import static org.awaitility.Awaitility.await;
+import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.hamcrest.Matchers.equalTo;
 
 
@@ -64,6 +65,7 @@ public class BomSmokeTests {
                                 put("web.http.path", "/api");
                                 put("web.http.catalog.port", "8081");
                                 put("web.http.catalog.path", "/api/catalog");
+                                put("web.http.version.port", String.valueOf(getFreePort()));
                                 put("edc.catalog.cache.execution.period.seconds", "5");
                                 put("edc.iam.issuer.id", "did:web:testparticipant");
                                 put("edc.iam.sts.privatekey.alias", "private-alias");

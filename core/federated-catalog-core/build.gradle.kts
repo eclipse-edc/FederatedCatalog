@@ -41,6 +41,8 @@ dependencies {
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.ext.http)
     testImplementation(libs.awaitility)
+    testFixturesImplementation(libs.edc.lib.json)
+
 
     testImplementation(testFixtures(project(":spi:federated-catalog-spi")))
     testImplementation(testFixtures(project(":spi:crawler-spi")))
