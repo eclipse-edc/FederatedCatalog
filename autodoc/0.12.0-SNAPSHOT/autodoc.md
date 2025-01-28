@@ -27,8 +27,8 @@ Module `crawler-spi`
 **Categories:** _None_
 
 ### Extension points
-  - `org.eclipse.edc.crawler.spi.TargetNodeFilter`
   - `org.eclipse.edc.crawler.spi.TargetNodeDirectory`
+  - `org.eclipse.edc.crawler.spi.TargetNodeFilter`
 
 ### Extensions
 Module `federated-catalog-api`
