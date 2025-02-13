@@ -25,10 +25,10 @@ dependencies {
     implementation(libs.edc.spi.transform)
     implementation(libs.edc.spi.web)
     implementation(libs.edc.lib.jerseyproviders)
-    implementation(libs.edc.core.api) // for the ApiCoreSchema
+    implementation(libs.edc.lib.api)
 
     runtimeOnly(libs.edc.spi.jsonld)
-    runtimeOnly(libs.edc.json.ld.lib)
+    runtimeOnly(libs.edc.lib.json.ld)
 
     // required for integration test
     testImplementation(libs.edc.spi.dsp.http)
@@ -39,7 +39,7 @@ dependencies {
     testImplementation(libs.edc.ext.http)
     testImplementation(libs.restAssured)
     testImplementation(libs.edc.iam.mock)
-    testImplementation(libs.edc.json.ld.lib)
+    testImplementation(libs.edc.lib.json.ld)
     testImplementation(libs.edc.dsp.transform.catalog)
     testImplementation(libs.edc.dsp.transform.catalog.lib)
     testImplementation(testFixtures(libs.edc.core.jersey))
