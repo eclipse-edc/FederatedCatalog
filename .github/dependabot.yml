@@ -20,5 +20,5 @@ updates:
       - "dependencies"
       - "java"
     ignore:
-      - dependency-name: "org.eclipse.edc:edc-versions"
+      - dependency-name: "org.eclipse.edc:*"
 
