@@ -35,7 +35,7 @@ dependencies {
     implementation(libs.edc.lib.transform)
     implementation(libs.edc.dsp.api.configuration)
     implementation(libs.edc.spi.jsonld)
-    implementation(libs.edc.json.ld.lib)
+    implementation(libs.edc.lib.json.ld)
     implementation(libs.edc.lib.store)
 
     testImplementation(libs.edc.junit)
@@ -51,6 +51,6 @@ dependencies {
     testFixturesImplementation(libs.edc.core.connector)
     testFixturesImplementation(libs.edc.dsp.transform.catalog)
     testFixturesImplementation(libs.edc.dsp.transform.catalog.lib)
-    testFixturesImplementation(libs.edc.json.ld.lib)
+    testFixturesImplementation(libs.edc.lib.json.ld)
     testFixturesImplementation(libs.edc.controlplane.transform)
 }

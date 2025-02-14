@@ -25,6 +25,7 @@ dependencies {
     runtimeOnly(libs.edc.spi.jsonld)
 
     runtimeOnly(libs.bundles.edc.connector)
+    runtimeOnly(libs.edc.core.api)
     runtimeOnly(libs.edc.core.controlplane)
     runtimeOnly(libs.edc.core.jetty)
     runtimeOnly(libs.edc.core.token)

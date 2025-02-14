@@ -23,7 +23,7 @@ dependencies {
     testImplementation(libs.edc.spi.jsonld)
     testImplementation(libs.edc.spi.catalog)
     testImplementation(libs.edc.dsp.all)
-    testImplementation(libs.edc.json.ld.lib)
+    testImplementation(libs.edc.lib.json.ld)
     testImplementation(libs.edc.core.jetty)
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.spi.dataplane.selector)

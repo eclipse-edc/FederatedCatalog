@@ -28,7 +28,7 @@ dependencies {
     testImplementation(libs.edc.dsp.transform.catalog)
     testImplementation(libs.edc.dsp.transform.catalog.lib)
     testImplementation(libs.edc.junit)
-    testImplementation(libs.edc.json.ld.lib)
+    testImplementation(libs.edc.lib.json.ld)
     testImplementation(libs.jackson.jsr310)
 }
 
