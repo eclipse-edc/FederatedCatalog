@@ -12,9 +12,9 @@
  *
  */
 
-package org.eclipse.edc.catalog.store.sql;
+package org.eclipse.edc.catalog.directory.sql;
 
-import org.eclipse.edc.catalog.store.sql.schema.postgres.TargetNodeMapping;
+import org.eclipse.edc.catalog.directory.sql.schema.postgres.TargetNodeMapping;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.sql.translation.PostgresqlOperatorTranslator;
 import org.eclipse.edc.sql.translation.SqlQueryStatement;
