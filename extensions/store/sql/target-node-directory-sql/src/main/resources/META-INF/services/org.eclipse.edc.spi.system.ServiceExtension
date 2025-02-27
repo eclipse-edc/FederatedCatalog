@@ -12,4 +12,4 @@
 #
 #
 
-org.eclipse.edc.catalog.store.sql.SqlTargetNodeDirectoryExtension
+org.eclipse.edc.catalog.directory.sql.SqlTargetNodeDirectoryExtension

@@ -12,9 +12,9 @@
  *
  */
 
-package org.eclipse.edc.catalog.store.sql.schema.postgres;
+package org.eclipse.edc.catalog.cache.sql.schema.postgres;
 
-import org.eclipse.edc.catalog.store.sql.FederatedCatalogCacheStatements;
+import org.eclipse.edc.catalog.cache.sql.FederatedCatalogCacheStatements;
 import org.eclipse.edc.sql.translation.JsonFieldTranslator;
 import org.eclipse.edc.sql.translation.TranslationMapping;
 

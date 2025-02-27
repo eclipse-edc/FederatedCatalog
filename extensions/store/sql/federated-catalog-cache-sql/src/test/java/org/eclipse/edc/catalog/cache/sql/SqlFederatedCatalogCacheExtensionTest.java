@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2024 Amadeus IT Group
+ *  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -8,15 +8,16 @@
  *  SPDX-License-Identifier: Apache-2.0
  *
  *  Contributors:
- *       Amadeus IT Group - initial API and implementation
+ *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
  *
  */
 
-package org.eclipse.edc.catalog.store.sql;
+package org.eclipse.edc.catalog.cache.sql;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.edc.crawler.spi.TargetNode;
-import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
+import org.eclipse.edc.catalog.spi.FederatedCatalogCache;
+import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
+import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
@@ -32,7 +33,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(DependencyInjectionExtension.class)
-public class SqlTargetNodeDirectoryExtensionTest {
+public class SqlFederatedCatalogCacheExtensionTest {
 
     private final TypeManager typeManager = mock();
 
@@ -43,16 +44,16 @@ public class SqlTargetNodeDirectoryExtensionTest {
     }
 
     @Test
-    void shouldInitializeTheStore(SqlTargetNodeDirectoryExtension extension, ServiceExtensionContext context) {
+    void shouldInitializeTheStore(SqlFederatedCatalogCacheExtension extension, ServiceExtensionContext context) {
         var config = mock(Config.class);
         when(context.getConfig()).thenReturn(config);
         when(config.getString(any(), any())).thenReturn("test");
 
         extension.initialize(context);
 
-        var service = context.getService(TargetNodeDirectory.class);
-        assertThat(service).isInstanceOf(SqlTargetNodeDirectory.class);
+        var service = context.getService(FederatedCatalogCache.class);
+        assertThat(service).isInstanceOf(SqlFederatedCatalogCache.class);
 
-        verify(typeManager).registerTypes(TargetNode.class);
+        verify(typeManager).registerTypes(Catalog.class, Dataset.class);
     }
 }

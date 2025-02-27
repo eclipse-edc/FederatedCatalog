@@ -12,4 +12,4 @@
 #
 #
 
-org.eclipse.edc.catalog.store.sql.SqlFederatedCatalogCacheExtension
+org.eclipse.edc.catalog.cache.sql.SqlFederatedCatalogCacheExtension

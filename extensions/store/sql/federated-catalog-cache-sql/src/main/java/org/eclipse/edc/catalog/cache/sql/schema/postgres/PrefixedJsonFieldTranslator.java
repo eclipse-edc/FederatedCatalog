@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.edc.catalog.store.sql.schema.postgres;
+package org.eclipse.edc.catalog.cache.sql.schema.postgres;
 
 import org.eclipse.edc.sql.translation.JsonFieldTranslator;
 import org.eclipse.edc.util.reflection.PathItem;
