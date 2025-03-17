@@ -172,7 +172,16 @@ class ExecutionManagerTest {
 
 
     private ExecutionPlan simplePlan() {
-        return Runnable::run;
+        return new ExecutionPlan() {
+            @Override
+            public void run(Runnable task) {
+                task.run();
+            }
+            @Override
+            public void stop() {
+
+            }
+        };
     }
 
     private ExecutionManager createManager() {

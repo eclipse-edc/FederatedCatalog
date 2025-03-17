@@ -17,7 +17,6 @@ package org.eclipse.edc.crawler.spi.model;
 /**
  * Interface for any sort of planned execution of a {@link Runnable} task.
  */
-@FunctionalInterface
 public interface ExecutionPlan {
 
     /**
@@ -27,4 +26,6 @@ public interface ExecutionPlan {
      * @param task A runnable
      */
     void run(Runnable task);
+
+    void stop();
 }
