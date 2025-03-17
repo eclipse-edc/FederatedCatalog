@@ -76,6 +76,10 @@ public class ExecutionManager {
 
     }
 
+    public void shutdownPlan(ExecutionPlan plan) {
+        plan.stop();
+    }
+
     private void doWork() {
         // load work items from directory
         var workItems = fetchWorkItems();

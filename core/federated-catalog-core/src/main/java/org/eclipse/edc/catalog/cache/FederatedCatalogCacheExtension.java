@@ -140,6 +140,11 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
         executionManager.executePlan(executionPlan);
     }
 
+    @Override
+    public void shutdown() {
+        executionManager.shutdownPlan(executionPlan);
+    }
+
     @Provider
     public CrawlerActionRegistry createNodeQueryAdapterRegistry(ServiceExtensionContext context) {
         if (nodeQueryAdapterRegistry == null) {
