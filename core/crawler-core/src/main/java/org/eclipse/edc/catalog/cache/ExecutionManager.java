@@ -77,6 +77,10 @@ public class ExecutionManager {
     }
 
     public void shutdownPlan(ExecutionPlan plan) {
+        if (!enabled) {
+            monitor.warning("Execution of crawlers is globally disabled.");
+            return;
+        }
         plan.stop();
     }
 

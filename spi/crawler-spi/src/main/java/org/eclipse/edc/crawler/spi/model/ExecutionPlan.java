@@ -27,5 +27,10 @@ public interface ExecutionPlan {
      */
     void run(Runnable task);
 
+    /**
+     * Stops the execution of the task. It is recommended to ensure that all
+     * resources are properly released and any ongoing tasks are gracefully
+     * terminated.
+     */
     void stop();
 }

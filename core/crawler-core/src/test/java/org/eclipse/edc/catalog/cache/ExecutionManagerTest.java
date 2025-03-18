@@ -40,11 +40,13 @@ import static org.eclipse.edc.catalog.test.TestUtil.createNode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -170,6 +172,25 @@ class ExecutionManagerTest {
         verify(filter, times(3)).test(any());
     }
 
+    @Test
+    void shutdownPlan_shouldNotStopPlanWhenGloballyDisabled() {
+        manager = createManagerBuilder().isEnabled(false).build();
+        var mockPlan = mock(ExecutionPlan.class);
+        manager.shutdownPlan(mockPlan);
+
+        verify(monitorMock).warning(eq("Execution of crawlers is globally disabled."));
+        verify(mockPlan, never()).stop();
+    }
+
+    @Test
+    void shutdownPlan_shouldStopPlanWhenGloballyEnabled() {
+        manager = createManagerBuilder().isEnabled(true).build();
+        var mockPlan = mock(ExecutionPlan.class);
+        manager.shutdownPlan(mockPlan);
+
+        verify(mockPlan).stop();
+        verify(monitorMock, never()).warning(anyString());
+    }
 
     private ExecutionPlan simplePlan() {
         return new ExecutionPlan() {
