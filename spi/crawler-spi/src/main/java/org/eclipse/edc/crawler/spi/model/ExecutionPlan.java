@@ -9,6 +9,7 @@
  *
  *  Contributors:
  *       Microsoft Corporation - Initial implementation
+ *       Fraunhofer-Gesellschaft - Add stop method
  *
  */
 
