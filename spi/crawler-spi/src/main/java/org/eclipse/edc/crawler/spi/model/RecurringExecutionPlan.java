@@ -9,6 +9,7 @@
  *
  *  Contributors:
  *       Microsoft Corporation - Initial implementation
+ *       Fraunhofer-Gesellschaft - Add stop method
  *
  */
 
@@ -61,8 +62,9 @@ public class RecurringExecutionPlan implements ExecutionPlan {
                 if (!ses.awaitTermination(EXECUTOR_SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
                     ses.shutdownNow();
 
-                    if (!ses.awaitTermination(EXECUTOR_SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS))
+                    if (!ses.awaitTermination(EXECUTOR_SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
                         monitor.warning("The execution plan did not shutdown");
+                    }
                 }
             } catch (InterruptedException ie) {
                 monitor.severe(ERROR_DURING_PLAN_SHUTDOWN, ie);

@@ -198,6 +198,7 @@ class ExecutionManagerTest {
             public void run(Runnable task) {
                 task.run();
             }
+
             @Override
             public void stop() {
 
