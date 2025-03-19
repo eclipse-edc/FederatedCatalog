@@ -12,9 +12,9 @@
  *
  */
 
-package org.eclipse.edc.catalog.store.sql.schema.postgres;
+package org.eclipse.edc.catalog.directory.sql.schema.postgres;
 
-import org.eclipse.edc.catalog.store.sql.BaseSqlDialectStatements;
+import org.eclipse.edc.catalog.directory.sql.BaseSqlDialectStatements;
 import org.eclipse.edc.sql.dialect.PostgresDialect;
 
 public class PostgresDialectStatements extends BaseSqlDialectStatements {

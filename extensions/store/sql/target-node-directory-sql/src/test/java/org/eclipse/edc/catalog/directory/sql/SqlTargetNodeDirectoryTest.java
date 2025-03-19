@@ -12,10 +12,10 @@
  *
  */
 
-package org.eclipse.edc.catalog.store.sql;
+package org.eclipse.edc.catalog.directory.sql;
 
+import org.eclipse.edc.catalog.directory.sql.schema.postgres.PostgresDialectStatements;
 import org.eclipse.edc.catalog.spi.testfixtures.TargetNodeDirectoryTestBase;
-import org.eclipse.edc.catalog.store.sql.schema.postgres.PostgresDialectStatements;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
 import org.eclipse.edc.crawler.spi.TargetNodeDirectory;

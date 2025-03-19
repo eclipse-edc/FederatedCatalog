@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.edc.catalog.store.sql;
+package org.eclipse.edc.catalog.directory.sql;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

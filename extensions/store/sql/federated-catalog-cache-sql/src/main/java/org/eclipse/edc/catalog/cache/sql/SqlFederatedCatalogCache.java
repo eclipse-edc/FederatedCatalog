@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.edc.catalog.store.sql;
+package org.eclipse.edc.catalog.cache.sql;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.catalog.spi.CatalogConstants;

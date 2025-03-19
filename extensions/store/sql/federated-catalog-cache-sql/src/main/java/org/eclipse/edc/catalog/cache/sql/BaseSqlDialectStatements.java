@@ -12,9 +12,9 @@
  *
  */
 
-package org.eclipse.edc.catalog.store.sql;
+package org.eclipse.edc.catalog.cache.sql;
 
-import org.eclipse.edc.catalog.store.sql.schema.postgres.FederatedCatalogMapping;
+import org.eclipse.edc.catalog.cache.sql.schema.postgres.FederatedCatalogMapping;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.sql.translation.SqlOperatorTranslator;
 import org.eclipse.edc.sql.translation.SqlQueryStatement;
