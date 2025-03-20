@@ -12,17 +12,19 @@
  *
  */
 
-package org.eclipse.edc.crawler.spi.model;
+package org.eclipse.edc.catalog.crawler;
 
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -32,15 +34,15 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 public class RecurringExecutionPlanTest {
-    private static final Integer INTERVAL = 300;
+    private static final Integer POLL_DELAY = 10;
+    private static final Integer TIMEOUT = 30;
+    private final Monitor monitor = mock(Monitor.class);
     private RecurringExecutionPlan recurringExecutionPlan;
-    private Monitor monitor;
 
     @BeforeEach
     public void setUp() {
-        monitor = mock(Monitor.class);
-        Duration schedule = Duration.ofMillis(100);
-        Duration initialDelay = Duration.ofMillis(50);
+        var schedule = Duration.ofMillis(5);
+        var initialDelay = Duration.ofMillis(1);
         recurringExecutionPlan = new RecurringExecutionPlan(schedule, initialDelay, monitor);
     }
 
@@ -50,10 +52,12 @@ public class RecurringExecutionPlanTest {
         Runnable task = counter::incrementAndGet;
 
         recurringExecutionPlan.run(task);
-        Thread.sleep(INTERVAL);
-        recurringExecutionPlan.stop();
 
-        assertNotEquals(0, counter.get(), "Task should have been executed at least once");
+        await().pollDelay(Duration.ofMillis(POLL_DELAY))
+                .untilAsserted(() -> {
+                    recurringExecutionPlan.stop();
+                    assertThat(counter).hasPositiveValue();
+                });
     }
 
     @Test
@@ -71,10 +75,14 @@ public class RecurringExecutionPlanTest {
         };
 
         recurringExecutionPlan.run(task);
-        Thread.sleep(INTERVAL);
-        recurringExecutionPlan.stop();
 
-        verify(monitor, atLeastOnce()).severe(eq(RecurringExecutionPlan.ERROR_DURING_PLAN_EXECUTION), any(Throwable.class));
+        await().pollDelay(Duration.ofMillis(POLL_DELAY))
+                .atMost(Duration.ofMillis(TIMEOUT))
+                .untilAsserted(() -> {
+                    recurringExecutionPlan.stop();
+                    verify(monitor, atLeastOnce())
+                            .severe(eq(RecurringExecutionPlan.ERROR_DURING_PLAN_EXECUTION), any(Throwable.class));
+                });
     }
 
     @Test
@@ -83,13 +91,16 @@ public class RecurringExecutionPlanTest {
         Runnable task = counter::incrementAndGet;
 
         recurringExecutionPlan.run(task);
-        Thread.sleep(INTERVAL);
+
+        await().pollDelay(Duration.ofMillis(POLL_DELAY))
+                .until(() -> counter.get() > 0);
+
         recurringExecutionPlan.stop();
 
         int countAfterStop = counter.get();
-        Thread.sleep(INTERVAL);
 
-        assertEquals(countAfterStop, counter.get(), "Task should not execute further after stop");
+        await().pollDelay(POLL_DELAY, TimeUnit.MILLISECONDS)
+                .untilAsserted(() -> assertEquals(countAfterStop, counter.get()));
     }
 
 }
