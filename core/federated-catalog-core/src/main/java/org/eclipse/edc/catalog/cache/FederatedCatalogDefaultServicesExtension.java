@@ -15,13 +15,13 @@
 package org.eclipse.edc.catalog.cache;
 
 import org.eclipse.edc.catalog.cache.query.QueryServiceImpl;
+import org.eclipse.edc.catalog.crawler.RecurringExecutionPlan;
 import org.eclipse.edc.catalog.directory.InMemoryNodeDirectory;
 import org.eclipse.edc.catalog.spi.FederatedCatalogCache;
 import org.eclipse.edc.catalog.spi.QueryService;
 import org.eclipse.edc.catalog.store.InMemoryFederatedCatalogCache;
 import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
 import org.eclipse.edc.crawler.spi.model.ExecutionPlan;
-import org.eclipse.edc.crawler.spi.model.RecurringExecutionPlan;
 import org.eclipse.edc.query.CriterionOperatorRegistryImpl;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
@@ -93,7 +93,7 @@ public class FederatedCatalogDefaultServicesExtension implements ServiceExtensio
         var monitor = context.getMonitor();
         if (periodSeconds < LOW_EXECUTION_PERIOD_SECONDS_THRESHOLD) {
             monitor.warning(format("An execution period of %d seconds is very low (threshold = %d). This might result in the work queue to be ever growing." +
-                                   " A longer execution period or more crawler threads (currently using %d) should be considered.", periodSeconds, LOW_EXECUTION_PERIOD_SECONDS_THRESHOLD, numCrawlers));
+                    " A longer execution period or more crawler threads (currently using %d) should be considered.", periodSeconds, LOW_EXECUTION_PERIOD_SECONDS_THRESHOLD, numCrawlers));
         }
         return new RecurringExecutionPlan(Duration.ofSeconds(periodSeconds), Duration.ofSeconds(initialDelaySeconds), monitor);
     }

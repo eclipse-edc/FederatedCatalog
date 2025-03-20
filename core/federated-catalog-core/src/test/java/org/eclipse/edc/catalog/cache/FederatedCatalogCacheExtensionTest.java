@@ -16,6 +16,7 @@ package org.eclipse.edc.catalog.cache;
 
 import org.eclipse.edc.boot.system.injection.ObjectFactory;
 import org.eclipse.edc.catalog.cache.query.DspCatalogRequestAction;
+import org.eclipse.edc.catalog.crawler.RecurringExecutionPlan;
 import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.spi.FederatedCatalogCache;
 import org.eclipse.edc.catalog.spi.model.CatalogUpdateResponse;
@@ -23,7 +24,6 @@ import org.eclipse.edc.crawler.spi.CrawlerAction;
 import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
 import org.eclipse.edc.crawler.spi.TargetNodeFilter;
 import org.eclipse.edc.crawler.spi.model.ExecutionPlan;
-import org.eclipse.edc.crawler.spi.model.RecurringExecutionPlan;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;

@@ -13,8 +13,9 @@
  *
  */
 
-package org.eclipse.edc.crawler.spi.model;
+package org.eclipse.edc.catalog.crawler;
 
+import org.eclipse.edc.crawler.spi.model.ExecutionPlan;
 import org.eclipse.edc.spi.monitor.Monitor;
 
 import java.time.Duration;
@@ -50,8 +51,8 @@ public class RecurringExecutionPlan implements ExecutionPlan {
 
     @Override
     public void run(Runnable task) {
-        this.ses = Executors.newSingleThreadScheduledExecutor();
-        this.ses.scheduleAtFixedRate(catchExceptions(task), withInitialDelay.toMillis(), schedule.toMillis(), TimeUnit.MILLISECONDS);
+        ses = Executors.newSingleThreadScheduledExecutor();
+        ses.scheduleAtFixedRate(catchExceptions(task), withInitialDelay.toMillis(), schedule.toMillis(), TimeUnit.MILLISECONDS);
     }
 
     @Override
