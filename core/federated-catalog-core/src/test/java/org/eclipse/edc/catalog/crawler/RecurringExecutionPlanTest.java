@@ -47,7 +47,7 @@ public class RecurringExecutionPlanTest {
     }
 
     @Test
-    public void runPlan_shouldExecuteAtLeastOnce() throws InterruptedException {
+    public void runPlan_shouldExecuteAtLeastOnce() {
         AtomicInteger counter = new AtomicInteger();
         Runnable task = counter::incrementAndGet;
 
@@ -69,7 +69,7 @@ public class RecurringExecutionPlanTest {
     }
 
     @Test
-    public void runPlaneWithException_shouldLogError() throws InterruptedException {
+    public void runPlaneWithException_shouldLogError() {
         Runnable task = () -> {
             throw new RuntimeException("Test Exception");
         };
@@ -86,7 +86,7 @@ public class RecurringExecutionPlanTest {
     }
 
     @Test
-    public void stopPlan_shouldPreventFurtherPlanExecution() throws InterruptedException {
+    public void stopPlan_shouldPreventFurtherPlanExecution() {
         AtomicInteger counter = new AtomicInteger();
         Runnable task = counter::incrementAndGet;
 
