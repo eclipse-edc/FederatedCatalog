@@ -34,7 +34,6 @@ import static org.mockito.Mockito.verify;
 
 public class RecurringExecutionPlanTest {
     private static final Integer POLL_DELAY = 10;
-    private static final Integer TIMEOUT = 30;
     private final Monitor monitor = mock(Monitor.class);
     private RecurringExecutionPlan recurringExecutionPlan;
 
