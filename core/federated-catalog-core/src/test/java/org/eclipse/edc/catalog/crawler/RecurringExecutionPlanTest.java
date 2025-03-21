@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -77,7 +76,6 @@ public class RecurringExecutionPlanTest {
         recurringExecutionPlan.run(task);
 
         await().pollDelay(Duration.ofMillis(POLL_DELAY))
-                .atMost(Duration.ofMillis(TIMEOUT))
                 .untilAsserted(() -> {
                     recurringExecutionPlan.stop();
                     verify(monitor, atLeastOnce())
@@ -100,7 +98,7 @@ public class RecurringExecutionPlanTest {
         int countAfterStop = counter.get();
 
         await().pollDelay(POLL_DELAY, TimeUnit.MILLISECONDS)
-                .untilAsserted(() -> assertEquals(countAfterStop, counter.get()));
+                .untilAsserted(() -> assertThat(counter.get()).isEqualTo(countAfterStop));
     }
 
 }
