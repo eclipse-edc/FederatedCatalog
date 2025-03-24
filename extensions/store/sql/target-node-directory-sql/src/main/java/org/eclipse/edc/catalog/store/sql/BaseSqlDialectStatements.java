@@ -48,6 +48,12 @@ public abstract class BaseSqlDialectStatements implements TargetNodeStatements {
     }
 
     @Override
+    public String getDeleteTemplate() {
+        return executeStatement()
+                .delete(getTargetNodeDirectoryTable(), getIdColumn());
+    }
+
+    @Override
     public SqlQueryStatement createQuery(QuerySpec querySpec) {
         var select = getSelectStatement();
         return new SqlQueryStatement(select, querySpec, new TargetNodeMapping(this), new PostgresqlOperatorTranslator());

@@ -19,6 +19,7 @@ import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryNodeDirectory implements TargetNodeDirectory {
@@ -32,5 +33,15 @@ public class InMemoryNodeDirectory implements TargetNodeDirectory {
     @Override
     public void insert(TargetNode node) {
         cache.put(node.id(), node);
+    }
+
+    @Override
+    public void remove(TargetNode node) {
+        remove(node.id());
+    }
+
+    @Override
+    public Optional<TargetNode> remove(String id) {
+        return Optional.ofNullable(cache.remove(id));
     }
 }
