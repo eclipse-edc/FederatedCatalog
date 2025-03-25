@@ -89,17 +89,7 @@ public abstract class TargetNodeDirectoryTestBase {
     class Remove {
 
         @Test
-        void removeByNode_shouldRemove() {
-            var node = createTargetNode(UUID.randomUUID().toString());
-            getStore().insert(node);
-
-            getStore().remove(node);
-
-            assertThat(getStore().getAll()).isEmpty();
-        }
-
-        @Test
-        void removeById_shouldRemoveAndReturnNode() {
+        void remove_shouldRemoveAndReturnNode() {
             var node = createTargetNode(UUID.randomUUID().toString());
             getStore().insert(node);
 
@@ -110,7 +100,7 @@ public abstract class TargetNodeDirectoryTestBase {
         }
 
         @Test
-        void removeById_notFound_shouldReturnNull() {
+        void remove_notFound_shouldReturnNull() {
             var result = getStore().remove("non-existent-id");
 
             assertThat(result).isNull();

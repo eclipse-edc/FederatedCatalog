@@ -71,11 +71,6 @@ public class SqlTargetNodeDirectory extends AbstractSqlStore implements TargetNo
     }
 
     @Override
-    public TargetNode remove(TargetNode node) {
-        return remove(node.id());
-    }
-
-    @Override
     public TargetNode remove(String id) {
         return transactionContext.execute(() -> {
             try (var connection = getConnection()) {

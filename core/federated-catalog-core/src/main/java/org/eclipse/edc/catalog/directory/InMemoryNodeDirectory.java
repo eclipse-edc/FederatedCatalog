@@ -35,11 +35,6 @@ public class InMemoryNodeDirectory implements TargetNodeDirectory {
     }
 
     @Override
-    public TargetNode remove(TargetNode node) {
-        return remove(node.id());
-    }
-
-    @Override
     public TargetNode remove(String id) {
         return cache.remove(id);
     }
