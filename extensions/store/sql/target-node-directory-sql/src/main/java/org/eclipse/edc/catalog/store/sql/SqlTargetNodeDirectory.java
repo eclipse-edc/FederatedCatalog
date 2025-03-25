@@ -29,7 +29,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 public class SqlTargetNodeDirectory extends AbstractSqlStore implements TargetNodeDirectory {
 
@@ -72,22 +71,22 @@ public class SqlTargetNodeDirectory extends AbstractSqlStore implements TargetNo
     }
 
     @Override
-    public void remove(TargetNode node) {
-        remove(node.id());
+    public TargetNode remove(TargetNode node) {
+        return remove(node.id());
     }
 
     @Override
-    public Optional<TargetNode> remove(String id) {
+    public TargetNode remove(String id) {
         return transactionContext.execute(() -> {
             try (var connection = getConnection()) {
                 var existing = findByIdInternal(connection, id);
                 if (existing == null) {
-                    return Optional.empty();
+                    return null;
                 }
 
                 var stmt = statements.getDeleteTemplate();
                 queryExecutor.execute(connection, stmt, id);
-                return Optional.of(existing);
+                return existing;
             } catch (SQLException e) {
                 throw new EdcPersistenceException(e);
             }

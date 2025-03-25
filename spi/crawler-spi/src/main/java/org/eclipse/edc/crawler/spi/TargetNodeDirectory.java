@@ -17,7 +17,6 @@ package org.eclipse.edc.crawler.spi;
 import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * A global list of all {@link TargetNode} entries, that are available to crawl in a data space, much like a "phone book" for catalog endpoints.
@@ -40,13 +39,15 @@ public interface TargetNodeDirectory {
      * Removes (="unregisters") a node from the directory.
      *
      * @param node The node to be removed.
+     * @return TargetNode containing the removed node if it was found and removed, otherwise null.
      */
-    void remove(TargetNode node);
+    TargetNode remove(TargetNode node);
 
     /**
      * Removes (="unregisters") a node from the directory by its ID.
      *
-     * @return Optional containing the removed node if it was found and removed, otherwise empty.
+     * @param id ID of the node to be removed.
+     * @return TargetNode containing the removed node if it was found and removed, otherwise null.
      */
-    Optional<TargetNode> remove(String id);
+    TargetNode remove(String id);
 }

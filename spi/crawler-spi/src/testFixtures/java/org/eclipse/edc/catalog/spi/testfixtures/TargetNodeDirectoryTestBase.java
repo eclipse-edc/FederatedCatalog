@@ -105,15 +105,15 @@ public abstract class TargetNodeDirectoryTestBase {
 
             var removed = getStore().remove(node.id());
 
-            assertThat(removed).isPresent().get().usingRecursiveComparison().isEqualTo(node);
+            assertThat(removed).usingRecursiveComparison().isEqualTo(node);
             assertThat(getStore().getAll()).isEmpty();
         }
 
         @Test
-        void removeById_notFound_shouldReturnEmpty() {
+        void removeById_notFound_shouldReturnNull() {
             var result = getStore().remove("non-existent-id");
 
-            assertThat(result).isEmpty();
+            assertThat(result).isNull();
         }
     }
 }
