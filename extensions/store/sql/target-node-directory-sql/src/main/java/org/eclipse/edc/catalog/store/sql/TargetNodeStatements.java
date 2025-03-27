@@ -46,6 +46,8 @@ public interface TargetNodeStatements extends SqlStatements {
 
     String getUpdateTemplate();
 
+    String getDeleteTemplate();
+
     SqlQueryStatement createQuery(QuerySpec query);
 
     String getSelectStatement();

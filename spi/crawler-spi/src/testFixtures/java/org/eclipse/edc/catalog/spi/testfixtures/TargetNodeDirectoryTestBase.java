@@ -84,4 +84,26 @@ public abstract class TargetNodeDirectoryTestBase {
         }
 
     }
+
+    @Nested
+    class Remove {
+
+        @Test
+        void remove_shouldRemoveAndReturnNode() {
+            var node = createTargetNode(UUID.randomUUID().toString());
+            getStore().insert(node);
+
+            var removed = getStore().remove(node.id());
+
+            assertThat(removed).usingRecursiveComparison().isEqualTo(node);
+            assertThat(getStore().getAll()).isEmpty();
+        }
+
+        @Test
+        void remove_notFound_shouldReturnNull() {
+            var result = getStore().remove("non-existent-id");
+
+            assertThat(result).isNull();
+        }
+    }
 }

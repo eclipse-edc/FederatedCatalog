@@ -34,4 +34,12 @@ public interface TargetNodeDirectory {
      * Inserts (="registers") a node into the directory.
      */
     void insert(TargetNode node);
+
+    /**
+     * Removes (="unregisters") a node from the directory by its ID.
+     *
+     * @param id ID of the node to be removed.
+     * @return TargetNode containing the removed node if it was found and removed, otherwise null.
+     */
+    TargetNode remove(String id);
 }

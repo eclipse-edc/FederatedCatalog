@@ -33,4 +33,9 @@ public class InMemoryNodeDirectory implements TargetNodeDirectory {
     public void insert(TargetNode node) {
         cache.put(node.id(), node);
     }
+
+    @Override
+    public TargetNode remove(String id) {
+        return cache.remove(id);
+    }
 }

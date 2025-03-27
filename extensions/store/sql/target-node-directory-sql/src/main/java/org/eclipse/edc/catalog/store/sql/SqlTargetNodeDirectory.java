@@ -70,6 +70,24 @@ public class SqlTargetNodeDirectory extends AbstractSqlStore implements TargetNo
         });
     }
 
+    @Override
+    public TargetNode remove(String id) {
+        return transactionContext.execute(() -> {
+            try (var connection = getConnection()) {
+                var existing = findByIdInternal(connection, id);
+                if (existing == null) {
+                    return null;
+                }
+
+                var stmt = statements.getDeleteTemplate();
+                queryExecutor.execute(connection, stmt, id);
+                return existing;
+            } catch (SQLException e) {
+                throw new EdcPersistenceException(e);
+            }
+        });
+    }
+
     private TargetNode findByIdInternal(Connection connection, String id) {
         var stmt = statements.getFindByIdTemplate();
         return queryExecutor.single(connection, false, this::mapResultSet, stmt, id);
