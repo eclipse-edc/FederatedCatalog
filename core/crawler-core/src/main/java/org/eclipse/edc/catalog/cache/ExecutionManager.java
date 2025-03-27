@@ -9,6 +9,7 @@
  *
  *  Contributors:
  *       Microsoft Corporation - initial API and implementation
+ *       Fraunhofer-Gesellschaft - Add shutdown method
  *
  */
 
@@ -74,6 +75,14 @@ public class ExecutionManager {
             runPostExecution();
         });
 
+    }
+
+    public void shutdownPlan(ExecutionPlan plan) {
+        if (!enabled) {
+            monitor.warning("Execution of crawlers is globally disabled.");
+            return;
+        }
+        plan.stop();
     }
 
     private void doWork() {

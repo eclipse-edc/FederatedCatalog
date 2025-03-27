@@ -9,6 +9,7 @@
  *
  *  Contributors:
  *       Microsoft Corporation - Initial implementation
+ *       Fraunhofer-Gesellschaft - Add stop method
  *
  */
 
@@ -17,7 +18,6 @@ package org.eclipse.edc.crawler.spi.model;
 /**
  * Interface for any sort of planned execution of a {@link Runnable} task.
  */
-@FunctionalInterface
 public interface ExecutionPlan {
 
     /**
@@ -27,4 +27,11 @@ public interface ExecutionPlan {
      * @param task A runnable
      */
     void run(Runnable task);
+
+    /**
+     * Stops the execution of the task. It is recommended to ensure that all
+     * resources are properly released and any ongoing tasks are gracefully
+     * terminated.
+     */
+    void stop();
 }
