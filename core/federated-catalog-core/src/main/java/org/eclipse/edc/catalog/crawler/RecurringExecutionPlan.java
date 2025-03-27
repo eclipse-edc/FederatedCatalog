@@ -28,8 +28,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class RecurringExecutionPlan implements ExecutionPlan {
 
-    protected static final String ERROR_DURING_PLAN_EXECUTION = "Unexpected error during plan execution";
-    protected static final String ERROR_DURING_PLAN_SHUTDOWN = "Unexpected error during execution plan shutdown";
     private static final Integer EXECUTOR_SHUTDOWN_TIMEOUT_SECONDS = 60;
 
     private final Duration schedule;
@@ -68,7 +66,7 @@ public class RecurringExecutionPlan implements ExecutionPlan {
                     }
                 }
             } catch (InterruptedException ie) {
-                monitor.severe(ERROR_DURING_PLAN_SHUTDOWN, ie);
+                monitor.severe("Unexpected error during execution plan shutdown", ie);
                 ses.shutdownNow();
                 Thread.currentThread().interrupt();
             }
@@ -80,7 +78,7 @@ public class RecurringExecutionPlan implements ExecutionPlan {
             try {
                 original.run();
             } catch (Throwable thr) {
-                monitor.severe(ERROR_DURING_PLAN_EXECUTION, thr);
+                monitor.severe("Unexpected error during plan execution", thr);
             }
         };
     }

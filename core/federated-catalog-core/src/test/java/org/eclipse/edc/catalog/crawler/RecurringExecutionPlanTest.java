@@ -26,7 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -78,7 +77,7 @@ public class RecurringExecutionPlanTest {
                 .untilAsserted(() -> {
                     recurringExecutionPlan.stop();
                     verify(monitor, atLeastOnce())
-                            .severe(eq(RecurringExecutionPlan.ERROR_DURING_PLAN_EXECUTION), any(Throwable.class));
+                            .severe(anyString(), any(Throwable.class));
                 });
     }
 

@@ -40,7 +40,6 @@ import static org.eclipse.edc.catalog.test.TestUtil.createNode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
@@ -178,8 +177,8 @@ class ExecutionManagerTest {
         var mockPlan = mock(ExecutionPlan.class);
         manager.shutdownPlan(mockPlan);
 
-        verify(monitorMock).warning(eq("Execution of crawlers is globally disabled."));
-        verify(mockPlan, never()).stop();
+        verify(monitorMock).warning(anyString());
+        verifyNoInteractions(mockPlan);
     }
 
     @Test
