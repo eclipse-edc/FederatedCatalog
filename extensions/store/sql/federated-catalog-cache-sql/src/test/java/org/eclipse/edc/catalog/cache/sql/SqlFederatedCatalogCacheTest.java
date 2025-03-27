@@ -12,11 +12,11 @@
  *
  */
 
-package org.eclipse.edc.catalog.store.sql;
+package org.eclipse.edc.catalog.cache.sql;
 
+import org.eclipse.edc.catalog.cache.sql.schema.postgres.PostgresDialectStatements;
 import org.eclipse.edc.catalog.spi.FederatedCatalogCache;
 import org.eclipse.edc.catalog.spi.testfixtures.FederatedCatalogCacheTestBase;
-import org.eclipse.edc.catalog.store.sql.schema.postgres.PostgresDialectStatements;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
 import org.eclipse.edc.json.JacksonTypeManager;

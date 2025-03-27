@@ -12,9 +12,9 @@
  *
  */
 
-package org.eclipse.edc.catalog.store.sql.schema.postgres;
+package org.eclipse.edc.catalog.directory.sql.schema.postgres;
 
-import org.eclipse.edc.catalog.store.sql.TargetNodeStatements;
+import org.eclipse.edc.catalog.directory.sql.TargetNodeStatements;
 import org.eclipse.edc.sql.translation.JsonFieldTranslator;
 import org.eclipse.edc.sql.translation.TranslationMapping;
 
