@@ -48,6 +48,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 class ExecutionManagerTest {
@@ -170,9 +171,38 @@ class ExecutionManagerTest {
         verify(filter, times(3)).test(any());
     }
 
+    @Test
+    void shutdownPlan_shouldNotStopPlanWhenGloballyDisabled() {
+        manager = createManagerBuilder().isEnabled(false).build();
+        var mockPlan = mock(ExecutionPlan.class);
+        manager.shutdownPlan(mockPlan);
+
+        verify(monitorMock).warning(anyString());
+        verifyNoInteractions(mockPlan);
+    }
+
+    @Test
+    void shutdownPlan_shouldStopPlanWhenGloballyEnabled() {
+        manager = createManagerBuilder().isEnabled(true).build();
+        var mockPlan = mock(ExecutionPlan.class);
+        manager.shutdownPlan(mockPlan);
+
+        verify(mockPlan).stop();
+        verifyNoMoreInteractions(monitorMock);
+    }
 
     private ExecutionPlan simplePlan() {
-        return Runnable::run;
+        return new ExecutionPlan() {
+            @Override
+            public void run(Runnable task) {
+                task.run();
+            }
+
+            @Override
+            public void stop() {
+
+            }
+        };
     }
 
     private ExecutionManager createManager() {

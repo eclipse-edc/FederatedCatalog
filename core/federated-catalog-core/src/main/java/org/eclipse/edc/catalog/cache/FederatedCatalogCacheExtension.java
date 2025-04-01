@@ -9,6 +9,7 @@
  *
  *  Contributors:
  *       Microsoft Corporation - Initial implementation
+ *       Fraunhofer-Gesellschaft - Add shutdown method
  *
  */
 
@@ -138,6 +139,11 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
     @Override
     public void start() {
         executionManager.executePlan(executionPlan);
+    }
+
+    @Override
+    public void shutdown() {
+        executionManager.shutdownPlan(executionPlan);
     }
 
     @Provider
