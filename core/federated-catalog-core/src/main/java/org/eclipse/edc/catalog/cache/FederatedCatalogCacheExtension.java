@@ -28,13 +28,13 @@ import org.eclipse.edc.catalog.transform.JsonObjectToDistributionTransformer;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.connector.controlplane.transform.odrl.from.JsonObjectFromPolicyTransformer;
 import org.eclipse.edc.connector.controlplane.transform.odrl.to.JsonObjectToPolicyTransformer;
-import org.eclipse.edc.connector.core.agent.NoOpParticipantIdMapper;
 import org.eclipse.edc.crawler.spi.CrawlerActionRegistry;
 import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
 import org.eclipse.edc.crawler.spi.TargetNodeFilter;
 import org.eclipse.edc.crawler.spi.model.ExecutionPlan;
 import org.eclipse.edc.crawler.spi.model.UpdateResponse;
 import org.eclipse.edc.jsonld.spi.JsonLd;
+import org.eclipse.edc.participant.spi.ParticipantIdMapper;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromCatalogTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDataServiceTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDatasetTransformer;
@@ -93,6 +93,8 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
     private ExecutionManager executionManager;
     @Inject
     private TypeManager typeManager;
+    @Inject
+    private ParticipantIdMapper participantIdMapper;
 
     @Inject
     private TypeTransformerRegistry registry;
@@ -166,7 +168,6 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
         transformerRegistry.register(new JsonObjectToCriterionTransformer());
 
         var jsonFactory = Json.createBuilderFactory(Map.of());
-        var participantIdMapper = new NoOpParticipantIdMapper();
         transformerRegistry.register(new JsonObjectFromCatalogTransformer(jsonFactory, typeManager, JSON_LD, participantIdMapper));
         transformerRegistry.register(new JsonObjectFromDatasetTransformer(jsonFactory, typeManager, JSON_LD));
         transformerRegistry.register(new JsonObjectFromDistributionTransformer(jsonFactory));

@@ -19,6 +19,7 @@ import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerMethodExtension;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -55,8 +56,8 @@ public class BomSmokeTests {
 
         @RegisterExtension
         protected RuntimeExtension runtime =
-                new RuntimePerMethodExtension(new EmbeddedRuntime("fc-dcp-bom",
-                        new HashMap<>() {
+                new RuntimePerMethodExtension(new EmbeddedRuntime("fc-dcp-bom", ":dist:bom:federatedcatalog-dcp-bom")
+                        .configurationProvider(() -> ConfigFactory.fromMap(new HashMap<>() {
                             {
                                 put("edc.iam.sts.oauth.token.url", "https://sts.com/token");
                                 put("edc.iam.sts.oauth.client.id", "test-clientid");
@@ -72,9 +73,8 @@ public class BomSmokeTests {
                                 put("edc.iam.sts.publickey.id", "public-key-id");
                                 put("edc.catalog.cache.execution.delay.seconds", "0");
                             }
-                        },
-                        ":dist:bom:federatedcatalog-dcp-bom"
-                ));
+                        }))
+                );
     }
 
 }

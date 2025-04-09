@@ -31,11 +31,6 @@ dependencies {
     testImplementation(libs.restAssured)
     testImplementation(libs.awaitility)
 
-
-    testRuntimeOnly(libs.bundles.edc.connector)
-    testRuntimeOnly(libs.edc.dsp.transform.catalog)
-    testRuntimeOnly(libs.edc.core.controlplane)
-    testRuntimeOnly(libs.edc.core.dataPlane.selector)
     testRuntimeOnly(libs.edc.iam.mock)
 }
 

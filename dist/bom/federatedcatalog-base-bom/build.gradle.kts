@@ -24,7 +24,15 @@ dependencies {
     runtimeOnly(libs.edc.lib.util)
     runtimeOnly(libs.edc.spi.jsonld)
 
-    runtimeOnly(libs.bundles.edc.connector)
+    runtimeOnly(libs.edc.boot)
+    runtimeOnly(libs.edc.core.runtime)
+    runtimeOnly(libs.edc.core.connector)
+    runtimeOnly(libs.edc.core.jersey)
+    runtimeOnly(libs.edc.api.observability)
+    runtimeOnly(libs.edc.config.filesystem)
+    runtimeOnly(libs.edc.core.edrstore)
+    runtimeOnly(libs.edc.api.version)
+
     runtimeOnly(libs.edc.core.api)
     runtimeOnly(libs.edc.core.controlplane)
     runtimeOnly(libs.edc.core.jetty)

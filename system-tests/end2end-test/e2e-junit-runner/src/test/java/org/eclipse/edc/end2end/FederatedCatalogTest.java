@@ -41,6 +41,7 @@ import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDataset
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDistributionTransformer;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.transform.TypeTransformerRegistryImpl;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
@@ -83,8 +84,9 @@ class FederatedCatalogTest {
     private static final Endpoint CATALOG_CATALOG = new Endpoint("/catalog", "8093");
 
     @RegisterExtension
-    static RuntimeExtension connector = new RuntimePerClassExtension(new EmbeddedRuntime("connector",
-            configOf("edc.connector.name", "connector1",
+    static RuntimeExtension connector = new RuntimePerClassExtension(
+            new EmbeddedRuntime("connector", ":system-tests:end2end-test:connector-runtime")
+                .configurationProvider(() -> ConfigFactory.fromMap(configOf("edc.connector.name", "connector1",
                     "edc.web.rest.cors.enabled", "true",
                     "web.http.port", CONNECTOR_DEFAULT.port(),
                     "web.http.path", CONNECTOR_DEFAULT.path(),
@@ -96,28 +98,31 @@ class FederatedCatalogTest {
                     "edc.participant.id", "test-connector",
                     "web.http.management.path", CONNECTOR_MANAGEMENT.path(),
                     "edc.web.rest.cors.headers", "origin,content-type,accept,authorization,x-api-key",
-                    "edc.dsp.callback.address", "http://localhost:%s%s".formatted(CONNECTOR_PROTOCOL.port(), CONNECTOR_PROTOCOL.path())),
-            ":system-tests:end2end-test:connector-runtime"));
+                    "edc.dsp.callback.address", "http://localhost:%s%s".formatted(CONNECTOR_PROTOCOL.port(), CONNECTOR_PROTOCOL.path())))
+                )
+    );
 
     @RegisterExtension
-    static RuntimeExtension catalog = new RuntimePerMethodExtension(new EmbeddedRuntime("catalog",
-            configOf("edc.catalog.cache.execution.delay.seconds", "0",
-                    "edc.catalog.cache.execution.period.seconds", "2",
-                    "edc.catalog.cache.partition.num.crawlers", "5",
-                    "edc.web.rest.cors.enabled", "true",
-                    "edc.participant.id", "test-catalog",
-                    "web.http.port", CATALOG_DEFAULT.port(),
-                    "web.http.path", CATALOG_DEFAULT.path(),
-                    "web.http.protocol.port", CATALOG_PROTOCOL.port(),
-                    "web.http.protocol.path", CATALOG_PROTOCOL.path(),
-                    "web.http.management.port", CATALOG_MANAGEMENT.port(),
-                    "web.http.management.path", CATALOG_MANAGEMENT.path(),
-                    "web.http.version.port", getFreePort() + "",
-                    "web.http.version.path", "/.well-known/version",
-                    "web.http.catalog.port", CATALOG_CATALOG.port(),
-                    "web.http.catalog.path", CATALOG_CATALOG.path(),
-                    "edc.web.rest.cors.headers", "origin,content-type,accept,authorization,x-api-key"),
-            ":launchers:catalog-mocked"));
+    static RuntimeExtension catalog = new RuntimePerMethodExtension(
+            new EmbeddedRuntime("catalog", ":launchers:catalog-mocked")
+                    .configurationProvider(() -> ConfigFactory.fromMap(configOf("edc.catalog.cache.execution.delay.seconds", "0",
+                            "edc.catalog.cache.execution.period.seconds", "2",
+                            "edc.catalog.cache.partition.num.crawlers", "5",
+                            "edc.web.rest.cors.enabled", "true",
+                            "edc.participant.id", "test-catalog",
+                            "web.http.port", CATALOG_DEFAULT.port(),
+                            "web.http.path", CATALOG_DEFAULT.path(),
+                            "web.http.protocol.port", CATALOG_PROTOCOL.port(),
+                            "web.http.protocol.path", CATALOG_PROTOCOL.path(),
+                            "web.http.management.port", CATALOG_MANAGEMENT.port(),
+                            "web.http.management.path", CATALOG_MANAGEMENT.path(),
+                            "web.http.version.port", getFreePort() + "",
+                            "web.http.version.path", "/.well-known/version",
+                            "web.http.catalog.port", CATALOG_CATALOG.port(),
+                            "web.http.catalog.path", CATALOG_CATALOG.path(),
+                            "edc.web.rest.cors.headers", "origin,content-type,accept,authorization,x-api-key"))
+                    )
+    );
     private final TypeTransformerRegistry typeTransformerRegistry = new TypeTransformerRegistryImpl();
     private final TypeManager mapper = new JacksonTypeManager();
     private final CatalogApiClient apiClient = new CatalogApiClient(CATALOG_CATALOG, CONNECTOR_MANAGEMENT, JacksonJsonLd.createObjectMapper(), new TitaniumJsonLd(mock(Monitor.class)), typeTransformerRegistry);
