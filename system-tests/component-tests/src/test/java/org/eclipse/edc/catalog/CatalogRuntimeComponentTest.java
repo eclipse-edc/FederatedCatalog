@@ -32,6 +32,7 @@ import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.protocol.dsp.http.spi.dispatcher.DspHttpRemoteMessageDispatcher;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.response.StatusResult;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -82,21 +83,24 @@ public class CatalogRuntimeComponentTest {
     private static final JsonLd JSON_LD_SERVICE = new TitaniumJsonLd(mock());
 
     @RegisterExtension
-    protected static RuntimeExtension runtimePerClassExtension = new RuntimePerMethodExtension(new EmbeddedRuntime("catalog", Map.of(
-            // make sure only one crawl-run is performed
-            "edc.catalog.cache.execution.period.seconds", "2",
-            // number of crawlers will be limited by the number of crawl-targets
-            "edc.catalog.cache.partition.num.crawlers", "10",
-            // give the runtime time to set up everything
-            "edc.catalog.cache.execution.delay.seconds", "1",
-            "web.http.catalog.port", valueOf(TestFunctions.CATALOG_QUERY_PORT),
-            "web.http.catalog.path", TestFunctions.CATALOG_QUERY_BASE_PATH,
-            "web.http.port", valueOf(getFreePort()),
-            "web.http.path", "/api/v1",
-            "web.http.protocol.port", valueOf(getFreePort()),
-            "web.http.protocol.path", "/api/v1/dsp",
-            "edc.participant.id", "test-participant"
-    )));
+    protected static RuntimeExtension runtimePerClassExtension = new RuntimePerMethodExtension(
+            new EmbeddedRuntime("catalog", ":dist:bom:federatedcatalog-base-bom")
+                    .configurationProvider(() -> ConfigFactory.fromMap(Map.of(
+                        // make sure only one crawl-run is performed
+                        "edc.catalog.cache.execution.period.seconds", "2",
+                        // number of crawlers will be limited by the number of crawl-targets
+                        "edc.catalog.cache.partition.num.crawlers", "10",
+                        // give the runtime time to set up everything
+                        "edc.catalog.cache.execution.delay.seconds", "1",
+                        "web.http.catalog.port", valueOf(TestFunctions.CATALOG_QUERY_PORT),
+                        "web.http.catalog.path", TestFunctions.CATALOG_QUERY_BASE_PATH,
+                        "web.http.port", valueOf(getFreePort()),
+                        "web.http.path", "/api/v1",
+                        "web.http.protocol.port", valueOf(getFreePort()),
+                        "web.http.protocol.path", "/api/v1/dsp",
+                        "edc.participant.id", "test-participant"
+                    )))
+    );
     private final DspHttpRemoteMessageDispatcher dispatcher = mock();
 
     @Test

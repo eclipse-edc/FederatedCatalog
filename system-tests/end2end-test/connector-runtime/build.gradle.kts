@@ -22,6 +22,7 @@ dependencies {
 
     implementation(libs.edc.core.controlplane)
     implementation(libs.edc.core.dataPlane.selector)
+    runtimeOnly(libs.edc.core.runtime)
     runtimeOnly(libs.edc.api.observability)
     runtimeOnly(libs.edc.api.management)
     runtimeOnly(libs.edc.api.control.config)

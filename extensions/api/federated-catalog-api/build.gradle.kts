@@ -35,7 +35,6 @@ dependencies {
     testImplementation(libs.edc.lib.boot)
     testImplementation(testFixtures(project(":core:federated-catalog-core"))) // provides the TestUtil
     testImplementation(libs.edc.junit)
-    testImplementation(libs.edc.core.connector)
     testImplementation(libs.edc.ext.http)
     testImplementation(libs.restAssured)
     testImplementation(libs.edc.iam.mock)

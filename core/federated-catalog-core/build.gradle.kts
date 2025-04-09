@@ -27,7 +27,6 @@ dependencies {
     implementation(project(":core:common:lib:catalog-util-lib"))
 
     implementation(libs.edc.lib.util)
-    implementation(libs.edc.core.connector)
     implementation(libs.edc.lib.query)
     implementation(libs.edc.dsp.transform.catalog)
     implementation(libs.edc.dsp.transform.catalog.lib)
@@ -48,7 +47,6 @@ dependencies {
     testImplementation(testFixtures(project(":spi:crawler-spi")))
 
     // required for integration test
-    testFixturesImplementation(libs.edc.core.connector)
     testFixturesImplementation(libs.edc.dsp.transform.catalog)
     testFixturesImplementation(libs.edc.dsp.transform.catalog.lib)
     testFixturesImplementation(libs.edc.lib.json.ld)

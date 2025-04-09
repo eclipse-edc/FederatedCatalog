@@ -25,9 +25,9 @@ import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Distribution;
 import org.eclipse.edc.connector.controlplane.transform.odrl.from.JsonObjectFromPolicyTransformer;
 import org.eclipse.edc.connector.controlplane.transform.odrl.to.JsonObjectToPolicyTransformer;
-import org.eclipse.edc.connector.core.agent.NoOpParticipantIdMapper;
 import org.eclipse.edc.crawler.spi.TargetNode;
 import org.eclipse.edc.json.JacksonTypeManager;
+import org.eclipse.edc.participant.spi.ParticipantIdMapper;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromCatalogTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDataServiceTransformer;
@@ -111,4 +111,15 @@ public class TestUtil {
         typeTransformerRegistry1.register(new JsonObjectToDistributionTransformer());
     }
 
+    public static class NoOpParticipantIdMapper implements ParticipantIdMapper {
+        @Override
+        public String toIri(String id) {
+            return id;
+        }
+
+        @Override
+        public String fromIri(String id) {
+            return id;
+        }
+    }
 }

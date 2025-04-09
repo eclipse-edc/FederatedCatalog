@@ -23,8 +23,6 @@ dependencies {
     api(libs.edc.spi.contract)
     api(project(":spi:crawler-spi"))
 
-    implementation(libs.edc.core.connector)
-
     // required for integration test
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.dsp.transform.catalog)

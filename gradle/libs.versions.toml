@@ -22,6 +22,7 @@ edc-core-controlplane = { module = "org.eclipse.edc:control-plane-core", version
 edc-core-dataPlane-selector = { module = "org.eclipse.edc:data-plane-selector-core", version.ref = "edc" }
 edc-core-jersey = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
 edc-core-jetty = { module = "org.eclipse.edc:jetty-core", version.ref = "edc" }
+edc-core-runtime = { module = "org.eclipse.edc:runtime-core", version.ref = "edc" }
 edc-core-token = { module = "org.eclipse.edc:token-core", version.ref = "edc" }
 edc-core-edrstore = { module = "org.eclipse.edc:edr-store-core", version.ref = "edc" }
 edc-dpf-selector-core = { module = "org.eclipse.edc:data-plane-selector-core", version.ref = "edc" }
@@ -81,8 +82,6 @@ jackson-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 
 [bundles]
-edc-connector = ["edc-boot", "edc-core-connector", "edc-core-jersey", "edc-api-observability", "edc-config-filesystem",
-    "edc-core-edrstore", "edc-api-version"]
 edc-dpf = ["edc-dpf-selector-spi", "edc-dpf-selector-core"]
 dcp = ["edc-dcp-core", "edc-dcp-issuersconfig", "edc-dcp-service", "edc-dcp-sts-client", "edc-dcp-transform",
     "edc-did-core", "edc-did-web", "edc-oauth2-client"]
