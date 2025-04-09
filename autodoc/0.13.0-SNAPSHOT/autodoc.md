@@ -157,6 +157,7 @@ _None_
 - `org.eclipse.edc.crawler.spi.TargetNodeFilter` (optional)
 - `org.eclipse.edc.crawler.spi.model.ExecutionPlan` (optional)
 - `org.eclipse.edc.spi.types.TypeManager` (required)
+- `org.eclipse.edc.participant.spi.ParticipantIdMapper` (required)
 - `org.eclipse.edc.transform.spi.TypeTransformerRegistry` (required)
 - `org.eclipse.edc.jsonld.spi.JsonLd` (required)
 - `org.eclipse.edc.spi.monitor.Monitor` (required)
