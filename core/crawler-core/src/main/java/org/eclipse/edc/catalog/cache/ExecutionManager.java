@@ -69,10 +69,11 @@ public class ExecutionManager {
             monitor.warning("Execution of crawlers is globally disabled.");
             return;
         }
+
         plan.run(() -> {
-            runPreExecution();
+            runTask("pre-execution", preExecutionTask);
             doWork();
-            runPostExecution();
+            runTask("post-execution", postExecutionTask);
         });
 
     }
@@ -89,9 +90,9 @@ public class ExecutionManager {
         // load work items from directory
         var workItems = fetchWorkItems();
         if (workItems.isEmpty()) {
-            monitor.debug("No WorkItems found, skipping execution");
             return;
         }
+
         monitor.debug("Loaded " + workItems.size() + " work items from storage");
         var allItems = new ArrayBlockingQueue<>(workItems.size(), true, workItems);
 
@@ -145,24 +146,12 @@ public class ExecutionManager {
         return crawler;
     }
 
-    private void runPostExecution() {
-        if (postExecutionTask != null) {
+    private void runTask(String description, Runnable runnable) {
+        if (runnable != null) {
             try {
-                monitor.debug("Run post-execution task");
-                postExecutionTask.run();
-            } catch (Throwable thr) {
-                monitor.severe("Error running post execution task", thr);
-            }
-        }
-    }
-
-    private void runPreExecution() {
-        if (preExecutionTask != null) {
-            try {
-                monitor.debug("Run pre-execution task");
-                preExecutionTask.run();
-            } catch (Throwable thr) {
-                monitor.severe("Error running pre execution task", thr);
+                runnable.run();
+            } catch (Throwable throwable) {
+                monitor.severe("Error running %s task".formatted(description), throwable);
             }
         }
     }
