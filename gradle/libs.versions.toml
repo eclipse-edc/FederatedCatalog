@@ -71,7 +71,7 @@ edc-lib-transform = { module = "org.eclipse.edc:transform-lib", version.ref = "e
 edc-lib-util = { module = "org.eclipse.edc:util-lib", version.ref = "edc" }
 
 # protocol modules
-edc-dsp-api-configuration = { module = "org.eclipse.edc:dsp-http-api-configuration", version.ref = "edc" }
+edc-dsp-api-configuration = { module = "org.eclipse.edc:dsp-http-api-configuration-2025", version.ref = "edc" }
 edc-dsp-all = { module = "org.eclipse.edc:dsp", version.ref = "edc" }
 edc-dsp-transform-catalog = { module = "org.eclipse.edc:dsp-catalog-transform", version.ref = "edc" }
 edc-dsp-transform-catalog-lib = { module = "org.eclipse.edc:dsp-catalog-transform-lib", version.ref = "edc" }
