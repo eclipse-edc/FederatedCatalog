@@ -25,7 +25,6 @@ dependencies {
 
     // required for integration test
     testImplementation(libs.edc.junit)
-    testImplementation(libs.edc.dsp.transform.catalog)
     testImplementation(libs.edc.ext.http)
     testImplementation(libs.awaitility)
 }

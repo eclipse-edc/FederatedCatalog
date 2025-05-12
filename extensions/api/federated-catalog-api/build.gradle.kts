@@ -39,7 +39,6 @@ dependencies {
     testImplementation(libs.restAssured)
     testImplementation(libs.edc.iam.mock)
     testImplementation(libs.edc.lib.json.ld)
-    testImplementation(libs.edc.dsp.transform.catalog)
     testImplementation(libs.edc.dsp.transform.catalog.lib)
     testImplementation(testFixtures(libs.edc.core.jersey))
     testImplementation(libs.edc.lib.transform)
