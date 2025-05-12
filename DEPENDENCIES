@@ -189,7 +189,6 @@ maven/mavencentral/org.eclipse.edc/dsp-catalog-http-dispatcher/0.13.0-SNAPSHOT, 
 maven/mavencentral/org.eclipse.edc/dsp-catalog-transform-08/0.13.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-catalog-transform-2024/0.13.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-catalog-transform-lib/0.13.0-SNAPSHOT, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/dsp-catalog-transform/0.13.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-catalog-validation-lib/0.13.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-core/0.13.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-http-api-base-configuration/0.13.0-SNAPSHOT, Apache-2.0, approved, technology.edc
