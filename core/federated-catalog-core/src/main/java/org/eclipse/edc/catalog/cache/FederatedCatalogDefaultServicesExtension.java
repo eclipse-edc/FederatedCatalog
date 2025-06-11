@@ -31,7 +31,6 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.util.concurrency.LockManager;
 
 import java.time.Duration;
-import java.util.Random;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static java.lang.String.format;
@@ -46,13 +45,25 @@ import static org.eclipse.edc.catalog.spi.CacheSettings.LOW_EXECUTION_PERIOD_SEC
 public class FederatedCatalogDefaultServicesExtension implements ServiceExtension {
 
     public static final String NAME = "Federated Catalog Default Services";
+    private static final int DEFAULT_INITIAL_DELAY = 0;
 
-    @Setting(description = "The time to elapse between two crawl runs", key = "edc.catalog.cache.execution.period.seconds", defaultValue = DEFAULT_EXECUTION_PERIOD_SECONDS + "")
+    @Setting(
+            description = "The time to elapse between two crawl runs",
+            key = "edc.catalog.cache.execution.period.seconds",
+            defaultValue = DEFAULT_EXECUTION_PERIOD_SECONDS + "")
     private long periodSeconds;
 
-    @Setting(description = "The number of crawlers (execution threads) that should be used. The engine will re-use crawlers when necessary.", key = "edc.catalog.cache.partition.num.crawlers", defaultValue = DEFAULT_NUMBER_OF_CRAWLERS + "")
+    @Setting(
+            description = "The number of crawlers (execution threads) that should be used. The engine will re-use crawlers when necessary.",
+            key = "edc.catalog.cache.partition.num.crawlers",
+            defaultValue = DEFAULT_NUMBER_OF_CRAWLERS + "")
     private int numCrawlers;
-    @Setting(description = "The initial delay for the cache crawler engine", key = "edc.catalog.cache.execution.delay.seconds", required = false)
+
+    @Setting(
+            description = "The initial delay for the cache crawler engine",
+            key = "edc.catalog.cache.execution.delay.seconds",
+            required = false,
+            defaultValue = DEFAULT_INITIAL_DELAY + "")
     private Integer delaySeconds;
 
     @Inject
@@ -80,26 +91,11 @@ public class FederatedCatalogDefaultServicesExtension implements ServiceExtensio
 
     @Provider(isDefault = true)
     public ExecutionPlan createRecurringExecutionPlan(ServiceExtensionContext context) {
-        int initialDelaySeconds;
-        if (delaySeconds == null) {
-            initialDelaySeconds = randomSeconds();
-        } else {
-            try {
-                initialDelaySeconds = delaySeconds;
-            } catch (NumberFormatException ex) {
-                initialDelaySeconds = 0;
-            }
-        }
         var monitor = context.getMonitor();
         if (periodSeconds < LOW_EXECUTION_PERIOD_SECONDS_THRESHOLD) {
             monitor.warning(format("An execution period of %d seconds is very low (threshold = %d). This might result in the work queue to be ever growing." +
                                    " A longer execution period or more crawler threads (currently using %d) should be considered.", periodSeconds, LOW_EXECUTION_PERIOD_SECONDS_THRESHOLD, numCrawlers));
         }
-        return new RecurringExecutionPlan(Duration.ofSeconds(periodSeconds), Duration.ofSeconds(initialDelaySeconds), monitor);
-    }
-
-    private int randomSeconds() {
-        var rnd = new Random();
-        return 10 + rnd.nextInt(90);
+        return new RecurringExecutionPlan(Duration.ofSeconds(periodSeconds), Duration.ofSeconds(delaySeconds), monitor);
     }
 }
