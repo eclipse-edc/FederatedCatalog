@@ -1,5 +1,15 @@
 rootProject.name = "federated-catalog"
 
+pluginManagement {
+    repositories {
+        maven {
+            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
 include(":spi:crawler-spi")
 include(":spi:federated-catalog-spi")
 
@@ -22,25 +32,3 @@ include(":version-catalog")
 include(":dist:bom:federatedcatalog-base-bom")
 include(":dist:bom:federatedcatalog-dcp-bom")
 include(":dist:bom:federatedcatalog-feature-sql-bom")
-
-// this is needed to have access to snapshot builds of plugins
-pluginManagement {
-    repositories {
-        mavenLocal()
-        maven {
-            url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-        }
-        mavenCentral()
-        gradlePluginPortal()
-    }
-}
-
-dependencyResolutionManagement {
-    repositories {
-        mavenLocal()
-        maven {
-            url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-        }
-        mavenCentral()
-    }
-}
