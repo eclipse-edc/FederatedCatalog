@@ -7,7 +7,7 @@
 <br>
 [![build](https://img.shields.io/github/actions/workflow/status/eclipse-edc/FederatedCatalog/verify.yaml?branch=main&logo=GitHub&style=flat-square&label=ci)](https://github.com/eclipse-edc/FederatedCatalog/actions/workflows/verify.yaml?query=branch%3Amain)
 [![snapshot build](https://img.shields.io/github/actions/workflow/status/eclipse-edc/FederatedCatalog/trigger_snapshot.yml?branch=main&logo=GitHub&style=flat-square&label=snapshot-build)](https://github.com/eclipse-edc/FederatedCatalog/actions/workflows/trigger_snapshot.yml)
-[![nightly build](https://img.shields.io/github/actions/workflow/status/eclipse-edc/Release/nightly.yaml?branch=main&logo=GitHub&style=flat-square&label=nightly-build)](https://github.com/eclipse-edc/Release/actions/workflows/nightly.yaml)
+[![nightly build](https://img.shields.io/github/actions/workflow/status/eclipse-edc/FederatedCatalog/nightly.yml?branch=main&logo=GitHub&style=flat-square&label=nightly-build)](https://github.com/eclipse-edc/FederatedCatalog/actions/workflows/nightly.yml)
 
 ---
 
