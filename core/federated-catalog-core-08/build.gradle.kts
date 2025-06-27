@@ -53,6 +53,6 @@ dependencies {
     testFixturesImplementation(libs.edc.dsp.transform.catalog.lib)
     testFixturesImplementation(libs.edc.lib.json.ld)
     testFixturesImplementation(libs.edc.controlplane.transform)
-    testFixturesImplementation(libs.edc.dsp.transform.catalog2025)
+    testFixturesImplementation(libs.edc.spi.dsp08)
 
 }

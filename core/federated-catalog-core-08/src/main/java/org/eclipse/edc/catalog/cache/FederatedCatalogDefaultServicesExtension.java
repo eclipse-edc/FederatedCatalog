@@ -41,6 +41,8 @@ import static org.eclipse.edc.catalog.spi.CacheSettings.LOW_EXECUTION_PERIOD_SEC
 /**
  * Provides default service implementations for fallback
  * Omitted {@link org.eclipse.edc.runtime.metamodel.annotation.Extension since there this module already contains {@link FederatedCatalogCacheExtension} }
+ *
+ * @deprecated Please use the {@link FederatedCatalogCacheExtension} in the 'federated-catalog-core` module instead.
  */
 @Deprecated(since = "0.14.0", forRemoval = true)
 public class FederatedCatalogDefaultServicesExtension implements ServiceExtension {
