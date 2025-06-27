@@ -40,6 +40,7 @@ dependencies {
     testImplementation(libs.edc.iam.mock)
     testImplementation(libs.edc.lib.json.ld)
     testImplementation(libs.edc.dsp.transform.catalog.lib)
+    testImplementation(libs.edc.dsp.transform.catalog2025)
     testImplementation(testFixtures(libs.edc.core.jersey))
     testImplementation(libs.edc.lib.transform)
     testImplementation(libs.edc.lib.query)
