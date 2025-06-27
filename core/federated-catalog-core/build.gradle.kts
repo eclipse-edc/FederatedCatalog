@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.edc.lib.util)
     implementation(libs.edc.lib.query)
     implementation(libs.edc.dsp.transform.catalog.lib)
+    implementation(libs.edc.dsp.transform.catalog2025)
     implementation(libs.edc.controlplane.transform)
     implementation(libs.edc.lib.transform)
     implementation(libs.edc.dsp.api.configuration)
@@ -49,4 +50,6 @@ dependencies {
     testFixturesImplementation(libs.edc.dsp.transform.catalog.lib)
     testFixturesImplementation(libs.edc.lib.json.ld)
     testFixturesImplementation(libs.edc.controlplane.transform)
+    testFixturesImplementation(libs.edc.dsp.transform.catalog2025)
+
 }

@@ -29,7 +29,8 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_CATALOG_ATTRI
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_DATASET_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_DATA_SERVICE_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_DISTRIBUTION_TYPE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DSPACE_PROPERTY_PARTICIPANT_ID_IRI;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DSPACE_PROPERTY_PARTICIPANT_ID_TERM;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_NAMESPACE_V_2025_1;
 
 /**
  * Converts from a DCAT catalog as a {@link JsonObject} in JSON-LD expanded form to a {@link Catalog}.
@@ -67,7 +68,7 @@ public class JsonObjectToCatalogTransformer extends AbstractJsonLdTransformer<Js
             transformArrayOrObject(value, Catalog.class, builder::dataset, context);
         } else if (DCAT_DATA_SERVICE_ATTRIBUTE.equalsIgnoreCase(key)) {
             transformArrayOrObject(value, DataService.class, builder::dataService, context);
-        } else if (DSPACE_PROPERTY_PARTICIPANT_ID_IRI.equalsIgnoreCase(key)) {
+        } else if (DSP_NAMESPACE_V_2025_1.toIri(DSPACE_PROPERTY_PARTICIPANT_ID_TERM).equalsIgnoreCase(key)) {
             builder.participantId(transformString(value, context));
         } else if (DCAT_DISTRIBUTION_TYPE.equalsIgnoreCase(key)) {
             transformArrayOrObject(value, Distribution.class, builder::distribution, context);

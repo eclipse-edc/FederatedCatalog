@@ -35,10 +35,10 @@ import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerMethodExtension;
-import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromCatalogTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDataServiceTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDatasetTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDistributionTransformer;
+import org.eclipse.edc.protocol.dsp.catalog.transform.v2025.from.JsonObjectFromCatalogV2025Transformer;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
@@ -65,6 +65,7 @@ import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.transform.odrl.OdrlTransformersFactory.jsonObjectToOdrlTransformers;
 import static org.eclipse.edc.end2end.TestFunctions.createContractDef;
 import static org.eclipse.edc.end2end.TestFunctions.createPolicy;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_NAMESPACE_V_2025_1;
 import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.mockito.Mockito.mock;
@@ -86,20 +87,20 @@ class FederatedCatalogTest {
     @RegisterExtension
     static RuntimeExtension connector = new RuntimePerClassExtension(
             new EmbeddedRuntime("connector", ":system-tests:end2end-test:connector-runtime")
-                .configurationProvider(() -> ConfigFactory.fromMap(configOf("edc.connector.name", "connector1",
-                    "edc.web.rest.cors.enabled", "true",
-                    "web.http.port", CONNECTOR_DEFAULT.port(),
-                    "web.http.path", CONNECTOR_DEFAULT.path(),
-                    "web.http.protocol.port", CONNECTOR_PROTOCOL.port(),
-                    "web.http.protocol.path", CONNECTOR_PROTOCOL.path(),
-                    "web.http.control.port", CONNECTOR_CONTROL.port(),
-                    "web.http.control.path", CONNECTOR_CONTROL.path(),
-                    "web.http.management.port", CONNECTOR_MANAGEMENT.port(),
-                    "edc.participant.id", "test-connector",
-                    "web.http.management.path", CONNECTOR_MANAGEMENT.path(),
-                    "edc.web.rest.cors.headers", "origin,content-type,accept,authorization,x-api-key",
-                    "edc.dsp.callback.address", "http://localhost:%s%s".formatted(CONNECTOR_PROTOCOL.port(), CONNECTOR_PROTOCOL.path())))
-                )
+                    .configurationProvider(() -> ConfigFactory.fromMap(configOf("edc.connector.name", "connector1",
+                            "edc.web.rest.cors.enabled", "true",
+                            "web.http.port", CONNECTOR_DEFAULT.port(),
+                            "web.http.path", CONNECTOR_DEFAULT.path(),
+                            "web.http.protocol.port", CONNECTOR_PROTOCOL.port(),
+                            "web.http.protocol.path", CONNECTOR_PROTOCOL.path(),
+                            "web.http.control.port", CONNECTOR_CONTROL.port(),
+                            "web.http.control.path", CONNECTOR_CONTROL.path(),
+                            "web.http.management.port", CONNECTOR_MANAGEMENT.port(),
+                            "edc.participant.id", "test-connector",
+                            "web.http.management.path", CONNECTOR_MANAGEMENT.path(),
+                            "edc.web.rest.cors.headers", "origin,content-type,accept,authorization,x-api-key",
+                            "edc.dsp.callback.address", "http://localhost:%s%s".formatted(CONNECTOR_PROTOCOL.port(), CONNECTOR_PROTOCOL.path())))
+                    )
     );
 
     @RegisterExtension
@@ -145,7 +146,7 @@ class FederatedCatalogTest {
         mapper.getMapper(JSON_LD).registerModule(new JavaTimeModule());
         var factory = Json.createBuilderFactory(Map.of());
         var participantIdMapper = new NoOpParticipantIdMapper();
-        typeTransformerRegistry.register(new JsonObjectFromCatalogTransformer(factory, mapper, JSON_LD, participantIdMapper));
+        typeTransformerRegistry.register(new JsonObjectFromCatalogV2025Transformer(factory, new JacksonTypeManager(), JSON_LD, participantIdMapper, DSP_NAMESPACE_V_2025_1));
         typeTransformerRegistry.register(new JsonObjectFromDatasetTransformer(factory, mapper, JSON_LD));
         typeTransformerRegistry.register(new JsonObjectFromDataServiceTransformer(factory));
         typeTransformerRegistry.register(new JsonObjectFromPolicyTransformer(factory, participantIdMapper));

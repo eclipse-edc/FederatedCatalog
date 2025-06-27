@@ -25,6 +25,7 @@ dependencies {
     testImplementation(libs.awaitility)
     testImplementation(libs.edc.api.management)
     testImplementation(libs.edc.dsp.transform.catalog.lib)
+    testImplementation(libs.edc.dsp.transform.catalog2025)
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.lib.json.ld)
     testImplementation(libs.jackson.jsr310)

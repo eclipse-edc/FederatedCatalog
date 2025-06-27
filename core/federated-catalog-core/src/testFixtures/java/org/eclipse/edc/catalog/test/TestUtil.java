@@ -29,10 +29,10 @@ import org.eclipse.edc.crawler.spi.TargetNode;
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.participant.spi.ParticipantIdMapper;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromCatalogTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDataServiceTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDatasetTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDistributionTransformer;
+import org.eclipse.edc.protocol.dsp.catalog.transform.v2025.from.JsonObjectFromCatalogV2025Transformer;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,6 +43,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_NAMESPACE_V_2025_1;
 import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 
 public class TestUtil {
@@ -95,20 +96,21 @@ public class TestUtil {
     }
 
     // registers all the necessary transformers to avoid duplicating their behaviour in mocks
-    public static void registerTransformers(TypeTransformerRegistry typeTransformerRegistry1) {
+    public static void registerTransformers(TypeTransformerRegistry registry) {
         var factory = Json.createBuilderFactory(Map.of());
         var typeManager = new JacksonTypeManager();
         var participantIdMapper = new NoOpParticipantIdMapper();
-        typeTransformerRegistry1.register(new JsonObjectFromCatalogTransformer(factory, typeManager, JSON_LD, participantIdMapper));
-        typeTransformerRegistry1.register(new JsonObjectFromDatasetTransformer(factory, typeManager, JSON_LD));
-        typeTransformerRegistry1.register(new JsonObjectFromDataServiceTransformer(factory));
-        typeTransformerRegistry1.register(new JsonObjectFromPolicyTransformer(factory, participantIdMapper));
-        typeTransformerRegistry1.register(new JsonObjectFromDistributionTransformer(factory));
-        typeTransformerRegistry1.register(new JsonObjectToCatalogTransformer());
-        typeTransformerRegistry1.register(new JsonObjectToDatasetTransformer());
-        typeTransformerRegistry1.register(new JsonObjectToDataServiceTransformer());
-        typeTransformerRegistry1.register(new JsonObjectToPolicyTransformer(participantIdMapper));
-        typeTransformerRegistry1.register(new JsonObjectToDistributionTransformer());
+        registry.register(new JsonObjectFromCatalogV2025Transformer(factory, typeManager, JSON_LD, participantIdMapper, DSP_NAMESPACE_V_2025_1));
+
+        registry.register(new JsonObjectFromDatasetTransformer(factory, typeManager, JSON_LD));
+        registry.register(new JsonObjectFromDataServiceTransformer(factory));
+        registry.register(new JsonObjectFromPolicyTransformer(factory, participantIdMapper));
+        registry.register(new JsonObjectFromDistributionTransformer(factory));
+        registry.register(new JsonObjectToCatalogTransformer());
+        registry.register(new JsonObjectToDatasetTransformer());
+        registry.register(new JsonObjectToDataServiceTransformer());
+        registry.register(new JsonObjectToPolicyTransformer(participantIdMapper));
+        registry.register(new JsonObjectToDistributionTransformer());
     }
 
     public static class NoOpParticipantIdMapper implements ParticipantIdMapper {
