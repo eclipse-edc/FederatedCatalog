@@ -27,8 +27,8 @@ Module `crawler-spi`
 **Categories:** _None_
 
 ### Extension points
-  - `org.eclipse.edc.crawler.spi.TargetNodeFilter`
   - `org.eclipse.edc.crawler.spi.TargetNodeDirectory`
+  - `org.eclipse.edc.crawler.spi.TargetNodeFilter`
 
 ### Extensions
 Module `federated-catalog-api`
@@ -110,6 +110,36 @@ Module `federated-catalog-core`
 _None_
 
 ### Extensions
+#### Class: `org.eclipse.edc.catalog.cache.FederatedCatalogDefaultServicesExtension`
+**Name:** "FederatedCatalogDefaultServicesExtension"
+
+### Configuration
+
+| Key                                          | Required | Type     | Default | Pattern | Min | Max | Description                                                                                                     |
+| -------------------------------------------- | -------- | -------- | ------- | ------- | --- | --- | --------------------------------------------------------------------------------------------------------------- |
+| `edc.catalog.cache.execution.period.seconds` | `*`      | `string` | `60`    |         |     |     | The time to elapse between two crawl runs                                                                       |
+| `edc.catalog.cache.partition.num.crawlers`   | `*`      | `string` | `2`     |         |     |     | The number of crawlers (execution threads) that should be used. The engine will re-use crawlers when necessary. |
+| `edc.catalog.cache.execution.delay.seconds`  |          | `string` | `0`     |         |     |     | The initial delay for the cache crawler engine                                                                  |
+
+#### Provided services
+- `org.eclipse.edc.catalog.spi.FederatedCatalogCache`
+- `org.eclipse.edc.crawler.spi.TargetNodeDirectory`
+- `org.eclipse.edc.catalog.spi.QueryService`
+- `org.eclipse.edc.crawler.spi.model.ExecutionPlan`
+
+#### Referenced (injected) services
+- `org.eclipse.edc.catalog.spi.FederatedCatalogCache` (required)
+
+Module `federated-catalog-core-08`
+----------------------------------
+**Artifact:** org.eclipse.edc:federated-catalog-core-08:0.14.0-SNAPSHOT
+
+**Categories:** _None_
+
+### Extension points
+_None_
+
+### Extensions
 #### Class: `org.eclipse.edc.catalog.cache.FederatedCatalogCacheExtension`
 **Name:** "Federated Catalog Cache"
 
@@ -162,6 +192,46 @@ _None_
 
 #### Referenced (injected) services
 - `org.eclipse.edc.catalog.spi.FederatedCatalogCache` (required)
+
+Module `federated-catalog-core-2025`
+------------------------------------
+**Artifact:** org.eclipse.edc:federated-catalog-core-2025:0.14.0-SNAPSHOT
+
+**Categories:** _None_
+
+### Extension points
+_None_
+
+### Extensions
+#### Class: `org.eclipse.edc.catalog.cache.FederatedCatalogCacheExtension`
+**Name:** "Federated Catalog Cache"
+
+**Overview:** No overview provided.
+
+
+### Configuration
+
+| Key                                        | Required | Type     | Default | Pattern | Min | Max | Description                                                                                                     |
+| ------------------------------------------ | -------- | -------- | ------- | ------- | --- | --- | --------------------------------------------------------------------------------------------------------------- |
+| `edc.catalog.cache.execution.enabled`      | `*`      | `string` | `true`  |         |     |     | Determines whether catalog crawling is globally enabled or disabled                                             |
+| `edc.catalog.cache.partition.num.crawlers` | `*`      | `string` | `2`     |         |     |     | The number of crawlers (execution threads) that should be used. The engine will re-use crawlers when necessary. |
+
+#### Provided services
+- `org.eclipse.edc.crawler.spi.CrawlerActionRegistry`
+
+#### Referenced (injected) services
+- `org.eclipse.edc.catalog.spi.FederatedCatalogCache` (required)
+- `org.eclipse.edc.spi.system.health.HealthCheckService` (optional)
+- `org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry` (required)
+- `org.eclipse.edc.crawler.spi.TargetNodeDirectory` (required)
+- `org.eclipse.edc.crawler.spi.TargetNodeFilter` (optional)
+- `org.eclipse.edc.crawler.spi.model.ExecutionPlan` (optional)
+- `org.eclipse.edc.spi.types.TypeManager` (required)
+- `org.eclipse.edc.participant.spi.ParticipantIdMapper` (required)
+- `org.eclipse.edc.transform.spi.TypeTransformerRegistry` (required)
+- `org.eclipse.edc.jsonld.spi.JsonLd` (required)
+- `org.eclipse.edc.spi.monitor.Monitor` (required)
+- `org.eclipse.edc.transform.spi.TypeTransformerRegistry` (required)
 
 Module `federated-catalog-spi`
 ------------------------------
