@@ -40,7 +40,7 @@ import static org.eclipse.edc.catalog.spi.CacheSettings.LOW_EXECUTION_PERIOD_SEC
 
 /**
  * Provides default service implementations for fallback
- * Omitted {@link org.eclipse.edc.runtime.metamodel.annotation.Extension since there this module already contains {@link FederatedCatalogCacheExtension} }
+ * Omitted {@link org.eclipse.edc.runtime.metamodel.annotation.Extension since there this module already contains {@code FederatedCatalogCacheExtension} }
  */
 public class FederatedCatalogDefaultServicesExtension implements ServiceExtension {
 
@@ -94,7 +94,7 @@ public class FederatedCatalogDefaultServicesExtension implements ServiceExtensio
         var monitor = context.getMonitor();
         if (periodSeconds < LOW_EXECUTION_PERIOD_SECONDS_THRESHOLD) {
             monitor.warning(format("An execution period of %d seconds is very low (threshold = %d). This might result in the work queue to be ever growing." +
-                                   " A longer execution period or more crawler threads (currently using %d) should be considered.", periodSeconds, LOW_EXECUTION_PERIOD_SECONDS_THRESHOLD, numCrawlers));
+                    " A longer execution period or more crawler threads (currently using %d) should be considered.", periodSeconds, LOW_EXECUTION_PERIOD_SECONDS_THRESHOLD, numCrawlers));
         }
         return new RecurringExecutionPlan(Duration.ofSeconds(periodSeconds), Duration.ofSeconds(delaySeconds), monitor);
     }
