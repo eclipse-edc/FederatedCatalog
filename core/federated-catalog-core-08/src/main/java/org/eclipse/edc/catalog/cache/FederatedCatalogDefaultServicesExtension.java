@@ -40,8 +40,11 @@ import static org.eclipse.edc.catalog.spi.CacheSettings.LOW_EXECUTION_PERIOD_SEC
 
 /**
  * Provides default service implementations for fallback
- * Omitted {@link org.eclipse.edc.runtime.metamodel.annotation.Extension since there this module already contains {@code FederatedCatalogCacheExtension} }
+ * Omitted {@link org.eclipse.edc.runtime.metamodel.annotation.Extension since there this module already contains {@link FederatedCatalogCacheExtension} }
+ *
+ * @deprecated Please use the {@link FederatedCatalogCacheExtension} in the 'federated-catalog-core` module instead.
  */
+@Deprecated(since = "0.14.0", forRemoval = true)
 public class FederatedCatalogDefaultServicesExtension implements ServiceExtension {
 
     public static final String NAME = "Federated Catalog Default Services";
@@ -72,6 +75,11 @@ public class FederatedCatalogDefaultServicesExtension implements ServiceExtensio
     @Override
     public String name() {
         return NAME;
+    }
+
+    @Override
+    public void initialize(ServiceExtensionContext context) {
+        context.getMonitor().warning("The 'federated-catalog-core-08' module is deprecated will be removed in a future release. Please use extensions and classes located in the 'federated-catalog-core` module instead.");
     }
 
     @Provider(isDefault = true)

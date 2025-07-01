@@ -17,39 +17,28 @@ plugins {
     `java-test-fixtures`
 }
 
+// DEPRECATED: This module is deprecated and will be removed in a future release.
+println("WARNING: The module '${project.name}' is deprecated and will be removed in a future release. Please use 'federated-catalog-core` instead.")
+
 dependencies {
-    api(libs.edc.spi.core)
-    api(libs.edc.spi.web)
-    api(libs.edc.spi.catalog)
-    api(libs.edc.spi.dsp)
-    api(project(":core:crawler-core"))
-    api(project(":spi:federated-catalog-spi"))
-    api(project(":core:common:lib:catalog-util-lib"))
-    api(libs.edc.dsp.transform.catalog.lib)
-    api(libs.edc.controlplane.transform)
-    api(libs.edc.lib.transform)
-    api(libs.edc.lib.query)
+    api(project(":core:federated-catalog-core"))
+    api(libs.edc.spi.dsp08)
 
     implementation(libs.edc.lib.util)
-
-    implementation(libs.edc.dsp.api.configuration)
-    implementation(libs.edc.spi.jsonld)
-    implementation(libs.edc.lib.json.ld)
-    implementation(libs.edc.lib.store)
 
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.ext.http)
     testImplementation(libs.awaitility)
-    testFixturesImplementation(libs.edc.lib.json)
-
-
+    testImplementation(libs.edc.lib.json.ld)
+    testImplementation(testFixtures(project(":core:federated-catalog-core")))
     testImplementation(testFixtures(project(":spi:federated-catalog-spi")))
     testImplementation(testFixtures(project(":spi:crawler-spi")))
 
     // required for integration test
     testFixturesImplementation(libs.edc.dsp.transform.catalog.lib)
+    testFixturesImplementation(libs.edc.lib.json)
     testFixturesImplementation(libs.edc.lib.json.ld)
     testFixturesImplementation(libs.edc.controlplane.transform)
-    testFixturesImplementation(libs.edc.dsp.transform.catalog2025)
+    testFixturesImplementation(libs.edc.spi.dsp08)
 
 }

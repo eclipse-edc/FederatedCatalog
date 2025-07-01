@@ -15,6 +15,8 @@ include(":spi:federated-catalog-spi")
 
 include(":core:crawler-core")
 include(":core:federated-catalog-core")
+include(":core:federated-catalog-core-08")
+include(":core:federated-catalog-core-2025")
 include(":core:common:lib:catalog-util-lib")
 
 include(":extensions:api:federated-catalog-api")

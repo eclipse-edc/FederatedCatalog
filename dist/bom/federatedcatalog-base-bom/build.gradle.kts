@@ -18,7 +18,7 @@ plugins {
 }
 
 dependencies {
-    runtimeOnly(project(":core:federated-catalog-core"))
+    runtimeOnly(project(":core:federated-catalog-core-2025"))
     runtimeOnly(project(":extensions:api:federated-catalog-api"))
     runtimeOnly(project(":spi:federated-catalog-spi"))
     runtimeOnly(libs.edc.lib.util)
