@@ -15,7 +15,6 @@
 package org.eclipse.edc.catalog.test;
 
 import jakarta.json.Json;
-import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDatasetTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDistributionTransformer;
@@ -106,7 +105,7 @@ public class TestUtil {
         registry.register(new JsonObjectFromDataServiceTransformer(factory));
         registry.register(new JsonObjectFromPolicyTransformer(factory, participantIdMapper));
         registry.register(new JsonObjectFromDistributionTransformer(factory));
-        registry.register(new JsonObjectToCatalogTransformer());
+//        registry.register(new JsonObjectToCatalogTransformer());
         registry.register(new JsonObjectToDatasetTransformer());
         registry.register(new JsonObjectToDataServiceTransformer());
         registry.register(new JsonObjectToPolicyTransformer(participantIdMapper));

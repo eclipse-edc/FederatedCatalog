@@ -19,6 +19,7 @@ plugins {
 dependencies {
     testImplementation(project(":spi:federated-catalog-spi"))
     testImplementation(project(":core:federated-catalog-core"))
+    testImplementation(project(":core:federated-catalog-core-2025"))
     testImplementation(libs.edc.core.connector)
     testImplementation(libs.edc.lib.transform)
     testImplementation(libs.edc.controlplane.transform)

@@ -18,33 +18,29 @@ plugins {
 }
 
 dependencies {
-    api(libs.edc.spi.core)
-    api(libs.edc.spi.web)
-    api(libs.edc.spi.catalog)
-    api(libs.edc.spi.dsp)
-    api(project(":core:crawler-core"))
-    api(project(":spi:federated-catalog-spi"))
+    api(project(":core:federated-catalog-core"))
     implementation(project(":core:common:lib:catalog-util-lib"))
-    api(libs.edc.dsp.transform.catalog.lib)
-    api(libs.edc.controlplane.transform)
-    api(libs.edc.lib.transform)
-
-    implementation(libs.edc.lib.util)
-    implementation(libs.edc.lib.query)
-
-    implementation(libs.edc.dsp.api.configuration)
-    implementation(libs.edc.spi.jsonld)
-    implementation(libs.edc.lib.json.ld)
-    implementation(libs.edc.lib.store)
-
-    testImplementation(libs.edc.junit)
-    testImplementation(libs.edc.ext.http)
+    implementation(libs.edc.dsp.transform.catalog2025)
+//    implementation(libs.edc.lib.util)
+//    implementation(libs.edc.lib.query)
+//    implementation(libs.edc.dsp.transform.catalog.lib)
+    implementation(libs.edc.dsp.transform.catalog2025)
+//    implementation(libs.edc.controlplane.transform)
+//    implementation(libs.edc.lib.transform)
+//    implementation(libs.edc.dsp.api.configuration)
+//    implementation(libs.edc.spi.jsonld)
+//    implementation(libs.edc.lib.json.ld)
+//    implementation(libs.edc.lib.store)
+//
+//    testImplementation(libs.edc.ext.http)
     testImplementation(libs.awaitility)
+    testImplementation(libs.edc.junit)
     testFixturesImplementation(libs.edc.lib.json)
 
 
     testImplementation(testFixtures(project(":spi:federated-catalog-spi")))
     testImplementation(testFixtures(project(":spi:crawler-spi")))
+    testImplementation(testFixtures(project(":core:federated-catalog-core")))
 
     // required for integration test
     testFixturesImplementation(libs.edc.dsp.transform.catalog.lib)

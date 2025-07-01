@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.edc.catalog.transform;
+package org.eclipse.edc.catalog.test;
 
 import com.apicatalog.jsonld.document.JsonDocument;
 import jakarta.json.JsonObject;
