@@ -1,21 +1,17 @@
-/*
- *  Copyright (c) 2021 Microsoft Corporation
- *
- *  This program and the accompanying materials are made available under the
- *  terms of the Apache License, Version 2.0 which is available at
- *  https://www.apache.org/licenses/LICENSE-2.0
- *
- *  SPDX-License-Identifier: Apache-2.0
- *
- *  Contributors:
- *       Microsoft Corporation - Initial implementation
- *
- */
+package org.eclipse.edc.catalog;
 
-package org.eclipse.edc.catalog.test;
+import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
+import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
+import org.eclipse.edc.connector.controlplane.catalog.spi.DataService;
+import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
+import org.eclipse.edc.connector.controlplane.catalog.spi.Distribution;
+
+import java.util.List;
+
+import static org.eclipse.edc.catalog.test.TestUtil.buildCatalog;
+
 
 import jakarta.json.Json;
-import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDatasetTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDistributionTransformer;
@@ -29,10 +25,10 @@ import org.eclipse.edc.crawler.spi.TargetNode;
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.participant.spi.ParticipantIdMapper;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromCatalogTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDataServiceTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDatasetTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDistributionTransformer;
+import org.eclipse.edc.protocol.dsp.catalog.transform.v2025.from.JsonObjectFromCatalogV2025Transformer;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,7 +39,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.DSP_NAMESPACE_V_08;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_NAMESPACE_V_2025_1;
 import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 
 public class TestUtil {
@@ -100,7 +96,8 @@ public class TestUtil {
         var factory = Json.createBuilderFactory(Map.of());
         var typeManager = new JacksonTypeManager();
         var participantIdMapper = new NoOpParticipantIdMapper();
-        registry.register(new JsonObjectFromCatalogTransformer(factory, typeManager, JSON_LD, participantIdMapper, DSP_NAMESPACE_V_08));
+        registry.register(new JsonObjectFromCatalogV2025Transformer(factory, typeManager, JSON_LD, participantIdMapper, DSP_NAMESPACE_V_2025_1));
+
         registry.register(new JsonObjectFromDatasetTransformer(factory, typeManager, JSON_LD));
         registry.register(new JsonObjectFromDataServiceTransformer(factory));
         registry.register(new JsonObjectFromPolicyTransformer(factory, participantIdMapper));

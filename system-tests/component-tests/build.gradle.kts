@@ -17,9 +17,9 @@ plugins {
 }
 
 dependencies {
-    testImplementation(project(":core:federated-catalog-core"))
+    testImplementation(project(":core:federated-catalog-core-2025"))
     testImplementation(project(":extensions:api:federated-catalog-api"))
-    
+
     testImplementation(libs.edc.spi.jsonld)
     testImplementation(libs.edc.spi.catalog)
     testImplementation(libs.edc.dsp.all)

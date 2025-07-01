@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.catalog.spi.model.CatalogUpdateResponse;
+import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.crawler.spi.model.UpdateRequest;
@@ -31,8 +32,8 @@ import org.junit.jupiter.api.Test;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.catalog.test.TestUtil.createCatalog;
-import static org.eclipse.edc.catalog.test.TestUtil.registerTransformers;
+import static org.eclipse.edc.catalog.TestUtil.createCatalog;
+import static org.eclipse.edc.catalog.TestUtil.registerTransformers;
 import static org.eclipse.edc.jsonld.util.JacksonJsonLd.createObjectMapper;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;

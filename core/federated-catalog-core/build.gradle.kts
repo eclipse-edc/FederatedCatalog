@@ -24,13 +24,13 @@ dependencies {
     api(libs.edc.spi.dsp)
     api(project(":core:crawler-core"))
     api(project(":spi:federated-catalog-spi"))
-    implementation(project(":core:common:lib:catalog-util-lib"))
+    api(project(":core:common:lib:catalog-util-lib"))
     api(libs.edc.dsp.transform.catalog.lib)
     api(libs.edc.controlplane.transform)
     api(libs.edc.lib.transform)
+    api(libs.edc.lib.query)
 
     implementation(libs.edc.lib.util)
-    implementation(libs.edc.lib.query)
 
     implementation(libs.edc.dsp.api.configuration)
     implementation(libs.edc.spi.jsonld)
