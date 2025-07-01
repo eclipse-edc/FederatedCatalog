@@ -1,17 +1,21 @@
+/*
+ *  Copyright (c) 2025 Microsoft Corporation
+ *
+ *  This program and the accompanying materials are made available under the
+ *  terms of the Apache License, Version 2.0 which is available at
+ *  https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  SPDX-License-Identifier: Apache-2.0
+ *
+ *  Contributors:
+ *       Microsoft Corporation - initial API and implementation
+ *
+ */
+
 package org.eclipse.edc.catalog;
 
-import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
-import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
-import org.eclipse.edc.connector.controlplane.catalog.spi.DataService;
-import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
-import org.eclipse.edc.connector.controlplane.catalog.spi.Distribution;
-
-import java.util.List;
-
-import static org.eclipse.edc.catalog.test.TestUtil.buildCatalog;
-
-
 import jakarta.json.Json;
+import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDatasetTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDistributionTransformer;
