@@ -22,3 +22,20 @@ updates:
     ignore:
       - dependency-name: "org.eclipse.edc:*"
 
+  - package-ecosystem: "docker"
+    target-branch: main
+    directory: launcher/catalog-dcp
+    labels:
+      - "dependabot"
+      - "docker"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "docker"
+    target-branch: main
+    directory: launcher/catalog-mocked
+    labels:
+      - "dependabot"
+      - "docker"
+    schedule:
+      interval: "weekly"
