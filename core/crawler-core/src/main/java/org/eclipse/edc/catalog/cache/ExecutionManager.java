@@ -15,34 +15,28 @@
 
 package org.eclipse.edc.catalog.cache;
 
-import org.eclipse.edc.catalog.cache.crawler.Crawler;
 import org.eclipse.edc.crawler.spi.CrawlerActionRegistry;
-import org.eclipse.edc.crawler.spi.CrawlerErrorHandler;
 import org.eclipse.edc.crawler.spi.CrawlerSuccessHandler;
 import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
 import org.eclipse.edc.crawler.spi.TargetNodeFilter;
 import org.eclipse.edc.crawler.spi.WorkItem;
 import org.eclipse.edc.crawler.spi.model.ExecutionPlan;
+import org.eclipse.edc.crawler.spi.model.UpdateRequest;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Queue;
 import java.util.Random;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static java.lang.String.format;
 
 /**
  * The execution manager is responsible for instantiating crawlers and delegating the incoming work items among them.
  * Work items are fetched directly from the {@link TargetNodeDirectory}, crawlers are instantiated before starting the run and will be reused.
- * For example, a list of 10 work items and 2 {@link Crawler} objects would mean that every crawler gets invoked 5 times.
  * <p>
  * Pre- and Post-Tasks can be registered to perform preparatory or cleanup operations.
  * <p>
@@ -59,6 +53,7 @@ public class ExecutionManager {
     private CrawlerActionRegistry crawlerActionRegistry;
     private CrawlerSuccessHandler successHandler;
     private boolean enabled = true;
+    private ScheduledExecutorService crawlers;
 
     private ExecutionManager() {
         nodeFilter = n -> true;
@@ -87,63 +82,45 @@ public class ExecutionManager {
     }
 
     private void doWork() {
-        // load work items from directory
         var workItems = fetchWorkItems();
         if (workItems.isEmpty()) {
             return;
         }
 
         monitor.debug("Loaded " + workItems.size() + " work items from storage");
-        var allItems = new ArrayBlockingQueue<>(workItems.size(), true, workItems);
 
-        //instantiate fixed pool of crawlers
-        var errorHandler = createErrorHandlers(monitor, allItems);
+        workItems.stream().map(this::createCrawler).forEach(crawler -> crawlers.execute(crawler));
+    }
 
-        var actualNumCrawlers = Math.min(allItems.size(), numCrawlers);
-        monitor.debug(format("Crawler parallelism is %s, based on config and number of work items", actualNumCrawlers));
-        var availableCrawlers = createCrawlers(errorHandler, actualNumCrawlers);
-
-        while (!allItems.isEmpty()) {
-            // try get next available crawler
-            var crawler = nextAvailableCrawler(availableCrawlers);
-            if (crawler == null) {
-                monitor.debug("No crawler available, will retry later");
-                continue;
-            }
-
-            var item = allItems.poll();
-            if (item == null) {
-                monitor.debug("WorkItem queue empty, skip execution");
-                break;
-            }
-
-            // for now use the first adapter that can handle the protocol
+    private Runnable createCrawler(WorkItem item) {
+        return () -> {
             var adapter = crawlerActionRegistry.findForProtocol(item.getProtocol()).stream().findFirst();
             if (adapter.isEmpty()) {
                 monitor.warning(format("No protocol adapter found for protocol '%s'", item.getProtocol()));
             } else {
-                crawler.run(item, adapter.get())
-                        .whenComplete((updateResponse, throwable) -> {
-                            if (throwable != null) {
-                                monitor.severe(format("Unexpected exception occurred during in crawler %s", crawler.getId()), throwable);
-                            } else {
-                                monitor.debug(format("Crawler [%s] is done", crawler.getId()));
-                            }
-                            availableCrawlers.add(crawler);
-                        });
+                var updateRequest = new UpdateRequest(item.getId(), item.getUrl());
+                adapter.get().apply(updateRequest)
+                        .thenAccept(successHandler)
+                        .whenComplete((v, throwable) -> onCompletion(item, throwable));
             }
-        }
+        };
     }
 
-    @Nullable
-    private Crawler nextAvailableCrawler(ArrayBlockingQueue<Crawler> availableCrawlers) {
-        Crawler crawler = null;
-        try {
-            crawler = availableCrawlers.poll(1, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            monitor.debug("interrupted while waiting for crawler to become available");
+    private void onCompletion(WorkItem item, Throwable throwable) {
+        if (throwable == null) {
+            monitor.debug(format("WorkItem [%s] is done", item.getId()));
+        } else {
+            item.error(throwable.getMessage());
+            monitor.severe("Unexpected exception occurred while crawling: " + item.getId(), throwable);
+            if (item.getErrors().size() > 5) {
+                monitor.severe(format("The following WorkItem has errored out more than 5 times. We'll discard it now: [%s]", item));
+            } else {
+                var random = new Random();
+                var delaySeconds = 5 + random.nextInt(20);
+                monitor.debug(format("The following work item has errored out. Will re-queue after a delay of %s seconds: [%s]", delaySeconds, item));
+                crawlers.schedule(createCrawler(item), delaySeconds, TimeUnit.SECONDS);
+            }
         }
-        return crawler;
     }
 
     private void runTask(String description, Runnable runnable) {
@@ -156,14 +133,6 @@ public class ExecutionManager {
         }
     }
 
-    @NotNull
-    private ArrayBlockingQueue<Crawler> createCrawlers(CrawlerErrorHandler errorHandler, int numCrawlers) {
-        var crawlers = IntStream.range(0, numCrawlers)
-                .mapToObj(i -> new Crawler(monitor, errorHandler, successHandler))
-                .toList();
-        return new ArrayBlockingQueue<>(numCrawlers, true, crawlers);
-    }
-
     private List<WorkItem> fetchWorkItems() {
         // use all nodes EXCEPT self
         return directory.getAll().stream()
@@ -173,24 +142,8 @@ public class ExecutionManager {
     }
 
     private String selectProtocol(List<String> supportedProtocols) {
-        //just take the first matching one.
         return supportedProtocols.isEmpty() ? null : supportedProtocols.get(0);
     }
-
-    @NotNull
-    private CrawlerErrorHandler createErrorHandlers(Monitor monitor, Queue<WorkItem> workItems) {
-        return workItem -> {
-            if (workItem.getErrors().size() > 7) {
-                monitor.severe(format("The following WorkItem has errored out more than 7 times. We'll discard it now: [%s]", workItem));
-            } else {
-                var random = new Random();
-                var delaySeconds = 5 + random.nextInt(20);
-                monitor.debug(format("The following work item has errored out. Will re-queue after a delay of %s seconds: [%s]", delaySeconds, workItem));
-                Executors.newSingleThreadScheduledExecutor().schedule(() -> workItems.offer(workItem), delaySeconds, TimeUnit.SECONDS);
-            }
-        };
-    }
-
 
     public static final class Builder {
 
@@ -253,6 +206,9 @@ public class ExecutionManager {
             Objects.requireNonNull(instance.monitor, "ExecutionManager.Builder: Monitor cannot be null");
             Objects.requireNonNull(instance.crawlerActionRegistry, "ExecutionManager.Builder: nodeQueryAdapterRegistry cannot be null");
             Objects.requireNonNull(instance.directory, "ExecutionManager.Builder: nodeDirectory cannot be null");
+
+            instance.crawlers = Executors.newScheduledThreadPool(instance.numCrawlers);
+
             return instance;
         }
     }

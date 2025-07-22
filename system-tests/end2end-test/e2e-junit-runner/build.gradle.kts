@@ -30,6 +30,9 @@ dependencies {
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.lib.json.ld)
     testImplementation(libs.jackson.jsr310)
+
+    testCompileOnly(project(":system-tests:end2end-test:catalog-runtime"))
+    testCompileOnly(project(":system-tests:end2end-test:connector-runtime"))
 }
 
 edcBuild {
