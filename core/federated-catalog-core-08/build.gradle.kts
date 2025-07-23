@@ -17,9 +17,6 @@ plugins {
     `java-test-fixtures`
 }
 
-// DEPRECATED: This module is deprecated and will be removed in a future release.
-println("WARNING: The module '${project.name}' is deprecated and will be removed in a future release. Please use 'federated-catalog-core` instead.")
-
 dependencies {
     api(project(":core:federated-catalog-core"))
     api(libs.edc.spi.dsp08)
