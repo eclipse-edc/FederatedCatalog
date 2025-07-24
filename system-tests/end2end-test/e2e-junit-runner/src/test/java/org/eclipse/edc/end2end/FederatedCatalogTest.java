@@ -14,9 +14,7 @@
 
 package org.eclipse.edc.end2end;
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.json.Json;
-import org.eclipse.edc.catalog.directory.InMemoryNodeDirectory;
 import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
@@ -39,8 +37,10 @@ import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromCatalog
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDataServiceTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDatasetTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDistributionTransformer;
+import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.transform.TypeTransformerRegistryImpl;
@@ -53,18 +53,20 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.time.Duration;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static java.time.Duration.ofSeconds;
+import static java.util.Map.entry;
+import static java.util.Map.ofEntries;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.transform.odrl.OdrlTransformersFactory.jsonObjectToOdrlTransformers;
 import static org.eclipse.edc.end2end.TestFunctions.createContractDef;
 import static org.eclipse.edc.end2end.TestFunctions.createPolicy;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.mockito.Mockito.mock;
@@ -72,7 +74,7 @@ import static org.mockito.Mockito.mock;
 @EndToEndTest
 class FederatedCatalogTest {
 
-    public static final Duration TIMEOUT = ofSeconds(60);
+    public static final Duration TIMEOUT = ofSeconds(30);
     private static final Endpoint CONNECTOR_MANAGEMENT = new Endpoint("/management", "8081");
     private static final Endpoint CONNECTOR_PROTOCOL = new Endpoint("/api/v1/dsp", "8082");
     private static final Endpoint CONNECTOR_DEFAULT = new Endpoint("/api/v1/", "8080");
@@ -86,63 +88,52 @@ class FederatedCatalogTest {
     @RegisterExtension
     static RuntimeExtension connector = new RuntimePerClassExtension(
             new EmbeddedRuntime("connector", ":system-tests:end2end-test:connector-runtime")
-                .configurationProvider(() -> ConfigFactory.fromMap(configOf("edc.connector.name", "connector1",
-                    "edc.web.rest.cors.enabled", "true",
-                    "web.http.port", CONNECTOR_DEFAULT.port(),
-                    "web.http.path", CONNECTOR_DEFAULT.path(),
-                    "web.http.protocol.port", CONNECTOR_PROTOCOL.port(),
-                    "web.http.protocol.path", CONNECTOR_PROTOCOL.path(),
-                    "web.http.control.port", CONNECTOR_CONTROL.port(),
-                    "web.http.control.path", CONNECTOR_CONTROL.path(),
-                    "web.http.management.port", CONNECTOR_MANAGEMENT.port(),
-                    "edc.participant.id", "test-connector",
-                    "web.http.management.path", CONNECTOR_MANAGEMENT.path(),
-                    "edc.web.rest.cors.headers", "origin,content-type,accept,authorization,x-api-key",
-                    "edc.dsp.callback.address", "http://localhost:%s%s".formatted(CONNECTOR_PROTOCOL.port(), CONNECTOR_PROTOCOL.path())))
-                )
+                    .configurationProvider(() -> ConfigFactory.fromMap(Map.ofEntries(
+                            entry("edc.connector.name", "connector1"),
+                            entry("edc.web.rest.cors.enabled", "true"),
+                            entry("web.http.port", CONNECTOR_DEFAULT.port()),
+                            entry("web.http.path", CONNECTOR_DEFAULT.path()),
+                            entry("web.http.protocol.port", CONNECTOR_PROTOCOL.port()),
+                            entry("web.http.protocol.path", CONNECTOR_PROTOCOL.path()),
+                            entry("web.http.control.port", CONNECTOR_CONTROL.port()),
+                            entry("web.http.control.path", CONNECTOR_CONTROL.path()),
+                            entry("web.http.management.port", CONNECTOR_MANAGEMENT.port()),
+                            entry("edc.participant.id", "test-connector"),
+                            entry("web.http.management.path", CONNECTOR_MANAGEMENT.path()),
+                            entry("edc.web.rest.cors.headers", "origin,content-type,accept,authorization,x-api-key"),
+                            entry("edc.dsp.callback.address", "http://localhost:%s%s".formatted(CONNECTOR_PROTOCOL.port(), CONNECTOR_PROTOCOL.path()))
+                    )))
     );
 
     @RegisterExtension
     static RuntimeExtension catalog = new RuntimePerMethodExtension(
             new EmbeddedRuntime("catalog", ":launchers:catalog-mocked")
-                    .configurationProvider(() -> ConfigFactory.fromMap(configOf("edc.catalog.cache.execution.delay.seconds", "0",
-                            "edc.catalog.cache.execution.period.seconds", "2",
-                            "edc.catalog.cache.partition.num.crawlers", "5",
-                            "edc.web.rest.cors.enabled", "true",
-                            "edc.participant.id", "test-catalog",
-                            "web.http.port", CATALOG_DEFAULT.port(),
-                            "web.http.path", CATALOG_DEFAULT.path(),
-                            "web.http.protocol.port", CATALOG_PROTOCOL.port(),
-                            "web.http.protocol.path", CATALOG_PROTOCOL.path(),
-                            "web.http.management.port", CATALOG_MANAGEMENT.port(),
-                            "web.http.management.path", CATALOG_MANAGEMENT.path(),
-                            "web.http.version.port", getFreePort() + "",
-                            "web.http.version.path", "/.well-known/version",
-                            "web.http.catalog.port", CATALOG_CATALOG.port(),
-                            "web.http.catalog.path", CATALOG_CATALOG.path(),
-                            "edc.web.rest.cors.headers", "origin,content-type,accept,authorization,x-api-key"))
-                    )
+                    .configurationProvider(() -> ConfigFactory.fromMap(ofEntries(
+                            entry("edc.catalog.cache.execution.delay.seconds", "0"),
+                            entry("edc.catalog.cache.execution.period.seconds", "5"),
+                            entry("edc.catalog.cache.partition.num.crawlers", "3"),
+                            entry("edc.web.rest.cors.enabled", "true"),
+                            entry("edc.participant.id", "test-catalog"),
+                            entry("web.http.port", CATALOG_DEFAULT.port()),
+                            entry("web.http.path", CATALOG_DEFAULT.path()),
+                            entry("web.http.protocol.port", CATALOG_PROTOCOL.port()),
+                            entry("web.http.protocol.path", CATALOG_PROTOCOL.path()),
+                            entry("web.http.management.port", CATALOG_MANAGEMENT.port()),
+                            entry("web.http.management.path", CATALOG_MANAGEMENT.path()),
+                            entry("web.http.version.port", getFreePort() + ""),
+                            entry("web.http.version.path", "/.well-known/version"),
+                            entry("web.http.catalog.port", CATALOG_CATALOG.port()),
+                            entry("web.http.catalog.path", CATALOG_CATALOG.path()),
+                            entry("edc.web.rest.cors.headers", "origin,content-type,accept,authorization,x-api-key")
+                    )))
     );
+
     private final TypeTransformerRegistry typeTransformerRegistry = new TypeTransformerRegistryImpl();
     private final TypeManager mapper = new JacksonTypeManager();
     private final CatalogApiClient apiClient = new CatalogApiClient(CATALOG_CATALOG, CONNECTOR_MANAGEMENT, JacksonJsonLd.createObjectMapper(), new TitaniumJsonLd(mock(Monitor.class)), typeTransformerRegistry);
 
-    private static Map<String, String> configOf(String... keyValuePairs) {
-        if (keyValuePairs.length % 2 != 0) {
-            throw new IllegalArgumentException("Must have an even number of key value pairs, was " + keyValuePairs.length);
-        }
-
-        var map = new HashMap<String, String>();
-        for (int i = 0; i < keyValuePairs.length - 1; i += 2) {
-            map.put(keyValuePairs[i], keyValuePairs[i + 1]);
-        }
-        return map;
-    }
-
     @BeforeEach
     void setUp() {
-        //needed for ZonedDateTime
-        mapper.getMapper(JSON_LD).registerModule(new JavaTimeModule());
         var factory = Json.createBuilderFactory(Map.of());
         var participantIdMapper = new NoOpParticipantIdMapper();
         typeTransformerRegistry.register(new JsonObjectFromCatalogTransformer(factory, mapper, JSON_LD, participantIdMapper));
@@ -157,35 +148,32 @@ class FederatedCatalogTest {
         typeTransformerRegistry.register(new JsonObjectToDistributionTransformer());
         typeTransformerRegistry.register(new JsonValueToGenericTypeTransformer(mapper, JSON_LD));
 
-        var directory = new InMemoryNodeDirectory();
-        directory.insert(new TargetNode("connector", "did:web:" + UUID.randomUUID(), "http://localhost:%s%s".formatted(CONNECTOR_PROTOCOL.port(), CONNECTOR_PROTOCOL.path()), List.of(CatalogConstants.DATASPACE_PROTOCOL)));
-        catalog.registerServiceMock(TargetNodeDirectory.class, directory);
+        var node = new TargetNode("connector", "did:web:" + UUID.randomUUID(), "http://localhost:%s%s".formatted(CONNECTOR_PROTOCOL.port(), CONNECTOR_PROTOCOL.path()), List.of(CatalogConstants.DATASPACE_PROTOCOL));
+        catalog.registerSystemExtension(ServiceExtension.class, new SeedNodeExtension(node));
     }
 
     @Test
     void crawl_whenOfferAvailable_shouldContainOffer(TestInfo testInfo) {
-        // setup
-        var id = String.format("%s-%s", testInfo.getDisplayName(), UUID.randomUUID());
+        var id = testInfo.getDisplayName() + "-" + UUID.randomUUID();
         var asset = TestFunctions.createAssetJson(id);
         var r = apiClient.postAsset(asset);
-        assertThat(r.succeeded()).withFailMessage(getError(r)).isTrue();
+        assertThat(r).withFailMessage(getError(r)).isSucceeded();
 
         var assetId = r.getContent();
 
-        var policyId = "policy-" + id;
-        var policy = createPolicy(policyId, id);
+        var policy = createPolicy("policy-" + id, id);
         var pr = apiClient.postPolicy(policy);
-        assertThat(r.succeeded()).withFailMessage(getError(pr)).isTrue();
+        assertThat(r).withFailMessage(getError(pr)).isSucceeded();
 
-        policyId = pr.getContent();
+        var policyId = pr.getContent();
 
         var request = createContractDef("def-" + id, policyId, policyId, assetId);
 
         var dr = apiClient.postContractDefinition(request);
-        assertThat(dr.succeeded()).withFailMessage(getError(dr)).isTrue();
+        assertThat(dr).withFailMessage(getError(dr)).isSucceeded();
 
         var assetIdBase64 = Base64.getEncoder().encodeToString(assetId.getBytes());
-        // act-assert
+
         await().pollDelay(ofSeconds(1))
                 .pollInterval(ofSeconds(1))
                 .atMost(TIMEOUT)
@@ -216,5 +204,23 @@ class FederatedCatalogTest {
                     assertThat(dataset.getOffers()).hasSizeGreaterThanOrEqualTo(1);
                     assertThat(dataset.getOffers().keySet()).anyMatch(key -> key.contains(assetIdBase64));
                 }));
+    }
+
+    private static class SeedNodeExtension implements ServiceExtension {
+
+        private final TargetNode node;
+
+        @Inject
+        private TargetNodeDirectory targetNodeDirectory;
+
+        SeedNodeExtension(TargetNode node) {
+            this.node = node;
+        }
+
+        @Override
+        public void prepare() {
+            targetNodeDirectory.insert(node);
+        }
+
     }
 }
