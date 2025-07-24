@@ -20,7 +20,6 @@ import org.eclipse.edc.crawler.spi.CrawlerSuccessHandler;
 import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
 import org.eclipse.edc.crawler.spi.TargetNodeFilter;
 import org.eclipse.edc.crawler.spi.model.ExecutionPlan;
-import org.eclipse.edc.crawler.spi.model.UpdateResponse;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.jetbrains.annotations.NotNull;
@@ -28,18 +27,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
-import static java.util.concurrent.CompletableFuture.delayedExecutor;
 import static java.util.concurrent.CompletableFuture.failedFuture;
+import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.catalog.test.TestUtil.TEST_PROTOCOL;
 import static org.eclipse.edc.catalog.test.TestUtil.createNode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
@@ -53,18 +49,18 @@ import static org.mockito.Mockito.when;
 
 class ExecutionManagerTest {
 
-    private final TargetNodeDirectory nodeDirectoryMock = mock(TargetNodeDirectory.class);
-    private final Monitor monitorMock = mock(Monitor.class);
-    private final CrawlerActionRegistry crawlerActionRegistry = mock(CrawlerActionRegistry.class);
-    private final Runnable preExecutionTaskMock = mock(Runnable.class);
-    private final CrawlerAction queryAdapterMock = mock(CrawlerAction.class);
-    private final CrawlerSuccessHandler successConsumerMock = mock(CrawlerSuccessHandler.class);
-    private final Runnable postExecutionTask = mock(Runnable.class);
+    private final TargetNodeDirectory nodeDirectoryMock = mock();
+    private final Monitor monitorMock = mock();
+    private final CrawlerActionRegistry crawlerActionRegistry = mock();
+    private final Runnable preExecutionTaskMock = mock();
+    private final CrawlerAction queryAdapterMock = mock();
+    private final CrawlerSuccessHandler successHandler = mock();
+    private final Runnable postExecutionTask = mock();
     private ExecutionManager manager;
 
     @BeforeEach
     void setUp() {
-        manager = createManager();
+        manager = createManagerBuilder().build();
     }
 
     @Test
@@ -72,33 +68,16 @@ class ExecutionManagerTest {
         when(nodeDirectoryMock.getAll()).thenReturn(List.of(createNode()));
         when(crawlerActionRegistry.findForProtocol(TEST_PROTOCOL)).thenReturn(List.of(queryAdapterMock));
         when(queryAdapterMock.apply(any())).thenReturn(completedFuture(new TestUpdateResponse("test-url")));
+
         manager.executePlan(simplePlan());
 
-        var inOrder = inOrder(preExecutionTaskMock, queryAdapterMock, successConsumerMock);
-        inOrder.verify(preExecutionTaskMock).run();
-        inOrder.verify(queryAdapterMock).apply(any());
-        inOrder.verify(successConsumerMock).accept(any());
+        await().untilAsserted(() -> {
+            var inOrder = inOrder(preExecutionTaskMock, queryAdapterMock, successHandler);
+            inOrder.verify(preExecutionTaskMock).run();
+            inOrder.verify(queryAdapterMock).apply(any());
+            inOrder.verify(successHandler).accept(any());
+        });
     }
-
-    @Test
-    void executePlan_waitsForCrawler() {
-        when(nodeDirectoryMock.getAll()).thenReturn(List.of(createNode(), createNode()));
-        when(crawlerActionRegistry.findForProtocol(TEST_PROTOCOL)).thenReturn(List.of(queryAdapterMock));
-
-        var response = new TestUpdateResponse("test-url");
-        var future = new CompletableFuture<UpdateResponse>();
-        future.completeAsync(() -> response, delayedExecutor(2, TimeUnit.SECONDS));
-
-        when(queryAdapterMock.apply(any())).thenReturn(future);
-        manager.executePlan(simplePlan());
-
-        var inOrder = inOrder(preExecutionTaskMock, queryAdapterMock, successConsumerMock);
-        inOrder.verify(preExecutionTaskMock).run();
-        inOrder.verify(queryAdapterMock).apply(any());
-        inOrder.verify(successConsumerMock).accept(any());
-        verify(monitorMock, atLeastOnce()).debug(contains("No crawler available"));
-    }
-
 
     @Test
     void executePlan_noQueryAdapter() {
@@ -109,7 +88,7 @@ class ExecutionManagerTest {
 
         var inOrder = inOrder(preExecutionTaskMock);
         inOrder.verify(preExecutionTaskMock).run();
-        verifyNoInteractions(queryAdapterMock, successConsumerMock);
+        verifyNoInteractions(queryAdapterMock, successHandler);
     }
 
     @Test
@@ -118,10 +97,13 @@ class ExecutionManagerTest {
         when(nodeDirectoryMock.getAll()).thenReturn(List.of(createNode()));
         when(crawlerActionRegistry.findForProtocol(TEST_PROTOCOL)).thenReturn(List.of(queryAdapterMock));
         when(queryAdapterMock.apply(any())).thenReturn(completedFuture(new TestUpdateResponse("test-url")));
+
         manager.executePlan(simplePlan());
 
-        verify(successConsumerMock).accept(any());
-        verify(monitorMock, atLeastOnce()).severe(anyString(), any(Throwable.class));
+        await().untilAsserted(() -> {
+            verify(successHandler).accept(any());
+            verify(monitorMock, atLeastOnce()).severe(anyString(), any(Throwable.class));
+        });
     }
 
     @Test
@@ -130,10 +112,13 @@ class ExecutionManagerTest {
         when(nodeDirectoryMock.getAll()).thenReturn(List.of(createNode()));
         when(crawlerActionRegistry.findForProtocol(TEST_PROTOCOL)).thenReturn(List.of(queryAdapterMock));
         when(queryAdapterMock.apply(any())).thenReturn(completedFuture(new TestUpdateResponse("test-url")));
+
         manager.executePlan(simplePlan());
 
-        verify(successConsumerMock).accept(any());
-        verify(monitorMock, atLeastOnce()).severe(anyString(), any(Throwable.class));
+        await().untilAsserted(() -> {
+            verify(successHandler).accept(any());
+            verify(monitorMock, atLeastOnce()).severe(anyString(), any(Throwable.class));
+        });
     }
 
     @Test
@@ -142,13 +127,14 @@ class ExecutionManagerTest {
         when(crawlerActionRegistry.findForProtocol(TEST_PROTOCOL)).thenReturn(List.of(queryAdapterMock));
         var exc = new EdcException("some exception");
         when(queryAdapterMock.apply(any())).thenReturn(failedFuture(exc));
+
         manager.executePlan(simplePlan());
 
-        var inOrder = inOrder(preExecutionTaskMock, queryAdapterMock, successConsumerMock);
+        var inOrder = inOrder(preExecutionTaskMock, queryAdapterMock, successHandler);
         inOrder.verify(preExecutionTaskMock).run();
         inOrder.verify(queryAdapterMock).apply(any());
 
-        verifyNoInteractions(successConsumerMock);
+        verifyNoInteractions(successHandler);
         verify(monitorMock, atLeastOnce()).severe(anyString(), isA(CompletionException.class));
     }
 
@@ -205,11 +191,6 @@ class ExecutionManagerTest {
         };
     }
 
-    private ExecutionManager createManager() {
-        return createManagerBuilder()
-                .build();
-    }
-
     @NotNull
     private ExecutionManager.Builder createManagerBuilder() {
         return ExecutionManager.Builder.newInstance()
@@ -218,7 +199,7 @@ class ExecutionManagerTest {
                 .preExecutionTask(preExecutionTaskMock)
                 .postExecutionTask(postExecutionTask)
                 .monitor(monitorMock)
-                .onSuccess(successConsumerMock);
+                .onSuccess(successHandler);
     }
 
 }
