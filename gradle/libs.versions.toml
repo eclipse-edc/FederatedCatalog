@@ -7,6 +7,7 @@ edc = "0.14.0-SNAPSHOT"
 restAssured = "5.5.0"
 jackson = "2.19.2"
 postgres = "42.7.7"
+testcontainers = "1.21.3"
 
 [libraries]
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
@@ -78,9 +79,10 @@ edc-dsp-transform-catalog-lib = { module = "org.eclipse.edc:dsp-catalog-transfor
 edc-dsp-transform-catalog2025 = { module = "org.eclipse.edc:dsp-catalog-transform-2025", version.ref = "edc" }
 edc-controlplane-transform = { module = "org.eclipse.edc:control-plane-transform", version.ref = "edc" }
 
-# third-party desp
+# third-party deps
 jackson-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
+testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 
 [bundles]
 edc-dpf = ["edc-dpf-selector-spi", "edc-dpf-selector-core"]
