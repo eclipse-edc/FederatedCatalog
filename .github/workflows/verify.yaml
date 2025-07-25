@@ -49,31 +49,6 @@ jobs:
       - name: Run unit tests
         run: ./gradlew test
 
-  Verify-Launcher:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: eclipse-edc/.github/.github/actions/setup-build@main
-
-      - name: 'Build launcher'
-        run: ./gradlew shadowJar
-
-      - name: 'Build Docker image'
-        run: docker build -t federated-catalog:mocked ./launchers/catalog-mocked
-
-      - name: 'Start FCC Container'
-        run: |
-          docker run -d --rm --name fcc \
-            -e "WEB_HTTP_CATALOG_PORT=8183" \
-            -e "WEB_HTTP_CATALOG_PATH=/catalog" \
-            federated-catalog:mocked
-
-      - name: 'Wait for Federated Catalog to be healthy'
-        uses: raschmitt/wait-for-healthy-container@v1
-        with:
-          container-name: fcc
-          timeout: 60
-
   Postgresql-Integration-Tests:
     runs-on: ubuntu-latest
     steps:
@@ -97,12 +72,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
-
-      - name: 'Build Launchers'
-        run: |
-          ./gradlew compileJava compileTestJava
-
-      - name: 'End to End Integration Tests'
+      - name: End to End Tests
         run: ./gradlew test -DincludeTags="EndToEndTest" -PverboseTest=true
 
   API-Tests:
@@ -111,7 +81,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
 
-      - name: Component Tests
+      - name: API Tests
         run: ./gradlew test -DincludeTags="ApiTest"
 
   Verify-OpenApi:

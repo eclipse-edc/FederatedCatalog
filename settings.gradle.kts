@@ -24,11 +24,12 @@ include(":extensions:store:sql:target-node-directory-sql")
 include(":extensions:store:sql:federated-catalog-cache-sql")
 include(":launchers:catalog-dcp")
 include(":launchers:catalog-mocked")
+include(":system-tests:bom-tests")
 include(":system-tests:component-tests")
 include(":system-tests:end2end-test:catalog-runtime")
 include(":system-tests:end2end-test:connector-runtime")
 include(":system-tests:end2end-test:e2e-junit-runner")
-include(":system-tests:bom-tests")
+include(":system-tests:launcher-tests")
 include(":version-catalog")
 
 // BOM modules
