@@ -2,11 +2,11 @@ rootProject.name = "federated-catalog"
 
 pluginManagement {
     repositories {
+        gradlePluginPortal()
+        mavenCentral()
         maven {
             url = uri("https://central.sonatype.com/repository/maven-snapshots/")
         }
-        mavenCentral()
-        gradlePluginPortal()
     }
 }
 
@@ -30,7 +30,6 @@ include(":system-tests:end2end-test:catalog-runtime")
 include(":system-tests:end2end-test:connector-runtime")
 include(":system-tests:end2end-test:e2e-junit-runner")
 include(":system-tests:launcher-tests")
-include(":version-catalog")
 
 // BOM modules
 include(":dist:bom:federatedcatalog-base-bom")
