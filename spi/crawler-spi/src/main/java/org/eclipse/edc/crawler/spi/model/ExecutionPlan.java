@@ -9,7 +9,7 @@
  *
  *  Contributors:
  *       Microsoft Corporation - Initial implementation
- *       Fraunhofer-Gesellschaft - Add stop method
+ *       Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. - Add stop method
  *
  */
 

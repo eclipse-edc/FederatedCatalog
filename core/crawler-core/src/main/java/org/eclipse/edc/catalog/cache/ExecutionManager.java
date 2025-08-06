@@ -9,7 +9,7 @@
  *
  *  Contributors:
  *       Microsoft Corporation - initial API and implementation
- *       Fraunhofer-Gesellschaft - Add shutdown method
+ *       Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. - Add shutdown method
  *
  */
 
