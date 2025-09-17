@@ -28,6 +28,7 @@ dependencies {
     runtimeOnly(libs.edc.core.runtime)
     runtimeOnly(libs.edc.core.connector)
     runtimeOnly(libs.edc.core.jersey)
+    runtimeOnly(libs.edc.core.participant.single)
     runtimeOnly(libs.edc.api.observability)
     runtimeOnly(libs.edc.config.filesystem)
     runtimeOnly(libs.edc.core.edrstore)
