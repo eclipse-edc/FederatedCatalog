@@ -29,6 +29,7 @@ application {
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     mergeServiceFiles()
     archiveFileName.set("fc.jar")
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 edcBuild {
