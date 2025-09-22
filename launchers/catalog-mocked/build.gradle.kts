@@ -32,6 +32,7 @@ application {
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     mergeServiceFiles()
     archiveFileName.set("fc-mocked.jar")
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 edcBuild {

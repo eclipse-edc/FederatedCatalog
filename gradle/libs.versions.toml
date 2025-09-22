@@ -92,5 +92,5 @@ dcp = ["edc-dcp-core", "edc-dcp-issuersconfig", "edc-dcp-service", "edc-dcp-sts-
 
 [plugins]
 edc-build = { id = "org.eclipse.edc.edc-build", version = "1.1.0" }
-shadow = { id = "com.gradleup.shadow", version = "8.3.8" }
+shadow = { id = "com.gradleup.shadow", version = "9.1.0" }
 
