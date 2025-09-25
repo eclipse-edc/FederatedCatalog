@@ -14,6 +14,7 @@
 
 package org.eclipse.edc.catalog.cache;
 
+import org.eclipse.edc.catalog.spi.CatalogCrawlerConfiguration;
 import org.eclipse.edc.crawler.spi.CrawlerAction;
 import org.eclipse.edc.crawler.spi.CrawlerActionRegistry;
 import org.eclipse.edc.crawler.spi.CrawlerSuccessHandler;
@@ -56,7 +57,7 @@ class ExecutionManagerTest {
     private final CrawlerAction queryAdapterMock = mock();
     private final CrawlerSuccessHandler successHandler = mock();
     private final Runnable postExecutionTask = mock();
-    private ExecutionManager manager;
+    private ExecutionManager manager = createManagerBuilder().build();
 
     @BeforeEach
     void setUp() {
@@ -159,7 +160,8 @@ class ExecutionManagerTest {
 
     @Test
     void shutdownPlan_shouldNotStopPlanWhenGloballyDisabled() {
-        manager = createManagerBuilder().isEnabled(false).build();
+
+        manager = createManagerBuilder().configuration(disabledCrawler()).build();
         var mockPlan = mock(ExecutionPlan.class);
         manager.shutdownPlan(mockPlan);
 
@@ -169,12 +171,20 @@ class ExecutionManagerTest {
 
     @Test
     void shutdownPlan_shouldStopPlanWhenGloballyEnabled() {
-        manager = createManagerBuilder().isEnabled(true).build();
+        manager = createManagerBuilder().configuration(enabledCrawler()).build();
         var mockPlan = mock(ExecutionPlan.class);
         manager.shutdownPlan(mockPlan);
 
         verify(mockPlan).stop();
         verifyNoMoreInteractions(monitorMock);
+    }
+
+    private CatalogCrawlerConfiguration disabledCrawler() {
+        return new CatalogCrawlerConfiguration(false, 5, 5, 5, 5, 5);
+    }
+
+    private CatalogCrawlerConfiguration enabledCrawler() {
+        return new CatalogCrawlerConfiguration(true, 5, 5, 5, 5, 5);
     }
 
     private ExecutionPlan simplePlan() {
@@ -194,6 +204,7 @@ class ExecutionManagerTest {
     @NotNull
     private ExecutionManager.Builder createManagerBuilder() {
         return ExecutionManager.Builder.newInstance()
+                .configuration(enabledCrawler())
                 .nodeDirectory(nodeDirectoryMock)
                 .nodeQueryAdapterRegistry(crawlerActionRegistry)
                 .preExecutionTask(preExecutionTaskMock)
