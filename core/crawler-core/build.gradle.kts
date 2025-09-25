@@ -22,6 +22,7 @@ dependencies {
     api(libs.edc.spi.web)
     api(libs.edc.spi.contract)
     api(project(":spi:crawler-spi"))
+    api(project(":spi:federated-catalog-spi"))
 
     // required for integration test
     testImplementation(libs.edc.junit)
