@@ -7,7 +7,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.txt
   version: 1.0.0-alpha
 servers:
-- url: /
+- url: http://localhost:8080
 paths:
   /v1alpha/catalog/query:
     post:
@@ -90,76 +90,6 @@ components:
           dcat: http://www.w3.org/ns/dcat#
           odrl: http://www.w3.org/ns/odrl/2/
           dspace: https://w3id.org/dspace/v0.8/
-    Criterion:
-      required:
-      - operandLeft
-      - operandRight
-      - operator
-      type: object
-      properties:
-        '@type':
-          type: string
-          example: https://w3id.org/edc/v0.0.1/ns/Criterion
-        operandLeft:
-          type: object
-        operandRight:
-          type: object
-        operator:
-          type: string
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@type': Criterion
-        operandLeft: fieldName
-        operator: =
-        operandRight: some value
-    JsonArray:
-      type: array
-      properties:
-        empty:
-          type: boolean
-        valueType:
-          type: string
-          enum:
-          - ARRAY
-          - OBJECT
-          - STRING
-          - NUMBER
-          - "TRUE"
-          - "FALSE"
-          - "NULL"
-      items:
-        $ref: "#/components/schemas/JsonValue"
-    JsonObject:
-      type: object
-      properties:
-        empty:
-          type: boolean
-        valueType:
-          type: string
-          enum:
-          - ARRAY
-          - OBJECT
-          - STRING
-          - NUMBER
-          - "TRUE"
-          - "FALSE"
-          - "NULL"
-      additionalProperties:
-        $ref: "#/components/schemas/JsonValue"
-    JsonValue:
-      type: object
-      properties:
-        valueType:
-          type: string
-          enum:
-          - ARRAY
-          - OBJECT
-          - STRING
-          - NUMBER
-          - "TRUE"
-          - "FALSE"
-          - "NULL"
     QuerySpec:
       type: object
       properties:
@@ -192,3 +122,26 @@ components:
         sortOrder: DESC
         sortField: fieldName
         filterExpression: []
+    Criterion:
+      required:
+      - operandLeft
+      - operandRight
+      - operator
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/Criterion
+        operandLeft:
+          type: object
+        operandRight:
+          type: object
+        operator:
+          type: string
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': Criterion
+        operandLeft: fieldName
+        operator: =
+        operandRight: some value
