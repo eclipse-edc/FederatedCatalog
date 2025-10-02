@@ -18,21 +18,13 @@ package org.eclipse.edc.catalog.cache;
 import jakarta.json.Json;
 import org.eclipse.edc.catalog.cache.crawler.CrawlerActionRegistryImpl;
 import org.eclipse.edc.catalog.cache.query.DspCatalogRequestAction;
-import org.eclipse.edc.catalog.spi.CatalogConstants;
-import org.eclipse.edc.catalog.spi.FederatedCatalogCache;
-import org.eclipse.edc.catalog.spi.model.CatalogUpdateResponse;
 import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDatasetTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDistributionTransformer;
-import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.connector.controlplane.transform.odrl.from.JsonObjectFromPolicyTransformer;
 import org.eclipse.edc.connector.controlplane.transform.odrl.to.JsonObjectToPolicyTransformer;
 import org.eclipse.edc.crawler.spi.CrawlerActionRegistry;
-import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
-import org.eclipse.edc.crawler.spi.TargetNodeFilter;
-import org.eclipse.edc.crawler.spi.model.ExecutionPlan;
-import org.eclipse.edc.crawler.spi.model.UpdateResponse;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.participant.spi.ParticipantIdMapper;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromCatalogTransformer;
@@ -42,13 +34,9 @@ import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDistrib
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
-import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.health.HealthCheckResult;
-import org.eclipse.edc.spi.system.health.HealthCheckService;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.transform.transformer.edc.to.JsonObjectToCriterionTransformer;
@@ -57,8 +45,6 @@ import org.eclipse.edc.transform.transformer.edc.to.JsonValueToGenericTypeTransf
 
 import java.util.Map;
 
-import static java.util.Optional.ofNullable;
-import static org.eclipse.edc.catalog.spi.CacheSettings.DEFAULT_NUMBER_OF_CRAWLERS;
 import static org.eclipse.edc.catalog.spi.CatalogConstants.DATASPACE_PROTOCOL;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.DSP_NAMESPACE_V_08;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.DSP_TRANSFORMER_CONTEXT_V_08;
@@ -68,31 +54,11 @@ import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 @Extension(value = FederatedCatalogCacheExtension.NAME)
 public class FederatedCatalogCacheExtension implements ServiceExtension {
 
-    public static final String NAME = "Federated Catalog Cache";
+    public static final String NAME = "DEPRECATED: Federated Catalog Cache DSP 0.8";
 
-    @Setting(description = "Determines whether catalog crawling is globally enabled or disabled", key = "edc.catalog.cache.execution.enabled", defaultValue = "true")
-    private boolean executionEnabled;
-
-    @Setting(description = "The number of crawlers (execution threads) that should be used. The engine will re-use crawlers when necessary.", key = "edc.catalog.cache.partition.num.crawlers", defaultValue = DEFAULT_NUMBER_OF_CRAWLERS + "")
-    private int numCrawlers;
-
-    @Inject
-    private FederatedCatalogCache store;
-    @Inject(required = false)
-    private HealthCheckService healthCheckService;
     @Inject
     private RemoteMessageDispatcherRegistry dispatcherRegistry;
-    // get all known nodes from node directory - must be supplied by another extension
-    @Inject
-    private TargetNodeDirectory directory;
-    // optional filter function to select FC nodes eligible for crawling.
-    @Inject(required = false)
-    private TargetNodeFilter nodeFilter;
-
-    @Inject(required = false)
-    private ExecutionPlan executionPlan;
     private CrawlerActionRegistryImpl nodeQueryAdapterRegistry;
-    private ExecutionManager executionManager;
     @Inject
     private TypeManager typeManager;
     @Inject
@@ -104,8 +70,6 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
     private JsonLd jsonLdService;
 
     @Inject
-    private Monitor monitor;
-    @Inject
     private TypeTransformerRegistry transformerRegistry;
 
     @Override
@@ -115,42 +79,7 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-
-        context.getMonitor().warning("The 'federated-catalog-core-08' module is deprecated will be removed in a future release. Please use extensions and classes located in the 'federated-catalog-core` module instead.");
-
-        // CRAWLER SUBSYSTEM
-        // contribute to the liveness probe
-        if (healthCheckService != null) {
-            healthCheckService.addReadinessProvider(() -> HealthCheckResult.Builder.newInstance().component("Crawler Subsystem").build());
-        }
-        // by default only uses FC nodes that are not "self"
-        nodeFilter = ofNullable(nodeFilter).orElse(node -> !node.name().equals(context.getRuntimeId()));
-
-        executionManager = ExecutionManager.Builder.newInstance()
-                .monitor(context.getMonitor().withPrefix("ExecutionManager"))
-                .preExecutionTask(() -> {
-                    store.deleteExpired();
-                    store.expireAll();
-                })
-                .numCrawlers(numCrawlers)
-                .nodeQueryAdapterRegistry(createNodeQueryAdapterRegistry(context))
-                .onSuccess(this::persist)
-                .nodeDirectory(directory)
-                .nodeFilterFunction(nodeFilter)
-                .isEnabled(executionEnabled)
-                .build();
-
         registerTransformers(context);
-    }
-
-    @Override
-    public void start() {
-        executionManager.executePlan(executionPlan);
-    }
-
-    @Override
-    public void shutdown() {
-        executionManager.shutdownPlan(executionPlan);
     }
 
     @Provider
@@ -182,21 +111,5 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
         transformerRegistry.register(new JsonObjectToPolicyTransformer(participantIdMapper));
         transformerRegistry.register(new JsonValueToGenericTypeTransformer(typeManager, JSON_LD));
     }
-
-    /**
-     * inserts a particular {@link Catalog} in the {@link FederatedCatalogCache}
-     *
-     * @param updateResponse The response that contains the catalog
-     */
-    private void persist(UpdateResponse updateResponse) {
-        if (updateResponse instanceof CatalogUpdateResponse catalogUpdateResponse) {
-            var catalog = catalogUpdateResponse.getCatalog();
-            catalog.getProperties().put(CatalogConstants.PROPERTY_ORIGINATOR, updateResponse.getSource());
-            store.save(catalog);
-        } else {
-            monitor.warning("Expected a response of type %s but got %s. Will discard".formatted(CatalogUpdateResponse.class, updateResponse.getClass()));
-        }
-    }
-
 
 }
