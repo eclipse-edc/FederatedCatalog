@@ -15,6 +15,7 @@
 
 package org.eclipse.edc.catalog.cache;
 
+import org.eclipse.edc.catalog.spi.CatalogCrawlerConfiguration;
 import org.eclipse.edc.crawler.spi.CrawlerActionRegistry;
 import org.eclipse.edc.crawler.spi.CrawlerSuccessHandler;
 import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
@@ -26,7 +27,6 @@ import org.eclipse.edc.spi.monitor.Monitor;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -49,18 +49,17 @@ public class ExecutionManager {
     private Runnable postExecutionTask;
     private TargetNodeDirectory directory;
     private TargetNodeFilter nodeFilter;
-    private int numCrawlers = 1;
     private CrawlerActionRegistry crawlerActionRegistry;
     private CrawlerSuccessHandler successHandler;
-    private boolean enabled = true;
     private ScheduledExecutorService crawlers;
+    private CatalogCrawlerConfiguration configuration;
 
     private ExecutionManager() {
         nodeFilter = n -> true;
     }
 
     public void executePlan(ExecutionPlan plan) {
-        if (!enabled) {
+        if (!configuration.enabled()) {
             monitor.warning("Execution of crawlers is globally disabled.");
             return;
         }
@@ -74,7 +73,7 @@ public class ExecutionManager {
     }
 
     public void shutdownPlan(ExecutionPlan plan) {
-        if (!enabled) {
+        if (!configuration.enabled()) {
             monitor.warning("Execution of crawlers is globally disabled.");
             return;
         }
@@ -112,13 +111,11 @@ public class ExecutionManager {
         } else {
             item.error(throwable.getMessage());
             monitor.severe("Unexpected exception occurred while crawling: " + item.getId(), throwable);
-            if (item.getErrors().size() > 5) {
-                monitor.severe(format("The following WorkItem has errored out more than 5 times. We'll discard it now: [%s]", item));
+            if (item.getErrors().size() > configuration.maxRetries()) {
+                monitor.severe(format("The following WorkItem has errored out more than %d times. We'll discard it now: [%s]", configuration.maxRetries(), item));
             } else {
-                var random = new Random();
-                var delaySeconds = 5 + random.nextInt(20);
-                monitor.debug(format("The following work item has errored out. Will re-queue after a delay of %s seconds: [%s]", delaySeconds, item));
-                crawlers.schedule(createCrawler(item), delaySeconds, TimeUnit.SECONDS);
+                monitor.debug(format("The following work item has errored out. Will re-queue after a delay of %s seconds: [%s]", configuration.retryDelaySeconds(), item));
+                crawlers.schedule(createCrawler(item), configuration.retryDelaySeconds(), TimeUnit.SECONDS);
             }
         }
     }
@@ -167,16 +164,6 @@ public class ExecutionManager {
             return this;
         }
 
-        public Builder numCrawlers(int numCrawlers) {
-            instance.numCrawlers = numCrawlers;
-            return this;
-        }
-
-        public Builder isEnabled(boolean isEnabled) {
-            instance.enabled = isEnabled;
-            return this;
-        }
-
         public Builder postExecutionTask(Runnable postExecutionTask) {
             instance.postExecutionTask = postExecutionTask;
             return this;
@@ -202,12 +189,18 @@ public class ExecutionManager {
             return this;
         }
 
+        public Builder configuration(CatalogCrawlerConfiguration catalogCrawlerConfiguration) {
+            instance.configuration = catalogCrawlerConfiguration;
+            return this;
+        }
+
         public ExecutionManager build() {
+            Objects.requireNonNull(instance.configuration, "ExecutionManager.Builder: Configuration cannot be null");
             Objects.requireNonNull(instance.monitor, "ExecutionManager.Builder: Monitor cannot be null");
             Objects.requireNonNull(instance.crawlerActionRegistry, "ExecutionManager.Builder: nodeQueryAdapterRegistry cannot be null");
             Objects.requireNonNull(instance.directory, "ExecutionManager.Builder: nodeDirectory cannot be null");
 
-            instance.crawlers = Executors.newScheduledThreadPool(instance.numCrawlers);
+            instance.crawlers = Executors.newScheduledThreadPool(instance.configuration.numCrawlers());
 
             return instance;
         }
