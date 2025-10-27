@@ -58,6 +58,7 @@ edc-spi-jsonld = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-spi-transform = { module = "org.eclipse.edc:transform-spi", version.ref = "edc" }
 edc-spi-dataplane-selector = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
 edc-spi-transaction-datasource = { module = "org.eclipse.edc:transaction-datasource-spi", version.ref = "edc" }
+edc-spi-participant-single = { module = "org.eclipse.edc:participant-context-single-spi", version.ref = "edc" }
 restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssured" }
 
 # EDC libs

@@ -22,8 +22,11 @@ import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.crawler.spi.model.UpdateRequest;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.response.StatusResult;
+import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.transform.TypeTransformerRegistryImpl;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +48,8 @@ class DspCatalogRequestActionTest {
     private final TypeTransformerRegistry typeTransformerRegistry = new TypeTransformerRegistryImpl();
     private final TitaniumJsonLd jsonLdService = new TitaniumJsonLd(mock());
     private final ObjectMapper objectMapper = createObjectMapper();
-    private final DspCatalogRequestAction action = new DspCatalogRequestAction(dispatcherRegistry, mock(), objectMapper, typeTransformerRegistry, jsonLdService);
+    private final SingleParticipantContextSupplier participantContextSupplier = () -> ServiceResult.success(new ParticipantContext("participantContext"));
+    private final DspCatalogRequestAction action = new DspCatalogRequestAction(dispatcherRegistry, participantContextSupplier, mock(), objectMapper, typeTransformerRegistry, jsonLdService);
 
     @BeforeEach
     void setup() {
@@ -57,7 +61,7 @@ class DspCatalogRequestActionTest {
         var request = new UpdateRequest("test-node-id", "https://example.com/test-node-id");
 
         var catalog = toBytes(createCatalog("test-catalog-id"));
-        when(dispatcherRegistry.dispatch(eq(byte[].class), any(CatalogRequestMessage.class)))
+        when(dispatcherRegistry.dispatch(any(), eq(byte[].class), any(CatalogRequestMessage.class)))
                 .thenReturn(completedFuture(catalog));
 
         assertThat(action.apply(request)).isCompletedWithValueMatching(updateResponse -> {
@@ -79,7 +83,7 @@ class DspCatalogRequestActionTest {
         var nestedCatalog = createCatalog("nested-catalog-id");
         rootCatalog.getDatasets().add(nestedCatalog);
 
-        when(dispatcherRegistry.dispatch(eq(byte[].class), any(CatalogRequestMessage.class)))
+        when(dispatcherRegistry.dispatch(any(), eq(byte[].class), any(CatalogRequestMessage.class)))
                 .thenReturn(completedFuture(toBytes(rootCatalog)))
                 .thenReturn(completedFuture(toBytes(nestedCatalog)));
 
@@ -102,7 +106,7 @@ class DspCatalogRequestActionTest {
         var nestedCatalog = createCatalog("nested-catalog-id");
         rootCatalog.getDatasets().add(nestedCatalog);
 
-        when(dispatcherRegistry.dispatch(eq(byte[].class), any(CatalogRequestMessage.class)))
+        when(dispatcherRegistry.dispatch(any(), eq(byte[].class), any(CatalogRequestMessage.class)))
                 .thenReturn(completedFuture(toBytes(rootCatalog)))
                 .thenReturn(completedFuture(toBytes(nestedCatalog)));
 
