@@ -22,6 +22,8 @@ import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.jsonld.spi.JsonLd;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.message.Range;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
@@ -47,13 +49,16 @@ import static org.eclipse.edc.federatedcatalog.util.FederatedCatalogUtil.merge;
  */
 public class PagingCatalogFetcher {
     private final RemoteMessageDispatcherRegistry dispatcherRegistry;
+    private final SingleParticipantContextSupplier participantContextSupplier;
     private final Monitor monitor;
     private final ObjectMapper objectMapper;
     private final TypeTransformerRegistry transformerRegistry;
     private final JsonLd jsonLdService;
 
-    public PagingCatalogFetcher(RemoteMessageDispatcherRegistry dispatcherRegistry, Monitor monitor, ObjectMapper objectMapper, TypeTransformerRegistry transformerRegistry, JsonLd jsonLdService) {
+    public PagingCatalogFetcher(RemoteMessageDispatcherRegistry dispatcherRegistry, SingleParticipantContextSupplier participantContextSupplier,
+                                Monitor monitor, ObjectMapper objectMapper, TypeTransformerRegistry transformerRegistry, JsonLd jsonLdService) {
         this.dispatcherRegistry = dispatcherRegistry;
+        this.participantContextSupplier = participantContextSupplier;
         this.monitor = monitor;
         this.objectMapper = objectMapper;
         this.transformerRegistry = transformerRegistry;
@@ -77,7 +82,13 @@ public class PagingCatalogFetcher {
                 .querySpec(QuerySpec.Builder.newInstance().range(range).build())
                 .build();
 
-        return dispatcherRegistry.dispatch(byte[].class, rq)
+        var participantResult  = participantContextSupplier.get().map(ParticipantContext::participantContextId);
+        if (participantResult.failed()) {
+            return failedFuture(new EdcException(participantResult.getFailureDetail()));
+        }
+
+
+        return dispatcherRegistry.dispatch(participantResult.getContent(), byte[].class, rq)
                 .thenCompose(this::readCatalogFrom)
                 .thenApply(catalog -> copy(catalog).build())
                 .thenCompose(catalog -> {

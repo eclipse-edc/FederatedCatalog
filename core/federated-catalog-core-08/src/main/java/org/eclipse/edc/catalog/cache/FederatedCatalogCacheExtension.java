@@ -27,6 +27,7 @@ import org.eclipse.edc.connector.controlplane.transform.odrl.to.JsonObjectToPoli
 import org.eclipse.edc.crawler.spi.CrawlerActionRegistry;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.participant.spi.ParticipantIdMapper;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromCatalogTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDataServiceTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDatasetTransformer;
@@ -72,6 +73,9 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
     @Inject
     private TypeTransformerRegistry transformerRegistry;
 
+    @Inject
+    private SingleParticipantContextSupplier singleParticipantContextSupplier;
+
     @Override
     public String name() {
         return NAME;
@@ -88,7 +92,7 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
             nodeQueryAdapterRegistry = new CrawlerActionRegistryImpl();
             // catalog queries via IDS multipart and DSP are supported by default
             var mapper = typeManager.getMapper(JSON_LD);
-            nodeQueryAdapterRegistry.register(DATASPACE_PROTOCOL, new DspCatalogRequestAction(dispatcherRegistry, context.getMonitor(), mapper, registry.forContext(DSP_TRANSFORMER_CONTEXT_V_08), jsonLdService));
+            nodeQueryAdapterRegistry.register(DATASPACE_PROTOCOL, new DspCatalogRequestAction(dispatcherRegistry, singleParticipantContextSupplier, context.getMonitor(), mapper, registry.forContext(DSP_TRANSFORMER_CONTEXT_V_08), jsonLdService));
         }
         return nodeQueryAdapterRegistry;
     }
