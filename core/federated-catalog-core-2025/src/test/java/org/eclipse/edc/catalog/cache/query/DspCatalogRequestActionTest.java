@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.catalog.TestUtil.createCatalog;
 import static org.eclipse.edc.catalog.TestUtil.registerTransformers;
 import static org.eclipse.edc.jsonld.util.JacksonJsonLd.createObjectMapper;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DATASPACE_PROTOCOL_HTTP_V_2025_1;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -58,7 +59,7 @@ class DspCatalogRequestActionTest {
 
     @Test
     void apply_withFlatCatalog() {
-        var request = new UpdateRequest("test-node-id", "https://example.com/test-node-id");
+        var request = new UpdateRequest("test-node-id", "https://example.com/test-node-id", DATASPACE_PROTOCOL_HTTP_V_2025_1);
 
         var catalog = toBytes(createCatalog("test-catalog-id"));
         when(dispatcherRegistry.dispatch(any(), eq(byte[].class), any(CatalogRequestMessage.class)))
@@ -76,7 +77,7 @@ class DspCatalogRequestActionTest {
 
     @Test
     void apply_withOnlyNestedCatalog() {
-        var request = new UpdateRequest("test-node-id", "https://example.com/test-node-id");
+        var request = new UpdateRequest("test-node-id", "https://example.com/test-node-id", DATASPACE_PROTOCOL_HTTP_V_2025_1);
 
         var rootCatalog = createCatalog("root-catalog-id");
         rootCatalog.getDatasets().clear();
@@ -100,7 +101,7 @@ class DspCatalogRequestActionTest {
 
     @Test
     void apply_withRootDatasets_andNestedCatalog() {
-        var request = new UpdateRequest("test-node-id", "https://example.com/test-node-id");
+        var request = new UpdateRequest("test-node-id", "https://example.com/test-node-id", DATASPACE_PROTOCOL_HTTP_V_2025_1);
 
         var rootCatalog = createCatalog("root-catalog-id");
         var nestedCatalog = createCatalog("nested-catalog-id");

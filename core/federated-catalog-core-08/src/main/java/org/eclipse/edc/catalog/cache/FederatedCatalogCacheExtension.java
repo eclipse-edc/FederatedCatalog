@@ -16,7 +16,6 @@
 package org.eclipse.edc.catalog.cache;
 
 import jakarta.json.Json;
-import org.eclipse.edc.catalog.cache.crawler.CrawlerActionRegistryImpl;
 import org.eclipse.edc.catalog.cache.query.DspCatalogRequestAction;
 import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
@@ -34,7 +33,6 @@ import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDataset
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDistributionTransformer;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
-import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -59,20 +57,18 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
 
     @Inject
     private RemoteMessageDispatcherRegistry dispatcherRegistry;
-    private CrawlerActionRegistryImpl nodeQueryAdapterRegistry;
+    @Inject
+    private CrawlerActionRegistry crawlerActionRegistry;
     @Inject
     private TypeManager typeManager;
     @Inject
     private ParticipantIdMapper participantIdMapper;
-
     @Inject
     private TypeTransformerRegistry registry;
     @Inject
     private JsonLd jsonLdService;
-
     @Inject
     private TypeTransformerRegistry transformerRegistry;
-
     @Inject
     private SingleParticipantContextSupplier singleParticipantContextSupplier;
 
@@ -83,21 +79,15 @@ public class FederatedCatalogCacheExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        registerTransformers(context);
+        registerTransformers();
+
+        var mapper = typeManager.getMapper(JSON_LD);
+        var dspTransformerRegistry = registry.forContext(DSP_TRANSFORMER_CONTEXT_V_08);
+        var adapter = new DspCatalogRequestAction(dispatcherRegistry, singleParticipantContextSupplier, context.getMonitor(), mapper, dspTransformerRegistry, jsonLdService);
+        crawlerActionRegistry.register(DATASPACE_PROTOCOL, adapter);
     }
 
-    @Provider
-    public CrawlerActionRegistry createNodeQueryAdapterRegistry(ServiceExtensionContext context) {
-        if (nodeQueryAdapterRegistry == null) {
-            nodeQueryAdapterRegistry = new CrawlerActionRegistryImpl();
-            // catalog queries via IDS multipart and DSP are supported by default
-            var mapper = typeManager.getMapper(JSON_LD);
-            nodeQueryAdapterRegistry.register(DATASPACE_PROTOCOL, new DspCatalogRequestAction(dispatcherRegistry, singleParticipantContextSupplier, context.getMonitor(), mapper, registry.forContext(DSP_TRANSFORMER_CONTEXT_V_08), jsonLdService));
-        }
-        return nodeQueryAdapterRegistry;
-    }
-
-    private void registerTransformers(ServiceExtensionContext context) {
+    private void registerTransformers() {
         transformerRegistry.register(new JsonObjectToCatalogTransformer());
         transformerRegistry.register(new JsonObjectToDatasetTransformer());
         transformerRegistry.register(new JsonObjectToDataServiceTransformer());

@@ -14,6 +14,7 @@
 
 package org.eclipse.edc.catalog.cache;
 
+import org.eclipse.edc.catalog.cache.crawler.CrawlerActionRegistryImpl;
 import org.eclipse.edc.catalog.cache.query.QueryServiceImpl;
 import org.eclipse.edc.catalog.crawler.RecurringExecutionPlan;
 import org.eclipse.edc.catalog.directory.InMemoryNodeDirectory;
@@ -21,6 +22,7 @@ import org.eclipse.edc.catalog.spi.CatalogCrawlerConfiguration;
 import org.eclipse.edc.catalog.spi.FederatedCatalogCache;
 import org.eclipse.edc.catalog.spi.QueryService;
 import org.eclipse.edc.catalog.store.InMemoryFederatedCatalogCache;
+import org.eclipse.edc.crawler.spi.CrawlerActionRegistry;
 import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
 import org.eclipse.edc.crawler.spi.model.ExecutionPlan;
 import org.eclipse.edc.query.CriterionOperatorRegistryImpl;
@@ -66,6 +68,11 @@ public class FederatedCatalogDefaultServicesExtension implements ServiceExtensio
     @Provider
     public QueryService defaultQueryEngine() {
         return new QueryServiceImpl(store);
+    }
+
+    @Provider
+    public CrawlerActionRegistry crawlerActionRegistry() {
+        return new CrawlerActionRegistryImpl();
     }
 
     @Provider(isDefault = true)

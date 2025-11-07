@@ -15,7 +15,6 @@
 package org.eclipse.edc.catalog.cache.query;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.spi.model.CatalogUpdateResponse;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequestMessage;
@@ -45,26 +44,24 @@ public class DspCatalogRequestAction implements CrawlerAction {
     private final PagingCatalogFetcher fetcher;
 
     public DspCatalogRequestAction(RemoteMessageDispatcherRegistry dispatcherRegistry, SingleParticipantContextSupplier participantContextSupplier,
-                                   Monitor monitor, ObjectMapper objectMapper, TypeTransformerRegistry transformerRegistry, JsonLd jsonLdService) {
+                                   Monitor monitor, ObjectMapper objectMapper, TypeTransformerRegistry transformerRegistry, JsonLd jsonLdService
+    ) {
         fetcher = new PagingCatalogFetcher(dispatcherRegistry, participantContextSupplier, monitor,  objectMapper, transformerRegistry, jsonLdService);
     }
 
     @Override
     public CompletableFuture<UpdateResponse> apply(UpdateRequest request) {
-        var catalogRequest = createCatalogRequest(request);
-        var catalogFuture = fetcher.fetch(catalogRequest, INITIAL_OFFSET, BATCH_SIZE);
-
-        return catalogFuture
-                .thenCompose(this::expandCatalog)
-                .thenApply(catalog -> new CatalogUpdateResponse(request.nodeUrl(), catalog));
-    }
-
-    private CatalogRequestMessage createCatalogRequest(UpdateRequest request) {
-        return CatalogRequestMessage.Builder.newInstance()
-                .protocol(CatalogConstants.DATASPACE_PROTOCOL)
+        var catalogRequest = CatalogRequestMessage.Builder.newInstance()
+                .protocol(request.protocol())
                 .counterPartyAddress(request.nodeUrl())
                 .counterPartyId(request.nodeId())
                 .build();
+
+        var catalogFuture = fetcher.fetch(catalogRequest, INITIAL_OFFSET, BATCH_SIZE);
+
+        return catalogFuture
+                .thenCompose(rootCatalog -> expandCatalog(rootCatalog, request.protocol()))
+                .thenApply(catalog -> new CatalogUpdateResponse(request.nodeUrl(), catalog));
     }
 
     /**
@@ -73,9 +70,10 @@ public class DspCatalogRequestAction implements CrawlerAction {
      * Note that this method will preserve hierarchy, so there could be catalogs within catalogs withing catalogs...
      *
      * @param rootCatalog the root catalog, e.g. of a catalog server
+     * @param protocol the protocol
      * @return a {@link Catalog} that contains expanded subcatalogs
      */
-    private CompletableFuture<Catalog> expandCatalog(Catalog rootCatalog) {
+    private CompletableFuture<Catalog> expandCatalog(Catalog rootCatalog, String protocol) {
         var partitions = rootCatalog.getDatasets().stream().collect(Collectors.groupingBy(Dataset::getClass));
 
         var subCatalogs = partitions.get(Catalog.class);
@@ -92,7 +90,7 @@ public class DspCatalogRequestAction implements CrawlerAction {
                         .findFirst()
                         .map(url -> {
                             var id = ofNullable(subCatalog.getParticipantId()).orElseGet(rootCatalog::getParticipantId);
-                            return new UpdateRequest(id, url);
+                            return new UpdateRequest(id, url, protocol);
                         })
                         .orElse(null))
                 .filter(Objects::nonNull)

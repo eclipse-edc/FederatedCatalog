@@ -18,7 +18,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.catalog.cache.query.PagingCatalogFetcher;
-import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
@@ -40,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.catalog.TestUtil.createCatalog;
 import static org.eclipse.edc.catalog.TestUtil.registerTransformers;
 import static org.eclipse.edc.jsonld.util.JacksonJsonLd.createObjectMapper;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DATASPACE_PROTOCOL_HTTP_V_2025_1;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -104,7 +104,7 @@ class PagingCatalogFetcherTest {
     private CatalogRequestMessage createRequest() {
         return CatalogRequestMessage.Builder.newInstance()
                 .counterPartyAddress("test-address")
-                .protocol(CatalogConstants.DATASPACE_PROTOCOL)
+                .protocol(DATASPACE_PROTOCOL_HTTP_V_2025_1)
                 .build();
     }
 

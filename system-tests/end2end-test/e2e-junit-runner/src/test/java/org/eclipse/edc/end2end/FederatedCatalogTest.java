@@ -15,7 +15,6 @@
 package org.eclipse.edc.end2end;
 
 import jakarta.json.Json;
-import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.catalog.transform.JsonObjectToCatalogTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDataServiceTransformer;
 import org.eclipse.edc.catalog.transform.JsonObjectToDatasetTransformer;
@@ -67,7 +66,9 @@ import static org.eclipse.edc.connector.controlplane.transform.odrl.OdrlTransfor
 import static org.eclipse.edc.end2end.TestFunctions.createContractDef;
 import static org.eclipse.edc.end2end.TestFunctions.createPolicy;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DATASPACE_PROTOCOL_HTTP_V_2025_1;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_NAMESPACE_V_2025_1;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.V_2025_1_VERSION;
 import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.mockito.Mockito.mock;
@@ -149,7 +150,11 @@ class FederatedCatalogTest {
         typeTransformerRegistry.register(new JsonObjectToDistributionTransformer());
         typeTransformerRegistry.register(new JsonValueToGenericTypeTransformer(mapper, JSON_LD));
 
-        var node = new TargetNode("connector", "did:web:" + UUID.randomUUID(), "http://localhost:%s%s".formatted(CONNECTOR_PROTOCOL.port(), CONNECTOR_PROTOCOL.path()), List.of(CatalogConstants.DATASPACE_PROTOCOL));
+        var node = new TargetNode(
+                "connector", "did:web:" + UUID.randomUUID(),
+                "http://localhost:%s%s".formatted(CONNECTOR_PROTOCOL.port(), CONNECTOR_PROTOCOL.path() + "/" + V_2025_1_VERSION),
+                List.of(DATASPACE_PROTOCOL_HTTP_V_2025_1)
+        );
         catalog.registerSystemExtension(ServiceExtension.class, new SeedNodeExtension(node));
     }
 

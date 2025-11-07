@@ -31,6 +31,7 @@ dependencies {
     testImplementation(libs.edc.lib.json.ld)
     testImplementation(libs.jackson.jsr310)
 
+    testCompileOnly(project(":launchers:catalog-mocked"))
     testCompileOnly(project(":system-tests:end2end-test:catalog-runtime"))
     testCompileOnly(project(":system-tests:end2end-test:connector-runtime"))
 }

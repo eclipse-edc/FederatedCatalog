@@ -25,18 +25,18 @@ import java.util.List;
 public class WorkItem {
     private final String id;
     private final String url;
-    private final String protocolName;
+    private final String protocol;
     private final List<String> errors;
 
-    public WorkItem(String id, String url, String protocolName) {
+    public WorkItem(String id, String url, String protocol) {
         this.id = id;
         this.url = url;
-        this.protocolName = protocolName;
+        this.protocol = protocol;
         errors = new ArrayList<>();
     }
 
     public String getProtocol() {
-        return protocolName;
+        return protocol;
     }
 
     public String getUrl() {
@@ -60,7 +60,7 @@ public class WorkItem {
         return "WorkItem{" +
                 "id='" + id + '\'' +
                 ", url='" + url + '\'' +
-                ", protocolName='" + protocolName + '\'' +
+                ", protocol='" + protocol + '\'' +
                 ", errors=" + errors +
                 '}';
     }

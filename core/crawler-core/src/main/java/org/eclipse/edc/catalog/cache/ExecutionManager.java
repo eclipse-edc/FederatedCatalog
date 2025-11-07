@@ -97,7 +97,7 @@ public class ExecutionManager {
             if (adapter.isEmpty()) {
                 monitor.warning(format("No protocol adapter found for protocol '%s'", item.getProtocol()));
             } else {
-                var updateRequest = new UpdateRequest(item.getId(), item.getUrl());
+                var updateRequest = new UpdateRequest(item.getId(), item.getUrl(), item.getProtocol());
                 adapter.get().apply(updateRequest)
                         .thenAccept(successHandler)
                         .whenComplete((v, throwable) -> onCompletion(item, throwable));
