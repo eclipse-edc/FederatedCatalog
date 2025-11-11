@@ -131,6 +131,7 @@ _None_
 - `org.eclipse.edc.catalog.spi.FederatedCatalogCache`
 - `org.eclipse.edc.crawler.spi.TargetNodeDirectory`
 - `org.eclipse.edc.catalog.spi.QueryService`
+- `org.eclipse.edc.crawler.spi.CrawlerActionRegistry`
 - `org.eclipse.edc.crawler.spi.model.ExecutionPlan`
 
 #### Referenced (injected) services
@@ -183,10 +184,11 @@ _None_
 ### Configuration_None_
 
 #### Provided services
-- `org.eclipse.edc.crawler.spi.CrawlerActionRegistry`
+_None_
 
 #### Referenced (injected) services
 - `org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry` (required)
+- `org.eclipse.edc.crawler.spi.CrawlerActionRegistry` (required)
 - `org.eclipse.edc.spi.types.TypeManager` (required)
 - `org.eclipse.edc.participant.spi.ParticipantIdMapper` (required)
 - `org.eclipse.edc.transform.spi.TypeTransformerRegistry` (required)
@@ -213,10 +215,11 @@ _None_
 ### Configuration_None_
 
 #### Provided services
-- `org.eclipse.edc.crawler.spi.CrawlerActionRegistry`
+_None_
 
 #### Referenced (injected) services
 - `org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry` (required)
+- `org.eclipse.edc.crawler.spi.CrawlerActionRegistry` (required)
 - `org.eclipse.edc.spi.types.TypeManager` (required)
 - `org.eclipse.edc.participant.spi.ParticipantIdMapper` (required)
 - `org.eclipse.edc.transform.spi.TypeTransformerRegistry` (required)
