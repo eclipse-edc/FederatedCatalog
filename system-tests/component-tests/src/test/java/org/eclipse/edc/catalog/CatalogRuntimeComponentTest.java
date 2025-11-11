@@ -34,6 +34,7 @@ import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.response.StatusResult;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -58,13 +59,12 @@ import static org.eclipse.edc.catalog.TestFunctions.catalogBuilder;
 import static org.eclipse.edc.catalog.TestFunctions.catalogOf;
 import static org.eclipse.edc.catalog.TestFunctions.createDataset;
 import static org.eclipse.edc.catalog.TestFunctions.emptyCatalog;
-import static org.eclipse.edc.catalog.TestFunctions.insertSingle;
 import static org.eclipse.edc.catalog.TestFunctions.queryCatalogApi;
 import static org.eclipse.edc.catalog.TestFunctions.randomCatalog;
 import static org.eclipse.edc.catalog.matchers.CatalogRequestMatcher.sentTo;
-import static org.eclipse.edc.catalog.spi.CatalogConstants.DATASPACE_PROTOCOL;
 import static org.eclipse.edc.catalog.spi.CatalogConstants.PROPERTY_ORIGINATOR;
 import static org.eclipse.edc.jsonld.util.JacksonJsonLd.createObjectMapper;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DATASPACE_PROTOCOL_HTTP_V_2025_1;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -108,9 +108,9 @@ public class CatalogRuntimeComponentTest {
     @DisplayName("Crawl a single target, yields no results")
     void crawlSingle_noResults(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
         // prepare node directory
-        insertSingle(directory);
+        directory.insert(targetNode());
         // intercept request egress
-        reg.register(DATASPACE_PROTOCOL, dispatcher);
+        reg.register(DATASPACE_PROTOCOL_HTTP_V_2025_1, dispatcher);
         when(dispatcher.dispatch(any(), eq(byte[].class), isA(CatalogRequestMessage.class)))
                 .thenReturn(emptyCatalog(catalog -> toBytes(ttr, catalog)));
 
@@ -127,9 +127,9 @@ public class CatalogRuntimeComponentTest {
     @DisplayName("Crawl a single target, yields some results")
     void crawlSingle_withResults(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
         // prepare node directory
-        insertSingle(directory);
+        directory.insert(targetNode());
         // intercept request egress
-        reg.register(DATASPACE_PROTOCOL, dispatcher);
+        reg.register(DATASPACE_PROTOCOL_HTTP_V_2025_1, dispatcher);
         when(dispatcher.dispatch(any(), eq(byte[].class), isA(CatalogRequestMessage.class)))
                 .thenReturn(randomCatalog(catalog -> toBytes(ttr, catalog), TEST_CATALOG_ID, 5))
                 .thenReturn(emptyCatalog(catalog -> toBytes(ttr, catalog))); // this is important, otherwise there is an endless loop!
@@ -146,9 +146,9 @@ public class CatalogRuntimeComponentTest {
     @DisplayName("Crawl a single target, returns a catalog of catalogs")
     void crawlSingle_withCatalogOfCatalogs(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
         // prepare node directory
-        insertSingle(directory);
+        directory.insert(targetNode());
         // intercept request egress
-        reg.register(DATASPACE_PROTOCOL, dispatcher);
+        reg.register(DATASPACE_PROTOCOL_HTTP_V_2025_1, dispatcher);
         when(dispatcher.dispatch(any(), eq(byte[].class), isA(CatalogRequestMessage.class)))
                 .thenReturn(randomCatalog(catalog -> StatusResult.success(TestUtils.getResourceFileContentAsString("catalog_of_catalogs.json").getBytes()), "root-catalog-id", 5))
                 .thenReturn(randomCatalog(catalog -> StatusResult.success(TestUtils.getResourceFileContentAsString("catalog.json").getBytes()), "sub-catalog-id", 5));
@@ -168,10 +168,10 @@ public class CatalogRuntimeComponentTest {
     @DisplayName("Crawl a single targets, > 100 results, needs paging")
     void crawlSingle_withPagedResults(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
         // prepare node directory
-        insertSingle(directory);
+        directory.insert(targetNode());
 
         // intercept request egress
-        reg.register(DATASPACE_PROTOCOL, dispatcher);
+        reg.register(DATASPACE_PROTOCOL_HTTP_V_2025_1, dispatcher);
         when(dispatcher.dispatch(any(), eq(byte[].class), isA(CatalogRequestMessage.class)))
                 .thenReturn(randomCatalog(catalog -> toBytes(ttr, catalog), TEST_CATALOG_ID, 100))
                 .thenReturn(randomCatalog(catalog -> toBytes(ttr, catalog), TEST_CATALOG_ID, 100))
@@ -192,10 +192,10 @@ public class CatalogRuntimeComponentTest {
     @DisplayName("Crawl a single target twice, emulate deletion of assets")
     void crawlSingle_withDeletions_shouldRemove(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
         // prepare node directory
-        insertSingle(directory);
+        directory.insert(targetNode());
 
         // intercept request egress
-        reg.register(DATASPACE_PROTOCOL, dispatcher);
+        reg.register(DATASPACE_PROTOCOL_HTTP_V_2025_1, dispatcher);
         when(dispatcher.dispatch(any(), eq(byte[].class), isA(CatalogRequestMessage.class)))
                 .thenReturn(completedFuture(toBytes(ttr, catalogBuilder().id(TEST_CATALOG_ID).datasets(new ArrayList<>(List.of(
                         createDataset("offer1"), createDataset("offer2"), createDataset("offer3")
@@ -221,10 +221,10 @@ public class CatalogRuntimeComponentTest {
     @DisplayName("Crawl a single target twice, emulate deleting and re-adding of assets with same ID")
     void crawlSingle_withUpdates_shouldReplace(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
         // prepare node directory
-        insertSingle(directory);
+        directory.insert(targetNode());
 
         // intercept request egress
-        reg.register(DATASPACE_PROTOCOL, dispatcher);
+        reg.register(DATASPACE_PROTOCOL_HTTP_V_2025_1, dispatcher);
         when(dispatcher.dispatch(any(), eq(byte[].class), isA(CatalogRequestMessage.class)))
                 .thenReturn(completedFuture(toBytes(ttr, catalogBuilder().id(TEST_CATALOG_ID).datasets(new ArrayList<>(List.of(
                         createDataset("offer1"), createDataset("offer2"), createDataset("offer3")
@@ -249,10 +249,10 @@ public class CatalogRuntimeComponentTest {
     @DisplayName("Crawl a single target twice, emulate addition of assets")
     void crawlSingle_withAdditions_shouldAdd(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
         // prepare node directory
-        insertSingle(directory);
+        directory.insert(targetNode());
 
         // intercept request egress
-        reg.register(DATASPACE_PROTOCOL, dispatcher);
+        reg.register(DATASPACE_PROTOCOL_HTTP_V_2025_1, dispatcher);
         when(dispatcher.dispatch(any(), eq(byte[].class), isA(CatalogRequestMessage.class)))
                 .thenAnswer(a -> completedFuture(toBytes(ttr, catalogBuilder().id("test-cat")
                         .datasets(List.of(createDataset("dataset1"), createDataset("dataset2"))).build())))
@@ -278,9 +278,9 @@ public class CatalogRuntimeComponentTest {
     @DisplayName("Crawl a single target, verify that the originator information is properly inserted")
     void crawlSingle_verifyCorrectOriginator(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
         // prepare node directory
-        insertSingle(directory);
+        directory.insert(targetNode());
         // intercept request egress
-        reg.register(DATASPACE_PROTOCOL, dispatcher);
+        reg.register(DATASPACE_PROTOCOL_HTTP_V_2025_1, dispatcher);
         when(dispatcher.dispatch(any(), eq(byte[].class), isA(CatalogRequestMessage.class)))
                 .thenReturn(randomCatalog(catalog -> toBytes(ttr, catalog), TEST_CATALOG_ID, 5))
                 .thenReturn(emptyCatalog(catalog -> toBytes(ttr, catalog))); // this is important, otherwise there is an endless loop!
@@ -303,13 +303,13 @@ public class CatalogRuntimeComponentTest {
         var rnd = new SecureRandom();
 
         // create 1000 crawl targets, setup dispatcher mocks for them
-        reg.register(DATASPACE_PROTOCOL, dispatcher);
+        reg.register(DATASPACE_PROTOCOL_HTTP_V_2025_1, dispatcher);
         var numTargets = 50;
         range(0, numTargets)
                 .forEach(i -> {
                     var nodeId = "did:web:" + UUID.randomUUID();
                     var nodeUrl = format("http://test-node%s.com", i);
-                    var node = new TargetNode("test-node-" + i, nodeId, nodeUrl, singletonList(DATASPACE_PROTOCOL));
+                    var node = new TargetNode("test-node-" + i, nodeId, nodeUrl, singletonList(DATASPACE_PROTOCOL_HTTP_V_2025_1));
                     directory.insert(node);
 
                     var numAssets = 1 + rnd.nextInt(10);
@@ -331,12 +331,12 @@ public class CatalogRuntimeComponentTest {
     @Test
     @DisplayName("Crawl multiple targets with conflicting asset IDs")
     void crawlMultiple_whenConflictingAssetIds_shouldOverwrite(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
-        var node1 = new TargetNode("test-node1", "did:web:" + UUID.randomUUID(), "http://test-node1.com", singletonList(DATASPACE_PROTOCOL));
-        var node2 = new TargetNode("test-node2", "did:web:" + UUID.randomUUID(), "http://test-node2.com", singletonList(DATASPACE_PROTOCOL));
+        var node1 = new TargetNode("test-node1", "did:web:" + UUID.randomUUID(), "http://test-node1.com", singletonList(DATASPACE_PROTOCOL_HTTP_V_2025_1));
+        var node2 = new TargetNode("test-node2", "did:web:" + UUID.randomUUID(), "http://test-node2.com", singletonList(DATASPACE_PROTOCOL_HTTP_V_2025_1));
 
         directory.insert(node1);
         directory.insert(node2);
-        reg.register(DATASPACE_PROTOCOL, dispatcher);
+        reg.register(DATASPACE_PROTOCOL_HTTP_V_2025_1, dispatcher);
 
         when(dispatcher.dispatch(any(), eq(byte[].class), argThat(sentTo(node1.id(), node1.targetUrl()))))
                 .thenReturn(catalogOf(catalog -> toBytes(ttr, catalog), "catalog-" + node1.targetUrl(), createDataset("offer1"), createDataset("offer2"), createDataset("offer3")))
@@ -370,5 +370,9 @@ public class CatalogRuntimeComponentTest {
         } catch (JsonProcessingException ex) {
             throw new AssertionError(ex);
         }
+    }
+
+    private @NotNull TargetNode targetNode() {
+        return new TargetNode("test-node", "did:web:" + UUID.randomUUID(), "http://test-node.com", singletonList(DATASPACE_PROTOCOL_HTTP_V_2025_1));
     }
 }

@@ -22,7 +22,7 @@ import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
-import static org.eclipse.edc.catalog.spi.CatalogConstants.DATASPACE_PROTOCOL;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DATASPACE_PROTOCOL_HTTP_V_2025_1;
 import static org.mockito.Mockito.mock;
 
 public class MockInjectionExtension implements ServiceExtension {
@@ -33,7 +33,7 @@ public class MockInjectionExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        registry.register(DATASPACE_PROTOCOL, createDispatcher());
+        registry.register(DATASPACE_PROTOCOL_HTTP_V_2025_1, createDispatcher());
     }
 
     @Provider

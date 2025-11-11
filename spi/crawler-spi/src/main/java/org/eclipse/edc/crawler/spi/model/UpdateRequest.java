@@ -20,5 +20,5 @@ import org.eclipse.edc.crawler.spi.CrawlerAction;
 /**
  * {@link CrawlerAction}s accept {@code UpdateRequests} to execute
  */
-public record UpdateRequest(String nodeId, String nodeUrl) {
+public record UpdateRequest(String nodeId, String nodeUrl, String protocol) {
 }

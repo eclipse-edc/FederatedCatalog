@@ -22,13 +22,10 @@ import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
-import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.connector.controlplane.catalog.spi.DataService;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Distribution;
-import org.eclipse.edc.crawler.spi.TargetNode;
-import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
 import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.policy.model.Policy;
@@ -48,7 +45,6 @@ import java.util.stream.IntStream;
 
 import static io.restassured.RestAssured.given;
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
@@ -98,10 +94,6 @@ public class TestFunctions {
                 .id(id)
                 .datasets(IntStream.range(0, howManyDatasets).mapToObj(i -> createDataset("DataSet_" + UUID.randomUUID())).collect(toList()))
                 .build()));
-    }
-
-    public static void insertSingle(TargetNodeDirectory directory) {
-        directory.insert(new TargetNode("test-node", "did:web:" + UUID.randomUUID(), "http://test-node.com", singletonList(CatalogConstants.DATASPACE_PROTOCOL)));
     }
 
     public static List<Catalog> queryCatalogApi(Function<JsonObject, Catalog> transformerFunction) {

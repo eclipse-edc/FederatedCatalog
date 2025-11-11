@@ -17,7 +17,6 @@ package org.eclipse.edc.catalog.cache.query;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.JsonObject;
-import org.eclipse.edc.catalog.spi.CatalogConstants;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractOffer;
@@ -77,8 +76,10 @@ public class PagingCatalogFetcher {
     public @NotNull CompletableFuture<Catalog> fetch(CatalogRequestMessage catalogRequest, int from, int batchSize) {
 
         var range = new Range(from, from + batchSize);
-        var rq = toBuilder(catalogRequest)
-                .protocol(CatalogConstants.DATASPACE_PROTOCOL)
+        var rangedRequest = CatalogRequestMessage.Builder.newInstance()
+                .counterPartyAddress(catalogRequest.getCounterPartyAddress())
+                .counterPartyId(catalogRequest.getCounterPartyId())
+                .protocol(catalogRequest.getProtocol())
                 .querySpec(QuerySpec.Builder.newInstance().range(range).build())
                 .build();
 
@@ -87,8 +88,7 @@ public class PagingCatalogFetcher {
             return failedFuture(new EdcException(participantResult.getFailureDetail()));
         }
 
-
-        return dispatcherRegistry.dispatch(participantResult.getContent(), byte[].class, rq)
+        return dispatcherRegistry.dispatch(participantResult.getContent(), byte[].class, rangedRequest)
                 .thenCompose(this::readCatalogFrom)
                 .thenApply(catalog -> copy(catalog).build())
                 .thenCompose(catalog -> {
@@ -96,14 +96,13 @@ public class PagingCatalogFetcher {
                     var datasets = catalog.getDatasets();
                     if (datasets.size() >= batchSize) {
                         monitor.debug(format("Fetching next batch from %s to %s", from, from + batchSize));
-                        return fetch(rq, range.getFrom() + batchSize, batchSize)
+                        return fetch(rangedRequest, range.getFrom() + batchSize, batchSize)
                                 .thenApply(catalogChunk -> merge(catalog, catalogChunk));
                     } else {
                         return completedFuture(catalog);
                     }
                 });
     }
-
 
     private CompletableFuture<Catalog> readCatalogFrom(StatusResult<byte[]> bytes) {
         if (bytes.failed()) {
@@ -122,9 +121,4 @@ public class PagingCatalogFetcher {
         }
     }
 
-    private CatalogRequestMessage.Builder toBuilder(CatalogRequestMessage catalogRequest) {
-        return CatalogRequestMessage.Builder.newInstance()
-                .counterPartyAddress(catalogRequest.getCounterPartyAddress())
-                .counterPartyId(catalogRequest.getCounterPartyId());
-    }
 }
