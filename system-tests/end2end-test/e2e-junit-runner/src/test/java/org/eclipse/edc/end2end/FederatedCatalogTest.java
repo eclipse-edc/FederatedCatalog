@@ -25,7 +25,7 @@ import org.eclipse.edc.connector.core.agent.NoOpParticipantIdMapper;
 import org.eclipse.edc.crawler.spi.TargetNode;
 import org.eclipse.edc.crawler.spi.TargetNodeDirectory;
 import org.eclipse.edc.json.JacksonTypeManager;
-import org.eclipse.edc.jsonld.TitaniumJsonLd;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
@@ -37,7 +37,6 @@ import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDataset
 import org.eclipse.edc.protocol.dsp.catalog.transform.from.JsonObjectFromDistributionTransformer;
 import org.eclipse.edc.protocol.dsp.catalog.transform.v2025.from.JsonObjectFromCatalogV2025Transformer;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
@@ -65,13 +64,13 @@ import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.transform.odrl.OdrlTransformersFactory.jsonObjectToOdrlTransformers;
 import static org.eclipse.edc.end2end.TestFunctions.createContractDef;
 import static org.eclipse.edc.end2end.TestFunctions.createPolicy;
+import static org.eclipse.edc.jsonld.spi.Namespaces.DSPACE_CONTEXT_2025_1;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DATASPACE_PROTOCOL_HTTP_V_2025_1;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_NAMESPACE_V_2025_1;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.V_2025_1_VERSION;
 import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.mockito.Mockito.mock;
 
 @EndToEndTest
 class FederatedCatalogTest {
@@ -132,7 +131,8 @@ class FederatedCatalogTest {
 
     private final TypeTransformerRegistry typeTransformerRegistry = new TypeTransformerRegistryImpl();
     private final TypeManager mapper = new JacksonTypeManager();
-    private final CatalogApiClient apiClient = new CatalogApiClient(CATALOG_CATALOG, CONNECTOR_MANAGEMENT, JacksonJsonLd.createObjectMapper(), new TitaniumJsonLd(mock(Monitor.class)), typeTransformerRegistry);
+    private final CatalogApiClient apiClient = new CatalogApiClient(CATALOG_CATALOG, CONNECTOR_MANAGEMENT,
+            JacksonJsonLd.createObjectMapper(), () -> catalog.getService(JsonLd.class), typeTransformerRegistry);
 
     @BeforeEach
     void setUp() {
@@ -184,16 +184,20 @@ class FederatedCatalogTest {
                 .pollInterval(ofSeconds(1))
                 .atMost(TIMEOUT)
                 .untilAsserted(() -> {
-
-                    // With empty query
                     var emptyQuery = TestFunctions.createEmptyQuery();
-                    var catalogs = apiClient.getCatalogs(emptyQuery);
+                    var catalogsJson = apiClient.queryCatalogs(emptyQuery);
+                    assertThat(catalogsJson).contains(DSPACE_CONTEXT_2025_1);
 
+                    var catalogs = apiClient.deserializeCatalogs(catalogsJson);
                     assertCatalogContainsOffer(assetIdBase64, catalogs);
+                });
 
-                    // With query containing a filter expression for existing asset.
+        await().pollDelay(ofSeconds(1))
+                .pollInterval(ofSeconds(1))
+                .atMost(TIMEOUT)
+                .untilAsserted(() -> {
                     var queryWithExistingAssetId = TestFunctions.createQuerySpecWithFilterExpressionForAssetId(id);
-                    catalogs = apiClient.getCatalogs(queryWithExistingAssetId);
+                    var catalogs = apiClient.deserializeCatalogs(apiClient.queryCatalogs(queryWithExistingAssetId));
 
                     assertCatalogContainsOffer(assetIdBase64, catalogs);
                 });

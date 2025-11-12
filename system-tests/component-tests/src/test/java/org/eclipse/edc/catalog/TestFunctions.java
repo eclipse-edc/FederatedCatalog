@@ -26,10 +26,8 @@ import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.connector.controlplane.catalog.spi.DataService;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Distribution;
-import org.eclipse.edc.jsonld.TitaniumJsonLd;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.response.StatusResult;
 import org.eclipse.edc.spi.result.Result;
@@ -49,7 +47,6 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.mockito.Mockito.mock;
 
 public class TestFunctions {
     public static final String CATALOG_QUERY_BASE_PATH = "/catalog";
@@ -57,8 +54,6 @@ public class TestFunctions {
     private static final String PATH = "/v1alpha/catalog/query";
     private static final TypeReference<List<Map<String, Object>>> MAP_TYPE = new TypeReference<>() {
     };
-
-    private static final JsonLd TITANIUM_JSON_LD = new TitaniumJsonLd(mock(Monitor.class));
 
     private static RequestSpecification baseRequest() {
         return given()
@@ -96,7 +91,7 @@ public class TestFunctions {
                 .build()));
     }
 
-    public static List<Catalog> queryCatalogApi(Function<JsonObject, Catalog> transformerFunction) {
+    public static List<Catalog> queryCatalogApi(JsonLd jsonLd, Function<JsonObject, Catalog> transformerFunction) {
         var objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         var body = baseRequest()
@@ -107,7 +102,7 @@ public class TestFunctions {
         try {
             var maps = objectMapper.readValue(body.asString(), MAP_TYPE);
             return maps.stream().map(map -> Json.createObjectBuilder(map).build())
-                    .map(TITANIUM_JSON_LD::expand)
+                    .map(jsonLd::expand)
                     .map(Result::getContent)
                     .map(transformerFunction)
                     .toList();
@@ -116,17 +111,17 @@ public class TestFunctions {
         }
     }
 
+    public static JsonObject createEmptyQuery() {
+        return Json.createObjectBuilder()
+                .add(TYPE, QuerySpec.EDC_QUERY_SPEC_TYPE)
+                .build();
+    }
+
     public static Dataset createDataset(String dataset1) {
         return Dataset.Builder.newInstance()
                 .offer("test-offer", Policy.Builder.newInstance().build())
                 .distribution(Distribution.Builder.newInstance().format("test-format").dataService(DataService.Builder.newInstance().build()).build())
                 .id(dataset1)
-                .build();
-    }
-
-    public static JsonObject createEmptyQuery() {
-        return Json.createObjectBuilder()
-                .add(TYPE, QuerySpec.EDC_QUERY_SPEC_TYPE)
                 .build();
     }
 }
