@@ -41,17 +41,8 @@ import java.io.IOException;
 import java.util.stream.Stream;
 
 import static org.eclipse.edc.catalog.spi.FccApiContexts.CATALOG_QUERY;
-import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
-import static org.eclipse.edc.jsonld.spi.Namespaces.DCAT_PREFIX;
-import static org.eclipse.edc.jsonld.spi.Namespaces.DCAT_SCHEMA;
-import static org.eclipse.edc.jsonld.spi.Namespaces.DCT_PREFIX;
-import static org.eclipse.edc.jsonld.spi.Namespaces.DCT_SCHEMA;
-import static org.eclipse.edc.jsonld.spi.Namespaces.DSPACE_PREFIX;
-import static org.eclipse.edc.jsonld.spi.Namespaces.DSPACE_SCHEMA;
-import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_PREFIX;
-import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
-import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.edc.spi.constants.CoreConstants.EDC_PREFIX;
+import static org.eclipse.edc.jsonld.spi.Namespaces.DSPACE_CONTEXT_2025_1;
+import static org.eclipse.edc.jsonld.spi.Namespaces.EDC_DSPACE_CONTEXT;
 import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 
 @Extension(value = FederatedCatalogApiExtension.NAME)
@@ -90,20 +81,14 @@ public class FederatedCatalogApiExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         portMappingRegistry.register(new PortMapping(CATALOG_QUERY, apiConfiguration.port(), apiConfiguration.path()));
 
-        jsonLd.registerNamespace(VOCAB, EDC_NAMESPACE, CATALOG_QUERY_SCOPE);
-        jsonLd.registerNamespace(EDC_PREFIX, EDC_NAMESPACE, CATALOG_QUERY_SCOPE);
-        jsonLd.registerNamespace(ODRL_PREFIX, ODRL_SCHEMA, CATALOG_QUERY_SCOPE);
-        jsonLd.registerNamespace(DCAT_PREFIX, DCAT_SCHEMA, CATALOG_QUERY_SCOPE);
-        jsonLd.registerNamespace(DCT_PREFIX, DCT_SCHEMA, CATALOG_QUERY_SCOPE);
-        jsonLd.registerNamespace(DSPACE_PREFIX, DSPACE_SCHEMA, CATALOG_QUERY_SCOPE);
+        jsonLd.registerContext(DSPACE_CONTEXT_2025_1, CATALOG_QUERY_SCOPE);
+        jsonLd.registerContext(EDC_DSPACE_CONTEXT, CATALOG_QUERY_SCOPE);
 
-        var jsonLdMapper = typeManager.getMapper(JSON_LD);
         var catalogController = new FederatedCatalogApiController(queryService, transformerRegistry);
         webService.registerResource(CATALOG_QUERY, catalogController);
         webService.registerResource(CATALOG_QUERY, new ObjectMapperProvider(typeManager, JSON_LD));
         webService.registerResource(CATALOG_QUERY, new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, CATALOG_QUERY_SCOPE));
 
-        // contribute to the liveness probe
         if (healthCheckService != null) {
             var successResult = HealthCheckResult.Builder.newInstance().component("FCC Query API").build();
             healthCheckService.addReadinessProvider(() -> successResult);

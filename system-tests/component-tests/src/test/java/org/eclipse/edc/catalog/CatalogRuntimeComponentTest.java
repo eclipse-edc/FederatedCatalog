@@ -106,7 +106,7 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single target, yields no results")
-    void crawlSingle_noResults(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
+    void crawlSingle_noResults(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory, JsonLd jsonLd) {
         // prepare node directory
         directory.insert(targetNode());
         // intercept request egress
@@ -117,7 +117,7 @@ public class CatalogRuntimeComponentTest {
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    var response = queryCatalogApi(jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
+                    var response = queryCatalogApi(jsonLd, jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
                     assertThat(response).hasSize(1);
                     assertThat(response).allSatisfy(c -> assertThat(c.getDatasets()).isNullOrEmpty());
                 });
@@ -125,7 +125,7 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single target, yields some results")
-    void crawlSingle_withResults(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
+    void crawlSingle_withResults(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory, JsonLd jsonLd) {
         // prepare node directory
         directory.insert(targetNode());
         // intercept request egress
@@ -137,14 +137,14 @@ public class CatalogRuntimeComponentTest {
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    var catalogs = queryCatalogApi(jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
+                    var catalogs = queryCatalogApi(jsonLd, jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
                     assertThat(catalogs).allSatisfy(c -> assertThat(c.getDatasets()).hasSize(5));
                 });
     }
 
     @Test
     @DisplayName("Crawl a single target, returns a catalog of catalogs")
-    void crawlSingle_withCatalogOfCatalogs(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
+    void crawlSingle_withCatalogOfCatalogs(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory, JsonLd jsonLd) {
         // prepare node directory
         directory.insert(targetNode());
         // intercept request egress
@@ -156,7 +156,7 @@ public class CatalogRuntimeComponentTest {
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    var catalogs = queryCatalogApi(jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
+                    var catalogs = queryCatalogApi(jsonLd, jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
                     assertThat(catalogs).isNotEmpty().allSatisfy(c -> {
                         assertThat(c.getDatasets()).hasSize(2);
                         assertThat(c.getDatasets()).anySatisfy(ds -> assertThat(ds).isInstanceOf(Catalog.class));
@@ -166,7 +166,7 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single targets, > 100 results, needs paging")
-    void crawlSingle_withPagedResults(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
+    void crawlSingle_withPagedResults(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory, JsonLd jsonLd) {
         // prepare node directory
         directory.insert(targetNode());
 
@@ -180,7 +180,7 @@ public class CatalogRuntimeComponentTest {
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    var catalogs = queryCatalogApi(jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
+                    var catalogs = queryCatalogApi(jsonLd, jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
                     assertThat(catalogs.size()).isEqualTo(1);
                     assertThat(catalogs.get(0).getDatasets()).hasSize(250);
                 });
@@ -190,7 +190,7 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single target twice, emulate deletion of assets")
-    void crawlSingle_withDeletions_shouldRemove(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
+    void crawlSingle_withDeletions_shouldRemove(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory, JsonLd jsonLd) {
         // prepare node directory
         directory.insert(targetNode());
 
@@ -208,7 +208,7 @@ public class CatalogRuntimeComponentTest {
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    var catalogs = queryCatalogApi(jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
+                    var catalogs = queryCatalogApi(jsonLd, jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
                     assertThat(catalogs).hasSize(1);
                     assertThat(catalogs.get(0).getDatasets()).hasSize(2)
                             .noneMatch(offer -> offer.getId().equals("offer3"));
@@ -219,7 +219,7 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single target twice, emulate deleting and re-adding of assets with same ID")
-    void crawlSingle_withUpdates_shouldReplace(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
+    void crawlSingle_withUpdates_shouldReplace(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory, JsonLd jsonLd) {
         // prepare node directory
         directory.insert(targetNode());
 
@@ -237,7 +237,7 @@ public class CatalogRuntimeComponentTest {
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    var catalogs = queryCatalogApi(jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
+                    var catalogs = queryCatalogApi(jsonLd, jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
                     assertThat(catalogs).hasSize(1);
                     assertThat(catalogs.get(0).getDatasets()).hasSize(3);
                     verify(dispatcher, atLeast(4)).dispatch(any(), eq(byte[].class), isA(CatalogRequestMessage.class));
@@ -247,7 +247,7 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single target twice, emulate addition of assets")
-    void crawlSingle_withAdditions_shouldAdd(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
+    void crawlSingle_withAdditions_shouldAdd(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory, JsonLd jsonLd) {
         // prepare node directory
         directory.insert(targetNode());
 
@@ -263,7 +263,7 @@ public class CatalogRuntimeComponentTest {
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    var catalogs = queryCatalogApi(jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
+                    var catalogs = queryCatalogApi(jsonLd, jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
                     assertThat(catalogs).hasSize(1);
                     assertThat(catalogs)
                             .allSatisfy(cat -> assertThat(cat.getDatasets()).hasSize(4))
@@ -276,7 +276,7 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl a single target, verify that the originator information is properly inserted")
-    void crawlSingle_verifyCorrectOriginator(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
+    void crawlSingle_verifyCorrectOriginator(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory, JsonLd jsonLd) {
         // prepare node directory
         directory.insert(targetNode());
         // intercept request egress
@@ -288,7 +288,7 @@ public class CatalogRuntimeComponentTest {
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    var catalogs = queryCatalogApi(jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
+                    var catalogs = queryCatalogApi(jsonLd, jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
                     assertThat(catalogs).hasSize(1);
                     assertThat(catalogs.get(0).getDatasets()).hasSize(5);
                     assertThat(catalogs).extracting(Catalog::getProperties).allSatisfy(a -> assertThat(a).containsEntry(PROPERTY_ORIGINATOR, "http://test-node.com"));
@@ -297,7 +297,7 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl 1000 targets, verify that all offers are collected")
-    void crawlMany_shouldCollectAll(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
+    void crawlMany_shouldCollectAll(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory, JsonLd jsonLd) {
 
         var numTotalAssets = new AtomicInteger();
         var rnd = new SecureRandom();
@@ -321,7 +321,7 @@ public class CatalogRuntimeComponentTest {
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT.plus(TEST_TIMEOUT))
                 .untilAsserted(() -> {
-                    var catalogs = queryCatalogApi(jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
+                    var catalogs = queryCatalogApi(jsonLd, jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
                     assertThat(catalogs).hasSize(numTargets);
                     //assert that the total number of offers across all catalogs is corrects
                     assertThat(catalogs.stream().mapToLong(c -> c.getDatasets().size()).sum()).isEqualTo(numTotalAssets.get());
@@ -330,7 +330,7 @@ public class CatalogRuntimeComponentTest {
 
     @Test
     @DisplayName("Crawl multiple targets with conflicting asset IDs")
-    void crawlMultiple_whenConflictingAssetIds_shouldOverwrite(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory) {
+    void crawlMultiple_whenConflictingAssetIds_shouldOverwrite(RemoteMessageDispatcherRegistry reg, TypeTransformerRegistry ttr, TargetNodeDirectory directory, JsonLd jsonLd) {
         var node1 = new TargetNode("test-node1", "did:web:" + UUID.randomUUID(), "http://test-node1.com", singletonList(DATASPACE_PROTOCOL_HTTP_V_2025_1));
         var node2 = new TargetNode("test-node2", "did:web:" + UUID.randomUUID(), "http://test-node2.com", singletonList(DATASPACE_PROTOCOL_HTTP_V_2025_1));
 
@@ -349,7 +349,7 @@ public class CatalogRuntimeComponentTest {
         await().pollDelay(ofSeconds(1))
                 .atMost(TEST_TIMEOUT)
                 .untilAsserted(() -> {
-                    var catalogs = queryCatalogApi(jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
+                    var catalogs = queryCatalogApi(jsonLd, jsonObject -> ttr.transform(jsonObject, Catalog.class).orElseThrow(AssertionError::new));
                     assertThat(catalogs).hasSize(2);
                     assertThat(catalogs).anySatisfy(c -> assertThat(c.getProperties().get(PROPERTY_ORIGINATOR).toString()).startsWith("http://test-node1.com"));
                     assertThat(catalogs).anySatisfy(c -> assertThat(c.getProperties().get(PROPERTY_ORIGINATOR).toString()).startsWith("http://test-node2.com"));
@@ -375,4 +375,5 @@ public class CatalogRuntimeComponentTest {
     private @NotNull TargetNode targetNode() {
         return new TargetNode("test-node", "did:web:" + UUID.randomUUID(), "http://test-node.com", singletonList(DATASPACE_PROTOCOL_HTTP_V_2025_1));
     }
+
 }
