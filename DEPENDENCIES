@@ -47,7 +47,7 @@ maven/mavencentral/com.google.guava/listenablefuture/9999.0-empty-to-avoid-confl
 maven/mavencentral/com.google.j2objc/j2objc-annotations/3.1, Apache-2.0, approved, #23379
 maven/mavencentral/com.google.protobuf/protobuf-java/4.32.1, BSD-3-Clause, approved, clearlydefined
 maven/mavencentral/com.networknt/json-schema-validator/2.0.0, , restricted, clearlydefined
-maven/mavencentral/com.nimbusds/nimbus-jose-jwt/10.5, Apache-2.0, approved, #23321
+maven/mavencentral/com.nimbusds/nimbus-jose-jwt/10.6, , restricted, clearlydefined
 maven/mavencentral/com.puppycrawl.tools/checkstyle/12.1.1, , restricted, clearlydefined
 maven/mavencentral/com.squareup.okhttp3/okhttp-dnsoverhttps/5.3.0, , restricted, clearlydefined
 maven/mavencentral/com.squareup.okhttp3/okhttp-jvm/5.3.0, , restricted, clearlydefined
