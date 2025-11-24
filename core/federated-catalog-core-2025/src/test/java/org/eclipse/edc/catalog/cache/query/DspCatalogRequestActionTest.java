@@ -49,7 +49,8 @@ class DspCatalogRequestActionTest {
     private final TypeTransformerRegistry typeTransformerRegistry = new TypeTransformerRegistryImpl();
     private final TitaniumJsonLd jsonLdService = new TitaniumJsonLd(mock());
     private final ObjectMapper objectMapper = createObjectMapper();
-    private final SingleParticipantContextSupplier participantContextSupplier = () -> ServiceResult.success(new ParticipantContext("participantContext"));
+    private final SingleParticipantContextSupplier participantContextSupplier = () -> ServiceResult.success(
+            ParticipantContext.Builder.newInstance().participantContextId("participantContext").identity("identity").build());
     private final DspCatalogRequestAction action = new DspCatalogRequestAction(dispatcherRegistry, participantContextSupplier, mock(), objectMapper, typeTransformerRegistry, jsonLdService);
 
     @BeforeEach

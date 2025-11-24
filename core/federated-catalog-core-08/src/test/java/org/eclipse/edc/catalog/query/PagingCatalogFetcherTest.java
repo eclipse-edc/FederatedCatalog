@@ -54,7 +54,8 @@ class PagingCatalogFetcherTest {
     private final RemoteMessageDispatcherRegistry dispatcherRegistryMock = mock();
     private final ObjectMapper objectMapper = createObjectMapper();
     private final TitaniumJsonLd jsonLdService = new TitaniumJsonLd(mock());
-    private final SingleParticipantContextSupplier participantContextSupplier = () -> ServiceResult.success(new ParticipantContext("participantContext"));
+    private final SingleParticipantContextSupplier participantContextSupplier = () -> ServiceResult.success(
+            ParticipantContext.Builder.newInstance().participantContextId("participantContext").identity("identity").build());
     private final TypeTransformerRegistry typeTransformerRegistry = new TypeTransformerRegistryImpl();
     private PagingCatalogFetcher fetcher;
 
