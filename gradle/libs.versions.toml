@@ -3,7 +3,7 @@ format.version = "1.1"
 
 [versions]
 awaitility = "4.2.0"
-edc = "0.15.0-SNAPSHOT"
+edc = "0.16.0-SNAPSHOT"
 restAssured = "5.5.6"
 jackson = "2.20.1"
 postgres = "42.7.8"
