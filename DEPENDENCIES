@@ -40,15 +40,14 @@ maven/mavencentral/com.github.docker-java/docker-java-transport-zerodep/3.7.0, A
 maven/mavencentral/com.github.docker-java/docker-java-transport/3.4.2, Apache-2.0, approved, #20873
 maven/mavencentral/com.github.docker-java/docker-java-transport/3.7.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.google.code.findbugs/jsr305/3.0.2, Apache-2.0 and CC-BY-2.5, approved, #15220
-maven/mavencentral/com.google.code.gson/gson/2.10.1, Apache-2.0, approved, #6159
-maven/mavencentral/com.google.crypto.tink/tink/1.19.0, , restricted, clearlydefined
-maven/mavencentral/com.google.errorprone/error_prone_annotations/2.22.0, Apache-2.0, approved, #10661
+maven/mavencentral/com.google.code.gson/gson/2.13.2, Apache-2.0, approved, #20656
+maven/mavencentral/com.google.crypto.tink/tink/1.20.0, , restricted, clearlydefined
 maven/mavencentral/com.google.errorprone/error_prone_annotations/2.41.0, Apache-2.0, approved, #22631
 maven/mavencentral/com.google.guava/failureaccess/1.0.3, Apache-2.0, approved, CQ22654
 maven/mavencentral/com.google.guava/guava/33.5.0-jre, Apache-2.0 AND CC0-1.0 AND CC-PDDC, approved, #23378
 maven/mavencentral/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava, Apache-2.0, approved, CQ22657
 maven/mavencentral/com.google.j2objc/j2objc-annotations/3.1, Apache-2.0, approved, #23379
-maven/mavencentral/com.google.protobuf/protobuf-java/4.32.1, BSD-3-Clause, approved, clearlydefined
+maven/mavencentral/com.google.protobuf/protobuf-java/4.33.0, BSD-3-Clause, approved, clearlydefined
 maven/mavencentral/com.networknt/json-schema-validator/2.0.0, , restricted, clearlydefined
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/10.6, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.puppycrawl.tools/checkstyle/12.3.0, , restricted, clearlydefined
@@ -72,10 +71,10 @@ maven/mavencentral/io.github.classgraph/classgraph/4.8.176, MIT, approved, CQ225
 maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/1.32.0, Apache-2.0, approved, #11684
 maven/mavencentral/io.opentelemetry/opentelemetry-api/1.32.0, Apache-2.0, approved, #11682
 maven/mavencentral/io.opentelemetry/opentelemetry-context/1.32.0, Apache-2.0, approved, #11683
-maven/mavencentral/io.rest-assured/json-path/6.0.0, , restricted, clearlydefined
+maven/mavencentral/io.rest-assured/json-path/6.0.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.rest-assured/rest-assured-common/6.0.0, , restricted, clearlydefined
 maven/mavencentral/io.rest-assured/rest-assured/6.0.0, , restricted, clearlydefined
-maven/mavencentral/io.rest-assured/xml-path/6.0.0, , restricted, clearlydefined
+maven/mavencentral/io.rest-assured/xml-path/6.0.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.setl/rdf-urdna/1.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.26, Apache-2.0, approved, #5947
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.41, Apache-2.0, approved, #5947
@@ -121,11 +120,11 @@ maven/mavencentral/org.apache.commons/commons-lang3/3.18.0, Apache-2.0, approved
 maven/mavencentral/org.apache.commons/commons-lang3/3.19.0, Apache-2.0, approved, #23560
 maven/mavencentral/org.apache.commons/commons-lang3/3.7, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.apache.commons/commons-lang3/3.8.1, Apache-2.0, approved, #815
-maven/mavencentral/org.apache.commons/commons-pool2/2.12.1, Apache-2.0 AND LicenseRef-Public-Domain, approved, #10843
+maven/mavencentral/org.apache.commons/commons-pool2/2.13.0, , restricted, clearlydefined
 maven/mavencentral/org.apache.commons/commons-text/1.3, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.apache.groovy/groovy-bom/5.0.3, , restricted, clearlydefined
 maven/mavencentral/org.apache.groovy/groovy-json/5.0.3, , restricted, clearlydefined
-maven/mavencentral/org.apache.groovy/groovy-xml/5.0.3, , restricted, clearlydefined
+maven/mavencentral/org.apache.groovy/groovy-xml/5.0.3, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.apache.groovy/groovy/5.0.3, , restricted, clearlydefined
 maven/mavencentral/org.apache.httpcomponents/httpclient/4.5.13, Apache-2.0, approved, #15248
 maven/mavencentral/org.apache.httpcomponents/httpcore/4.4.13, Apache-2.0, approved, CQ23528
@@ -257,6 +256,7 @@ maven/mavencentral/org.eclipse.edc/dsp/0.16.0-SNAPSHOT, Apache-2.0, approved, te
 maven/mavencentral/org.eclipse.edc/edr-cache-api/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/edr-store-core/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/edr-store-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/encryption-lib/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/encryption-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/http-lib/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/http-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -392,9 +392,9 @@ maven/mavencentral/org.testcontainers/junit-jupiter/1.21.4, , restricted, clearl
 maven/mavencentral/org.testcontainers/testcontainers-database-commons/2.0.2, Apache-2.0, approved, #25271
 maven/mavencentral/org.testcontainers/testcontainers-jdbc/2.0.2, Apache-2.0, approved, #25272
 maven/mavencentral/org.testcontainers/testcontainers-junit-jupiter/2.0.2, MIT, approved, clearlydefined
-maven/mavencentral/org.testcontainers/testcontainers-postgresql/2.0.2, None, restricted, #25273
+maven/mavencentral/org.testcontainers/testcontainers-postgresql/2.0.2, MIT, approved, #25273
 maven/mavencentral/org.testcontainers/testcontainers/1.21.4, MIT, approved, #20874
-maven/mavencentral/org.testcontainers/testcontainers/2.0.2, None, restricted, #25274
+maven/mavencentral/org.testcontainers/testcontainers/2.0.2, MIT, approved, #25274
 maven/mavencentral/org.xmlresolver/xmlresolver/5.3.3, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.yaml/snakeyaml/2.2, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #10232
 maven/mavencentral/org.yaml/snakeyaml/2.3, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #16046
