@@ -110,34 +110,6 @@ Module `federated-catalog-core`
 _None_
 
 ### Extensions
-#### Class: `org.eclipse.edc.catalog.cache.FederatedCatalogCoreServicesExtension`
-**Name:** "Federated Catalog Core"
-
-**Overview:** No overview provided.
-
-
-### Configuration
-
-| Key                                          | Required | Type     | Default | Pattern | Min | Max | Description                                                                                                     |
-| -------------------------------------------- | -------- | -------- | ------- | ------- | --- | --- | --------------------------------------------------------------------------------------------------------------- |
-| `edc.catalog.cache.execution.enabled`        | `*`      | `string` | `true`  |         |     |     | Determines whether catalog crawling is globally enabled or disabled                                             |
-| `edc.catalog.cache.partition.num.crawlers`   | `*`      | `string` | `2`     |         |     |     | The number of crawlers (execution threads) that should be used. The engine will re-use crawlers when necessary. |
-| `edc.catalog.cache.execution.period.seconds` | `*`      | `string` | `60`    |         |     |     | The time to elapse between two crawl runs                                                                       |
-| `edc.catalog.cache.execution.delay.seconds`  |          | `string` | `0`     |         |     |     | The initial delay for the cache crawler engine                                                                  |
-| `edc.catalog.cache.retry.retries.max`        | `*`      | `string` | `5`     |         |     |     | How many retries will be executed in case of crawler failure                                                    |
-| `edc.catalog.cache.retry.delay.seconds`      | `*`      | `string` | `10`    |         |     |     | How many seconds the crawler will await after a failure before retry                                            |
-
-#### Provided services
-_None_
-
-#### Referenced (injected) services
-- `org.eclipse.edc.crawler.spi.model.ExecutionPlan` (optional)
-- `org.eclipse.edc.catalog.spi.FederatedCatalogCache` (required)
-- `org.eclipse.edc.crawler.spi.CrawlerActionRegistry` (required)
-- `org.eclipse.edc.crawler.spi.TargetNodeDirectory` (required)
-- `org.eclipse.edc.crawler.spi.TargetNodeFilter` (optional)
-- `org.eclipse.edc.spi.system.health.HealthCheckService` (optional)
-
 #### Class: `org.eclipse.edc.catalog.cache.FederatedCatalogDefaultServicesExtension`
 **Name:** "FederatedCatalogDefaultServicesExtension"
 
@@ -165,36 +137,33 @@ _None_
 #### Referenced (injected) services
 - `org.eclipse.edc.catalog.spi.FederatedCatalogCache` (required)
 
-Module `federated-catalog-core-08`
-----------------------------------
-**Artifact:** org.eclipse.edc:federated-catalog-core-08:0.16.0-SNAPSHOT
-
-**Categories:** _None_
-
-### Extension points
-_None_
-
-### Extensions
-#### Class: `org.eclipse.edc.catalog.cache.FederatedCatalogCacheExtension`
-**Name:** "DEPRECATED: Federated Catalog Cache DSP 0.8"
+#### Class: `org.eclipse.edc.catalog.cache.FederatedCatalogCoreServicesExtension`
+**Name:** "Federated Catalog Core"
 
 **Overview:** No overview provided.
 
 
-### Configuration_None_
+### Configuration
+
+| Key                                          | Required | Type     | Default | Pattern | Min | Max | Description                                                                                                     |
+| -------------------------------------------- | -------- | -------- | ------- | ------- | --- | --- | --------------------------------------------------------------------------------------------------------------- |
+| `edc.catalog.cache.execution.enabled`        | `*`      | `string` | `true`  |         |     |     | Determines whether catalog crawling is globally enabled or disabled                                             |
+| `edc.catalog.cache.partition.num.crawlers`   | `*`      | `string` | `2`     |         |     |     | The number of crawlers (execution threads) that should be used. The engine will re-use crawlers when necessary. |
+| `edc.catalog.cache.execution.period.seconds` | `*`      | `string` | `60`    |         |     |     | The time to elapse between two crawl runs                                                                       |
+| `edc.catalog.cache.execution.delay.seconds`  |          | `string` | `0`     |         |     |     | The initial delay for the cache crawler engine                                                                  |
+| `edc.catalog.cache.retry.retries.max`        | `*`      | `string` | `5`     |         |     |     | How many retries will be executed in case of crawler failure                                                    |
+| `edc.catalog.cache.retry.delay.seconds`      | `*`      | `string` | `10`    |         |     |     | How many seconds the crawler will await after a failure before retry                                            |
 
 #### Provided services
 _None_
 
 #### Referenced (injected) services
-- `org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry` (required)
+- `org.eclipse.edc.crawler.spi.model.ExecutionPlan` (optional)
+- `org.eclipse.edc.catalog.spi.FederatedCatalogCache` (required)
 - `org.eclipse.edc.crawler.spi.CrawlerActionRegistry` (required)
-- `org.eclipse.edc.spi.types.TypeManager` (required)
-- `org.eclipse.edc.participant.spi.ParticipantIdMapper` (required)
-- `org.eclipse.edc.transform.spi.TypeTransformerRegistry` (required)
-- `org.eclipse.edc.jsonld.spi.JsonLd` (required)
-- `org.eclipse.edc.transform.spi.TypeTransformerRegistry` (required)
-- `org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier` (required)
+- `org.eclipse.edc.crawler.spi.TargetNodeDirectory` (required)
+- `org.eclipse.edc.crawler.spi.TargetNodeFilter` (optional)
+- `org.eclipse.edc.spi.system.health.HealthCheckService` (optional)
 
 Module `federated-catalog-core-2025`
 ------------------------------------
