@@ -41,6 +41,9 @@ dependencies {
     runtimeOnly(libs.edc.core.token)
     runtimeOnly(libs.edc.lib.providers.jersey)
     runtimeOnly(libs.edc.lib.boot)
+    runtimeOnly(libs.edc.dpf.selector.core)
+    runtimeOnly(libs.edc.transfer.data.plane.signaling)
+    runtimeOnly(libs.edc.data.plane.signaling.client)
 
     runtimeOnly(libs.edc.dsp.all)
 

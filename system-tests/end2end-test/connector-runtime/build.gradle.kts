@@ -31,6 +31,8 @@ dependencies {
     runtimeOnly(libs.edc.ext.http)
     runtimeOnly(libs.edc.spi.jsonld)
     runtimeOnly(libs.edc.core.edrstore)
+    runtimeOnly(libs.edc.transfer.data.plane.signaling)
+    runtimeOnly(libs.edc.data.plane.signaling.client)
 
     // protocol modules
     runtimeOnly(libs.edc.dsp.all)
