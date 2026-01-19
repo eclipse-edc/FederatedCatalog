@@ -60,7 +60,7 @@ java -Dweb.http.catalog.path="/api/catalog" \
 ```
 
 this will expose the Catalog API at `http://localhost:8181/api/catalog`. More information about Federated Catalog's APIs
-can be found [here](docs/developer/architecture/federated-catalog-apis).
+can be found [here](docs/developer/architecture/federated-catalog-apis.md).
 
 ### Create the Docker image
 
