@@ -111,7 +111,7 @@ public interface FederatedCatalogApi {
                         "edc": "https://w3id.org/edc/v0.0.1/ns/",
                         "dcat": "http://www.w3.org/ns/dcat#",
                         "odrl": "http://www.w3.org/ns/odrl/2/",
-                        "dspace": "https://w3id.org/dspace/v0.8/"
+                        "dspace": "https://w3id.org/dspace/2025/1/"
                     }
                 }
                 """;
