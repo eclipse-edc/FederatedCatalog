@@ -6,7 +6,7 @@ awaitility = "4.2.0"
 edc = "0.16.0-SNAPSHOT"
 restAssured = "6.0.0"
 jackson = "2.21.0"
-postgres = "42.7.9"
+postgres = "42.7.10"
 testcontainers = "1.21.4"
 
 [libraries]
