@@ -46,7 +46,6 @@ public class BomSmokeTests {
                     .statusCode(200)
                     .log().ifValidationFails()
                     .body("isSystemHealthy", equalTo(true)));
-
         }
     }
 
@@ -62,8 +61,8 @@ public class BomSmokeTests {
                                 put("edc.iam.sts.oauth.token.url", "https://sts.com/token");
                                 put("edc.iam.sts.oauth.client.id", "test-clientid");
                                 put("edc.iam.sts.oauth.client.secret.alias", "test-alias");
-                                put("web.http.port", "8080");
-                                put("web.http.path", "/api");
+                                put("web.http.port", DEFAULT_PORT);
+                                put("web.http.path", DEFAULT_PATH);
                                 put("web.http.catalog.port", "8081");
                                 put("web.http.catalog.path", "/api/catalog");
                                 put("web.http.version.port", String.valueOf(getFreePort()));

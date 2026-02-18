@@ -30,6 +30,7 @@ edc-core-participant-single = { module = "org.eclipse.edc:participant-context-si
 edc-dpf-selector-core = { module = "org.eclipse.edc:data-plane-selector-core", version.ref = "edc" }
 edc-dpf-selector-spi = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
 edc-ext-http = { module = "org.eclipse.edc:http", version.ref = "edc" }
+edc-verifiable-credentials = { module = "org.eclipse.edc:verifiable-credentials", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
 
 edc-transfer-data-plane-signaling = { module = "org.eclipse.edc:transfer-data-plane-signaling", version.ref = "edc" }
@@ -92,7 +93,7 @@ testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.re
 [bundles]
 edc-dpf = ["edc-dpf-selector-spi", "edc-dpf-selector-core"]
 dcp = ["edc-dcp-core", "edc-dcp-issuersconfig", "edc-dcp-service", "edc-dcp-sts-client", "edc-dcp-transform",
-    "edc-did-core", "edc-did-web", "edc-oauth2-client"]
+    "edc-did-core", "edc-did-web", "edc-oauth2-client", "edc-verifiable-credentials"]
 
 [plugins]
 edc-build = { id = "org.eclipse.edc.edc-build", version = "1.1.6" }
