@@ -11,6 +11,8 @@
 
 ---
 
+**This repository has been archived, please refer to the [Connector](https://github.com/eclipse-edc/Connector) repository to find out the federated-catalog modules and BOMs**
+
 The Federated Catalog (FC) represents the aggregated catalogs of multiple participants in a dataspace. To achieve that,
 the FC employs a set of crawlers, that periodically scrape the dataspace requesting the catalog from each participant in
 a list of participants and consolidates them in a local cache.
